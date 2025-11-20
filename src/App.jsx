@@ -281,10 +281,10 @@ const TournamentReplayViewer = ({
  * ============================================================================
  * 
  * CHANGELOG v3.04:
+ * - Fixed React Hooks rules: moved tournament roster loading useEffect outside conditional
  * - Added tournament roster_id validation before submission
  * - Enhanced error logging for roster selection
  * - Log backend roster structure to debug missing roster_id field
- * - Validate all 3 roster IDs are present before API call
  * 
  * CHANGELOG v3.04:
  * - Fixed React Hooks rules violations: extracted TournamentReplayViewer to separate component
@@ -10339,21 +10339,22 @@ export default function PokemonCareerGame() {
     );
   }
 
+  // Load user rosters when in tournament details screen
+  useEffect(() => {
+    if (gameState === 'tournamentDetails' && user && authToken) {
+      apiGetRosters(100, 0).then(rosters => {
+        console.log('[Tournament] Loaded rosters:', rosters);
+        console.log('[Tournament] First roster sample:', rosters[0]);
+        if (rosters.length > 0 && !rosters[0].roster_id) {
+          console.error('[Tournament] ERROR: Rosters missing roster_id field!', rosters[0]);
+        }
+        setUserRosters(rosters || []);
+      });
+    }
+  }, [gameState, user, authToken]);
+
   // Tournament Details & Entry Screen
   if (gameState === 'tournamentDetails') {
-    // Load user rosters from backend
-    useEffect(() => {
-      if (user && authToken) {
-        apiGetRosters(100, 0).then(rosters => {
-          console.log('[Tournament] Loaded rosters:', rosters);
-          console.log('[Tournament] First roster sample:', rosters[0]);
-          if (rosters.length > 0 && !rosters[0].roster_id) {
-            console.error('[Tournament] ERROR: Rosters missing roster_id field!', rosters[0]);
-          }
-          setUserRosters(rosters || []);
-        });
-      }
-    }, [user, authToken]);
 
     const userHasRosters = userRosters.length >= 3;
     const canEnter = user && userHasRosters && 
