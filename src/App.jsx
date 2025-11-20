@@ -277,16 +277,22 @@ const TournamentReplayViewer = ({
 };
 
 /* ============================================================================
- * POKEMON CAREER BATTLE GAME - v3.04
+ * POKEMON CAREER BATTLE GAME - v3.05
  * ============================================================================
  * 
- * CHANGELOG v3.04:
- * - Fixed React Hooks rules: moved tournament roster loading useEffect outside conditional
- * - Added tournament roster_id validation before submission
- * - Enhanced error logging for roster selection
- * - Log backend roster structure to debug missing roster_id field
+ * CHANGELOG v3.05:
+ * - Added debug logging for tournament entry conditions
+ * - Shows specific reason why user can't enter (need 3 trained Pokemon)
+ * - Displays current roster count vs required count
+ * - Better user feedback for tournament requirements
  * 
- * CHANGELOG v3.04:
+ * CHANGELOG v3.05:
+ * - Fixed React Hooks rules: moved tournament roster loading useEffect outside conditional
+ * - Added detailed logging to apiGetRosters to debug backend response
+ * - Added empty state message when no trained Pokemon available
+ * - Shows helpful message directing users to Career Mode to train Pokemon
+ * 
+ * CHANGELOG v3.05:
  * - Fixed React Hooks rules violations: extracted TournamentReplayViewer to separate component
  * - Resolved hooks being called conditionally
  * - Removed undefined TYPE_COLORS reference
@@ -7158,22 +7164,29 @@ export default function PokemonCareerGame() {
   
   // Pokemon: Get user's saved rosters
   const apiGetRosters = async (limit = 10, offset = 0) => {
-    if (!authToken) return [];
+    if (!authToken) {
+      console.log('[apiGetRosters] No auth token, returning empty array');
+      return [];
+    }
     
     try {
+      console.log('[apiGetRosters] Fetching from:', `${API_URL}/pokemon/rosters?limit=${limit}&offset=${offset}`);
       const response = await fetch(`${API_URL}/pokemon/rosters?limit=${limit}&offset=${offset}`, {
         headers: { 'Authorization': `Bearer ${authToken}` }
       });
       
+      console.log('[apiGetRosters] Response status:', response.status);
       const data = await response.json();
+      console.log('[apiGetRosters] Response data:', data);
       
       if (!response.ok) {
         throw new Error(data.error || 'Failed to fetch rosters');
       }
       
-      return data.rosters;
+      console.log('[apiGetRosters] Returning rosters:', data.rosters);
+      return data.rosters || [];
     } catch (error) {
-      console.error('Fetch rosters error:', error);
+      console.error('[apiGetRosters] Error:', error);
       return [];
     }
   };
@@ -9562,7 +9575,7 @@ export default function PokemonCareerGame() {
             
             {/* Version number in bottom-right corner */}
             <div className="fixed bottom-4 right-4 text-white text-xs font-semibold bg-black bg-opacity-30 px-3 py-1 rounded-lg">
-              v3.04
+              v3.05
             </div>
           </div>
         </>
@@ -9709,7 +9722,7 @@ export default function PokemonCareerGame() {
         
         {/* Version number in bottom-right corner */}
         <div className="fixed bottom-4 right-4 text-white text-xs font-semibold bg-black bg-opacity-30 px-3 py-1 rounded-lg">
-          v3.04
+          v3.05
         </div>
       </div>
       </>
@@ -10362,6 +10375,17 @@ export default function PokemonCareerGame() {
     const userEntry = tournamentDetails?.entries?.find(e => e.user_id === user?.id);
     const isFull = (tournamentDetails?.tournament?.entries_count || 0) >= (selectedTournament?.max_players || 0);
 
+    // Debug logging
+    console.log('[Tournament Details] Entry conditions:', {
+      user: !!user,
+      userRostersLength: userRosters.length,
+      userHasRosters,
+      tournamentStatus: selectedTournament?.status,
+      canEnter,
+      userEntry: !!userEntry,
+      isFull
+    });
+
     const handleTeamSelect = (slotIndex, roster) => {
       const newTeam = [...selectedTeam];
       newTeam[slotIndex] = roster;
@@ -10520,8 +10544,15 @@ export default function PokemonCareerGame() {
 
                 {/* Available Pokemon List */}
                 <h4 className="font-bold mb-3">Available Trained Pokemon ({userRosters.length} rosters)</h4>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-96 overflow-y-auto">
-                  {userRosters.map((roster, idx) => {
+                {userRosters.length === 0 ? (
+                  <div className="bg-gray-50 rounded-lg p-8 text-center">
+                    <p className="text-gray-500 mb-2">No trained Pokemon found</p>
+                    <p className="text-sm text-gray-400">You need to train at least 3 Pokemon before entering tournaments.</p>
+                    <p className="text-sm text-gray-400 mt-2">Go to Career Mode to train Pokemon!</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-96 overflow-y-auto">
+                    {userRosters.map((roster, idx) => {
                     const alreadySelected = selectedTeam.some(t => t && t.roster_id === roster.roster_id);
                     const pokemonData = roster.pokemon_data ? JSON.parse(roster.pokemon_data) : {};
                     return (
@@ -10564,6 +10595,7 @@ export default function PokemonCareerGame() {
                     );
                   })}
                 </div>
+                )}
 
                 <button
                   onClick={handleSubmitEntry}
@@ -10578,6 +10610,12 @@ export default function PokemonCareerGame() {
             <div className="bg-gray-100 border-2 border-gray-300 rounded-lg p-6">
               {!user ? (
                 <p className="text-center text-gray-700 font-bold">Login required to enter tournaments</p>
+              ) : !userHasRosters ? (
+                <div className="text-center">
+                  <p className="text-gray-700 font-bold mb-2">Need 3 Trained Pokemon</p>
+                  <p className="text-sm text-gray-600 mb-2">You have {userRosters.length} trained Pokemon</p>
+                  <p className="text-sm text-gray-500">Complete Career Mode with 3 Pokemon to unlock tournament entry!</p>
+                </div>
               ) : isFull ? (
                 <p className="text-center text-gray-700 font-bold">Tournament is full</p>
               ) : selectedTournament?.status === 'in_progress' ? (
