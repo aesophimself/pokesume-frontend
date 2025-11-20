@@ -6972,7 +6972,15 @@ export default function PokemonCareerGame() {
 
   // Load user rosters when entering tournament details screen
   useEffect(() => {
+    console.log('[Tournament useEffect] Checking conditions:', {
+      gameState,
+      hasUser: !!user,
+      hasAuthToken: !!authToken,
+      willFetch: gameState === 'tournamentDetails' && user && authToken
+    });
+    
     if (gameState === 'tournamentDetails' && user && authToken) {
+      console.log('[Tournament useEffect] Calling apiGetRosters...');
       apiGetRosters(100, 0).then(rosters => {
         console.log('[Tournament] Loaded rosters:', rosters);
         console.log('[Tournament] First roster sample:', rosters[0]);
@@ -7137,7 +7145,16 @@ export default function PokemonCareerGame() {
   
   // Pokemon: Save roster to backend (career completion)
   const apiSaveRoster = async (pokemonData, turnNumber) => {
-    if (!authToken) return null;
+    if (!authToken) {
+      console.log('[apiSaveRoster] No auth token, cannot save');
+      return null;
+    }
+    
+    console.log('[apiSaveRoster] Saving roster:', {
+      pokemon: pokemonData.name,
+      turn: turnNumber,
+      hasAuthToken: !!authToken
+    });
     
     try {
       const response = await fetch(`${API_URL}/pokemon/roster`, {
@@ -7149,7 +7166,9 @@ export default function PokemonCareerGame() {
         body: JSON.stringify({ pokemonData, turnNumber })
       });
       
+      console.log('[apiSaveRoster] Response status:', response.status);
       const data = await response.json();
+      console.log('[apiSaveRoster] Response data:', data);
       
       if (!response.ok) {
         throw new Error(data.error || 'Failed to save roster');
