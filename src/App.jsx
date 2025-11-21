@@ -277,8 +277,14 @@ const TournamentReplayViewer = ({
 };
 
 /* ============================================================================
- * POKEMON CAREER BATTLE GAME - v3.05
+ * POKEMON CAREER BATTLE GAME - v3.06
  * ============================================================================
+ * 
+ * CHANGELOG v3.06:
+ * - Fixed JSON.parse error: pokemon_data might already be object, not string
+ * - Support both 'roster_id' and 'id' field names from backend
+ * - Added try-catch for pokemon_data parsing to prevent crashes
+ * - Better logging to identify which ID field backend uses
  * 
  * CHANGELOG v3.05:
  * - Added debug logging for tournament entry conditions
@@ -286,13 +292,13 @@ const TournamentReplayViewer = ({
  * - Displays current roster count vs required count
  * - Better user feedback for tournament requirements
  * 
- * CHANGELOG v3.05:
+ * CHANGELOG v3.04:
  * - Fixed React Hooks rules: moved tournament roster loading useEffect outside conditional
  * - Added detailed logging to apiGetRosters to debug backend response
  * - Added empty state message when no trained Pokemon available
  * - Shows helpful message directing users to Career Mode to train Pokemon
  * 
- * CHANGELOG v3.05:
+ * CHANGELOG v3.06:
  * - Fixed React Hooks rules violations: extracted TournamentReplayViewer to separate component
  * - Resolved hooks being called conditionally
  * - Removed undefined TYPE_COLORS reference
@@ -6984,8 +6990,14 @@ export default function PokemonCareerGame() {
       apiGetRosters(100, 0).then(rosters => {
         console.log('[Tournament] Loaded rosters:', rosters);
         console.log('[Tournament] First roster sample:', rosters[0]);
-        if (rosters.length > 0 && !rosters[0].roster_id) {
-          console.error('[Tournament] ERROR: Rosters missing roster_id field!', rosters[0]);
+        if (rosters.length > 0) {
+          const firstRoster = rosters[0];
+          const hasId = firstRoster.roster_id || firstRoster.id;
+          if (!hasId) {
+            console.error('[Tournament] ERROR: Rosters missing roster_id/id field!', firstRoster);
+          } else {
+            console.log('[Tournament] Roster ID field:', firstRoster.roster_id ? 'roster_id' : 'id', '=', hasId);
+          }
         }
         setUserRosters(rosters || []);
       });
@@ -9594,7 +9606,7 @@ export default function PokemonCareerGame() {
             
             {/* Version number in bottom-right corner */}
             <div className="fixed bottom-4 right-4 text-white text-xs font-semibold bg-black bg-opacity-30 px-3 py-1 rounded-lg">
-              v3.05
+              v3.06
             </div>
           </div>
         </>
@@ -9741,7 +9753,7 @@ export default function PokemonCareerGame() {
         
         {/* Version number in bottom-right corner */}
         <div className="fixed bottom-4 right-4 text-white text-xs font-semibold bg-black bg-opacity-30 px-3 py-1 rounded-lg">
-          v3.05
+          v3.06
         </div>
       </div>
       </>
@@ -10572,11 +10584,23 @@ export default function PokemonCareerGame() {
                 ) : (
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-96 overflow-y-auto">
                     {userRosters.map((roster, idx) => {
-                    const alreadySelected = selectedTeam.some(t => t && t.roster_id === roster.roster_id);
-                    const pokemonData = roster.pokemon_data ? JSON.parse(roster.pokemon_data) : {};
+                    // Handle pokemon_data that might be string or already parsed object
+                    let pokemonData = {};
+                    try {
+                      pokemonData = typeof roster.pokemon_data === 'string' 
+                        ? JSON.parse(roster.pokemon_data) 
+                        : (roster.pokemon_data || {});
+                    } catch (e) {
+                      console.error('[Tournament] Failed to parse pokemon_data:', roster.pokemon_data, e);
+                    }
+                    
+                    // Backend might use 'id' instead of 'roster_id'
+                    const rosterId = roster.roster_id || roster.id;
+                    const alreadySelected = selectedTeam.some(t => t && t.roster_id === rosterId);
+                    
                     return (
                       <div
-                        key={roster.roster_id || idx}
+                        key={rosterId || idx}
                         className={`bg-gradient-to-b from-gray-50 to-gray-100 rounded-lg p-3 cursor-pointer transition ${
                           alreadySelected ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-lg hover:scale-105'
                         }`}
@@ -10585,11 +10609,11 @@ export default function PokemonCareerGame() {
                             const emptySlot = selectedTeam.findIndex(t => t === null);
                             if (emptySlot !== -1) {
                               console.log('[Tournament] Selecting roster:', {
-                                roster_id: roster.roster_id,
+                                roster_id: rosterId,
                                 full_roster: roster
                               });
                               handleTeamSelect(emptySlot, {
-                                roster_id: roster.roster_id,
+                                roster_id: rosterId,
                                 name: pokemonData.name || 'Unknown',
                                 type: pokemonData.primaryType || pokemonData.type || 'Normal',
                                 grade: pokemonData.grade || 'E'
