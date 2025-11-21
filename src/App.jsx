@@ -289,8 +289,11 @@ const TournamentReplayViewer = ({
 };
 
 /* ============================================================================
- * POKEMON CAREER BATTLE GAME - v3.13
+ * POKEMON CAREER BATTLE GAME - v3.14
  * ============================================================================
+ * 
+ * CHANGELOG v3.14:
+ * - Fixed useEffect dependency array syntax error
  * 
  * CHANGELOG v3.13:
  * - Removed deprecated SVG sprite code (2400+ lines)
@@ -6784,7 +6787,7 @@ export default function PokemonCareerGame() {
         }
       });
     }
-  }, [gameState, careerData?.turn, careerData?.currentTrainingOptions !== null && careerData?.currentTrainingOptions !== undefined, careerData?.pendingEvent !== null && careerData?.pendingEvent !== undefined, battleState, evolutionModal, inspirationModal]);
+  }, [gameState, careerData?.turn, careerData?.currentTrainingOptions, careerData?.pendingEvent, battleState, evolutionModal, inspirationModal]);
 
   useEffect(() => {
     if (careerData && careerData.turn > GAME_CONFIG.CAREER.TOTAL_TURNS && gameState !== 'victory') {
@@ -7304,7 +7307,7 @@ export default function PokemonCareerGame() {
             
             {/* Version number in bottom-right corner */}
             <div className="fixed bottom-4 right-4 text-white text-xs font-semibold bg-black bg-opacity-30 px-3 py-1 rounded-lg">
-              v3.13
+              v3.14
             </div>
           </div>
         </>
