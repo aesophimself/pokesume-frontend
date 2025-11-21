@@ -289,8 +289,12 @@ const TournamentReplayViewer = ({
 };
 
 /* ============================================================================
- * POKEMON CAREER BATTLE GAME - v3.14
+ * POKEMON CAREER BATTLE GAME - v3.15
  * ============================================================================
+ * 
+ * CHANGELOG v3.15:
+ * - Fixed all broken UTF-8 characters in flavor texts
+ * - Comprehensive syntax error sweep completed
  * 
  * CHANGELOG v3.14:
  * - Fixed useEffect dependency array syntax error
@@ -484,13 +488,13 @@ const TournamentReplayViewer = ({
  * - This will help diagnose why Mewtwo isn't attacking
  * 
  * CHANGELOG v2.82:
- * - Fixed clock emoji (ÃƒÆ’Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒâ€šÃ‚Â°) in pokeclock modal
+ * - Fixed clock emoji (→’Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒâ€šÃ‚Â°) in pokeclock modal
  * - Added debug logging for Mewtwo battle initialization to diagnose attack issue
  * 
  * CHANGELOG v2.81:
- * - Fixed Mewtwo type: Normal ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ Psychic
- * - Fixed Mewtwo starting moves: Tackle/ThunderShock ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ PsyBeam/Tackle  
- * - Fixed battle aptitude lookup bug: added PsychicÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢Purple, FightingÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢Orange type mappings
+ * - Fixed Mewtwo type: Normal →’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ Psychic
+ * - Fixed Mewtwo starting moves: Tackle/ThunderShock →’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ PsyBeam/Tackle  
+ * - Fixed battle aptitude lookup bug: added Psychic→’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢Purple, Fighting→’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢Orange type mappings
  * - Psychic and Fighting type Pokemon can now properly attack in battles
  * 
  * CHANGELOG v2.80:
@@ -509,31 +513,31 @@ const TournamentReplayViewer = ({
  * 
  * CHANGELOG v2.77:
  * - Fixed remaining em-dash corruption in flavor text strings
- * - All emojis verified: ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“Ãƒâ€šÃ‚Â¨ sparkles, Ã¢Ëœâ€¦ stars, Ã°Å¸â€™Â¡ lightbulb, ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ arrow
+ * - All emojis verified: →’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“Ãƒâ€šÃ‚Â¨ sparkles, ⭐ stars, 💡 lightbulb, →’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ arrow
  * 
  * CHANGELOG v2.76:
- * - Fixed sparkle emoji (ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“Ãƒâ€šÃ‚Â¨) in inspiration modals (4 locations)
- * - Fixed arrow (ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢) in inspiration aptitude upgrade display
+ * - Fixed sparkle emoji (→’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“Ãƒâ€šÃ‚Â¨) in inspiration modals (4 locations)
+ * - Fixed arrow (→’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢) in inspiration aptitude upgrade display
  * 
  * CHANGELOG v2.75:
  * - Fixed UTF-8 corruption in emoji characters
- * - Fixed lightbulb emoji (Ã°Å¸â€™Â¡) in 4 locations
- * - Fixed star emoji (Ã¢Ëœâ€¦) preserved correctly
+ * - Fixed lightbulb emoji (💡) in 4 locations
+ * - Fixed star emoji (⭐) preserved correctly
  * - Cleaned up corrupted text in old changelogs
  * 
  * CHANGELOG v2.74:
- * - HyperBeam stamina cost reduced: 85ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢65
+ * - HyperBeam stamina cost reduced: 85→’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢65
  * 
  * CHANGELOG v2.73:
- * - HyperBeam stamina cost reduced: 105ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢85
- * - HyperBeam SP cost reduced: 95ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢80
+ * - HyperBeam stamina cost reduced: 105→’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢85
+ * - HyperBeam SP cost reduced: 95→’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢80
  * 
  * CHANGELOG v2.72:
  * - Balance pass on Normal type abilities - reduced damage by 10-15% across all Normal moves
  * - Increased stamina/SP costs slightly on Normal moves to make them weaker than typed abilities
- * - Tackle: 8ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢7 dmg | QuickAttack: 12ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢10 dmg | BodySlam: 24ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢21 dmg, 40ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢42 stam, 30ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢35 cost
- * - ExtremeSpeed: 22ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢19 dmg | StoneEdge: 30ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢27 dmg | PlayRough: 27ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢24 dmg
- * - DoubleEdge: 38ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢34 dmg | HyperBeam: 42ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢38 dmg, 100ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢105 stam, 90ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢95 cost
+ * - Tackle: 8→’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢7 dmg | QuickAttack: 12→’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢10 dmg | BodySlam: 24→’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢21 dmg, 40→’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢42 stam, 30→’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢35 cost
+ * - ExtremeSpeed: 22→’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢19 dmg | StoneEdge: 30→’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢27 dmg | PlayRough: 27→’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢24 dmg
+ * - DoubleEdge: 38→’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢34 dmg | HyperBeam: 42→’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢38 dmg, 100→’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢105 stam, 90→’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢95 cost
  * 
  * CHANGELOG v2.71:
  * - New accounts now start with 5 common support cards
@@ -572,7 +576,7 @@ const TournamentReplayViewer = ({
  * 
  * CHANGELOG v2.30:
  * - Wild battles now require energy (disabled at 0 energy)
- * - Wild battle stat gains increased by 50% (10 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ 15 per victory)
+ * - Wild battle stat gains increased by 50% (10 →’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ 15 per victory)
  * - Wild battles have 20% chance to grant move hint (logged in turn history)
  * - Event battles now scale with turn progression (same as wild pokemon)
  * - Event battle scaling combines turn multiplier with event difficulty
@@ -580,7 +584,7 @@ const TournamentReplayViewer = ({
  * CHANGELOG v2.29:
  * - Added Inspirations system - Pokemon earn stat and aptitude inspirations on career completion
  * - Stat Inspiration: Randomly chooses 1 stat, 1-3 stars based on stat value (<200/200-300/>300)
- * - Aptitude Inspiration: Randomly chooses 1 aptitude, 1-3 stars based on grade (ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°Ãƒâ€šÃ‚Â¤C/B/ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°Ãƒâ€šÃ‚Â¥A)
+ * - Aptitude Inspiration: Randomly chooses 1 aptitude, 1-3 stars based on grade (→’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°Ãƒâ€šÃ‚Â¤C/B/→’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°Ãƒâ€šÃ‚Â¥A)
  * - Career completion screens now show full Pokemon details (stats, aptitudes, inspirations)
  * - Trained Pokemon inventory displays inspirations on each card
  * - Removed "Career History" button from menu (data shown in Trained Pokemon)
@@ -3715,7 +3719,7 @@ const RANDOM_EVENTS = {
       {
         text: 'Just observe carefully',
         outcomes: [
-          { chance: 1.0, effect: { skillPoints: 10, energy: 5 }, flavor: 'You sketch the symbolsÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âvaluable knowledge that grants understanding!' }
+          { chance: 1.0, effect: { skillPoints: 10, energy: 5 }, flavor: 'You sketch the symbols—valuable knowledge that grants understanding!' }
         ]
       }
     ]
@@ -3754,7 +3758,7 @@ const RANDOM_EVENTS = {
       {
         text: 'Watch from the stands',
         outcomes: [
-          { chance: 1.0, effect: { skillPoints: 10, energy: 8 }, flavor: 'You take notes on advanced strategiesÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âvery educational!' }
+          { chance: 1.0, effect: { skillPoints: 10, energy: 8 }, flavor: 'You take notes on advanced strategies—very educational!' }
         ]
       }
     ]
@@ -3787,7 +3791,7 @@ const RANDOM_EVENTS = {
       {
         text: 'Use Surf to cross',
         outcomes: [
-          { chance: 1.0, effect: { stats: { HP: 9, Speed: 8, Defense: 8 } }, flavor: 'Your Pokemon powers through the currentÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âexcellent water training!' }
+          { chance: 1.0, effect: { stats: { HP: 9, Speed: 8, Defense: 8 } }, flavor: 'Your Pokemon powers through the current—excellent water training!' }
         ]
       },
       {
@@ -3807,7 +3811,7 @@ const RANDOM_EVENTS = {
         text: 'Let Pokemon eat them (RISKY)',
         outcomes: [
           { chance: 0.5, effect: { stats: { HP: 29, Instinct: 14 }, energy: 28 }, flavor: 'They were premium Oran Berries! Your Pokemon is fully revitalized!' },
-          { chance: 0.5, effect: { stats: { HP: -8 }, energy: -19 }, flavor: 'Those were bitter Razz BerriesÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âyour Pokemon feels sick!' }
+          { chance: 0.5, effect: { stats: { HP: -8 }, energy: -19 }, flavor: 'Those were bitter Razz Berries—your Pokemon feels sick!' }
         ]
       },
       {
@@ -3832,7 +3836,7 @@ const RANDOM_EVENTS = {
       {
         text: 'Take the long route',
         outcomes: [
-          { chance: 1.0, effect: { energy: 10, skillPoints: 5 }, flavor: 'Better safe than sorryÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âyou take a safer path and stay fresh.' }
+          { chance: 1.0, effect: { energy: 10, skillPoints: 5 }, flavor: 'Better safe than sorry—you take a safer path and stay fresh.' }
         ]
       }
     ]
@@ -3870,7 +3874,7 @@ const RANDOM_EVENTS = {
       {
         text: 'Eat moderately',
         outcomes: [
-          { chance: 1.0, effect: { energy: 10, skillPoints: 5 }, flavor: 'You snack lightly while chatting with trainersÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Ânice break!' }
+          { chance: 1.0, effect: { energy: 10, skillPoints: 5 }, flavor: 'You snack lightly while chatting with trainers—nice break!' }
         ]
       }
     ]
@@ -4082,7 +4086,7 @@ const RANDOM_EVENTS = {
       {
         text: 'Moderate pace',
         outcomes: [
-          { chance: 1.0, effect: { energy: 11, stats: { HP: 8, Defense: 8 } }, flavor: 'Slow and steady wins the raceÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âyou train safely.' }
+          { chance: 1.0, effect: { energy: 11, stats: { HP: 8, Defense: 8 } }, flavor: 'Slow and steady wins the race—you train safely.' }
         ]
       }
     ]
@@ -4115,7 +4119,7 @@ const RANDOM_EVENTS = {
         text: 'Investigate (RISKY)',
         outcomes: [
           { chance: 0.5, effect: { stats: { HP: 29, Attack: 23, Defense: 18, Instinct: 18, Speed: 18 } }, flavor: 'Fortune favors the bold! Everything goes perfectly!' },
-          { chance: 0.5, effect: { stats: { HP: -15, Attack: -11, Defense: -9 }, energy: -22 }, flavor: 'Your gamble backfires spectacularlyÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âsometimes caution is best!' }
+          { chance: 0.5, effect: { stats: { HP: -15, Attack: -11, Defense: -9 }, energy: -22 }, flavor: 'Your gamble backfires spectacularly—sometimes caution is best!' }
         ]
       },
       {
@@ -6885,7 +6889,7 @@ export default function PokemonCareerGame() {
               </span>
             </div>
 
-            <div className="text-4xl text-yellow-300 animate-pulse">Ã°Å¸â€™Â¡</div>
+            <div className="text-4xl text-yellow-300 animate-pulse">💡</div>
 
             <div className="text-center">
               <div className="mb-2">
@@ -6952,7 +6956,7 @@ export default function PokemonCareerGame() {
                       </span>
                       <div className="flex gap-1">
                         {[...Array(result.statBonus.stars)].map((_, i) => (
-                          <span key={i} className="text-yellow-300">Ã¢Ëœâ€¦</span>
+                          <span key={i} className="text-yellow-300">⭐</span>
                         ))}
                       </div>
                     </div>
@@ -6970,7 +6974,7 @@ export default function PokemonCareerGame() {
                       </span>
                       <div className="flex gap-1">
                         {[...Array(result.aptitudeUpgrade.stars)].map((_, i) => (
-                          <span key={i} className="text-yellow-300">Ã¢Ëœâ€¦</span>
+                          <span key={i} className="text-yellow-300">⭐</span>
                         ))}
                       </div>
                     </div>
@@ -7307,7 +7311,7 @@ export default function PokemonCareerGame() {
             
             {/* Version number in bottom-right corner */}
             <div className="fixed bottom-4 right-4 text-white text-xs font-semibold bg-black bg-opacity-30 px-3 py-1 rounded-lg">
-              v3.14
+              v3.15
             </div>
           </div>
         </>
@@ -7500,7 +7504,7 @@ export default function PokemonCareerGame() {
                       <div className={`inline-block px-3 py-1 rounded-lg font-bold ${
                         career.victory ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                       }`}>
-                        {career.victory ? 'Ã°Å¸â€™Â¡ CHAMPION' : `Gyms Defeated: ${career.gymsDefeated}/5`}
+                        {career.victory ? '💡 CHAMPION' : `Gyms Defeated: ${career.gymsDefeated}/5`}
                       </div>
                     </div>
                     <div className="text-xs text-gray-500 mt-2">
@@ -7907,7 +7911,7 @@ export default function PokemonCareerGame() {
                           <div className="flex gap-0.5">
                             {[...Array(trained.inspirations.stat.stars)].map((_, i) => (
                               <span key={i} className="text-xs text-yellow-500">
-                                Ã¢Ëœâ€¦
+                                ⭐
                               </span>
                             ))}
                           </div>
@@ -7917,7 +7921,7 @@ export default function PokemonCareerGame() {
                           <div className="flex gap-0.5">
                             {[...Array(trained.inspirations.aptitude.stars)].map((_, i) => (
                               <span key={i} className="text-xs text-yellow-500">
-                                Ã¢Ëœâ€¦
+                                ⭐
                               </span>
                             ))}
                           </div>
@@ -9546,7 +9550,7 @@ export default function PokemonCareerGame() {
                           <div className="flex justify-center gap-1 mt-2 mb-3">
                             {[...Array(totalStars)].map((_, i) => (
                               <span key={i} className="text-base text-yellow-500">
-                                Ã¢Ëœâ€¦
+                                ⭐
                               </span>
                             ))}
                           </div>
@@ -9560,7 +9564,7 @@ export default function PokemonCareerGame() {
                                 <div className="flex gap-0.5">
                                   {[...Array(trained.inspirations.stat.stars)].map((_, i) => (
                                     <span key={i} className="text-xs text-yellow-500">
-                                      Ã¢Ëœâ€¦
+                                      ⭐
                                     </span>
                                   ))}
                                 </div>
@@ -9570,7 +9574,7 @@ export default function PokemonCareerGame() {
                                 <div className="flex gap-0.5">
                                   {[...Array(trained.inspirations.aptitude.stars)].map((_, i) => (
                                     <span key={i} className="text-xs text-yellow-500">
-                                      Ã¢Ëœâ€¦
+                                      ⭐
                                     </span>
                                   ))}
                                 </div>
@@ -10028,7 +10032,7 @@ export default function PokemonCareerGame() {
                         
                         {careerData.eventResult.moveHint && (
                           <div className="bg-yellow-50 p-3 rounded border-2 border-yellow-500">
-                            <div className="font-bold text-yellow-700">Ã°Å¸â€™Â¡ New Move Unlocked!</div>
+                            <div className="font-bold text-yellow-700">💡 New Move Unlocked!</div>
                             <div className="text-sm mt-1">You can now learn: <span className="font-bold">{careerData.eventResult.moveHint}</span></div>
                           </div>
                         )}
@@ -10374,7 +10378,7 @@ export default function PokemonCareerGame() {
                             )}
                             {option.hint && (
                               <div className="bg-yellow-200 text-yellow-800 text-[8px] sm:text-xs px-0.5 sm:px-1 py-0.5 rounded mt-0.5 sm:mt-1 truncate">
-                                Ã°Å¸â€™Â¡ {option.hint.move}
+                                💡 {option.hint.move}
                               </div>
                             )}
                           </button>
@@ -10775,7 +10779,7 @@ export default function PokemonCareerGame() {
                       <div className="flex gap-1">
                         {[...Array(completedPokemon.inspirations.stat.stars)].map((_, i) => (
                           <span key={i} className="text-xl text-yellow-400">
-                            Ã¢Ëœâ€¦
+                            ⭐
                           </span>
                         ))}
                       </div>
@@ -10789,7 +10793,7 @@ export default function PokemonCareerGame() {
                       <div className="flex gap-1">
                         {[...Array(completedPokemon.inspirations.aptitude.stars)].map((_, i) => (
                           <span key={i} className="text-xl text-yellow-400">
-                            Ã¢Ëœâ€¦
+                            ⭐
                           </span>
                         ))}
                       </div>
@@ -10890,7 +10894,7 @@ export default function PokemonCareerGame() {
                       <div className="flex gap-1">
                         {[...Array(completedPokemon.inspirations.stat.stars)].map((_, i) => (
                           <span key={i} className="text-xl text-yellow-400">
-                            Ã¢Ëœâ€¦
+                            ⭐
                           </span>
                         ))}
                       </div>
@@ -10904,7 +10908,7 @@ export default function PokemonCareerGame() {
                       <div className="flex gap-1">
                         {[...Array(completedPokemon.inspirations.aptitude.stars)].map((_, i) => (
                           <span key={i} className="text-xl text-yellow-400">
-                            Ã¢Ëœâ€¦
+                            ⭐
                           </span>
                         ))}
                       </div>
@@ -11005,7 +11009,7 @@ export default function PokemonCareerGame() {
                       <div className="flex gap-1">
                         {[...Array(completedPokemon.inspirations.stat.stars)].map((_, i) => (
                           <span key={i} className="text-xl text-yellow-400">
-                            Ã¢Ëœâ€¦
+                            ⭐
                           </span>
                         ))}
                       </div>
@@ -11019,7 +11023,7 @@ export default function PokemonCareerGame() {
                       <div className="flex gap-1">
                         {[...Array(completedPokemon.inspirations.aptitude.stars)].map((_, i) => (
                           <span key={i} className="text-xl text-yellow-400">
-                            Ã¢Ëœâ€¦
+                            ⭐
                           </span>
                         ))}
                       </div>
