@@ -202,10 +202,6 @@ const CareerScreen = () => {
   const [pokeclockModal, setPokeclockModal] = useState(null);
   const lastProcessedTurnRef = useRef(null);
 
-  if (!careerData) {
-    return null;
-  }
-
   // ============================================================================
   // HELPER FUNCTIONS (Component-specific)
   // ============================================================================
@@ -862,6 +858,11 @@ const CareerScreen = () => {
       }
     }
   }, [careerData?.turn, careerData?.currentTrainingOptions, careerData?.pendingEvent, evolutionModal, inspirationModal, battleState]);
+
+  // Null check AFTER all hooks
+  if (!careerData) {
+    return null;
+  }
 
   // ============================================================================
   // MODAL COMPONENTS
