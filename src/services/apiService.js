@@ -749,3 +749,135 @@ export const apiAbandonCareer = async (authToken) => {
     return null;
   }
 };
+
+// ============================================================================
+// CAREER API - Server-Authoritative Actions
+// ============================================================================
+
+export const apiTrainStat = async (stat, authToken) => {
+  if (!authToken) return null;
+
+  try {
+    const response = await fetch(`${API_URL}/career/train`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify({ stat })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to process training');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Train stat error:', error);
+    return null;
+  }
+};
+
+export const apiGenerateTraining = async (authToken) => {
+  if (!authToken) return null;
+
+  try {
+    const response = await fetch(`${API_URL}/career/generate-training`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to generate training');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Generate training error:', error);
+    return null;
+  }
+};
+
+export const apiTriggerEvent = async (authToken) => {
+  if (!authToken) return null;
+
+  try {
+    const response = await fetch(`${API_URL}/career/trigger-event`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to trigger event');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Trigger event error:', error);
+    return null;
+  }
+};
+
+export const apiResolveEvent = async (choiceIndex, authToken) => {
+  if (!authToken) return null;
+
+  try {
+    const response = await fetch(`${API_URL}/career/resolve-event`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify({ choiceIndex })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to resolve event');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Resolve event error:', error);
+    return null;
+  }
+};
+
+export const apiLearnAbility = async (moveName, authToken) => {
+  if (!authToken) return null;
+
+  try {
+    const response = await fetch(`${API_URL}/career/learn-ability`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify({ moveName })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to learn ability');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Learn ability error:', error);
+    return null;
+  }
+};

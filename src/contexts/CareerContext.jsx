@@ -13,7 +13,12 @@ import {
   apiUpdateCareer,
   apiProcessBattle,
   apiCompleteCareer,
-  apiAbandonCareer
+  apiAbandonCareer,
+  apiTrainStat,
+  apiGenerateTraining,
+  apiTriggerEvent,
+  apiResolveEvent,
+  apiLearnAbility
 } from '../services/apiService';
 
 const CareerContext = createContext(null);
@@ -163,6 +168,116 @@ export const CareerProvider = ({ children }) => {
     }
   };
 
+  // Server-authoritative training
+  const trainStat = async (stat) => {
+    if (!authToken) return null;
+
+    setCareerLoading(true);
+    setCareerError(null);
+    try {
+      const result = await apiTrainStat(stat, authToken);
+      if (result && result.success) {
+        setCareerData(result.careerState);
+        return result;
+      }
+      return null;
+    } catch (error) {
+      console.error('Failed to train stat:', error);
+      setCareerError(error.message);
+      return null;
+    } finally {
+      setCareerLoading(false);
+    }
+  };
+
+  // Server-authoritative training generation
+  const generateTraining = async () => {
+    if (!authToken) return null;
+
+    setCareerLoading(true);
+    setCareerError(null);
+    try {
+      const result = await apiGenerateTraining(authToken);
+      if (result && result.success) {
+        setCareerData(result.careerState);
+        return result.trainingOptions;
+      }
+      return null;
+    } catch (error) {
+      console.error('Failed to generate training:', error);
+      setCareerError(error.message);
+      return null;
+    } finally {
+      setCareerLoading(false);
+    }
+  };
+
+  // Server-authoritative event triggering
+  const triggerEvent = async () => {
+    if (!authToken) return null;
+
+    setCareerLoading(true);
+    setCareerError(null);
+    try {
+      const result = await apiTriggerEvent(authToken);
+      if (result && result.success) {
+        setCareerData(result.careerState);
+        return result.event;
+      }
+      return null;
+    } catch (error) {
+      console.error('Failed to trigger event:', error);
+      setCareerError(error.message);
+      return null;
+    } finally {
+      setCareerLoading(false);
+    }
+  };
+
+  // Server-authoritative event resolution
+  const resolveEvent = async (choiceIndex) => {
+    if (!authToken) return null;
+
+    setCareerLoading(true);
+    setCareerError(null);
+    try {
+      const result = await apiResolveEvent(choiceIndex, authToken);
+      if (result && result.success) {
+        setCareerData(result.careerState);
+        return result.outcome;
+      }
+      return null;
+    } catch (error) {
+      console.error('Failed to resolve event:', error);
+      setCareerError(error.message);
+      return null;
+    } finally {
+      setCareerLoading(false);
+    }
+  };
+
+  // Server-authoritative ability learning
+  const learnAbility = async (moveName) => {
+    if (!authToken) return null;
+
+    setCareerLoading(true);
+    setCareerError(null);
+    try {
+      const result = await apiLearnAbility(moveName, authToken);
+      if (result && result.success) {
+        setCareerData(result.careerState);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Failed to learn ability:', error);
+      setCareerError(error.message);
+      return false;
+    } finally {
+      setCareerLoading(false);
+    }
+  };
+
   // Load career when user logs in
   useEffect(() => {
     if (authToken && user) {
@@ -189,6 +304,13 @@ export const CareerProvider = ({ children }) => {
     processBattle,
     completeCareer,
     abandonCareer,
+
+    // Server-authoritative operations
+    trainStat,
+    generateTraining,
+    triggerEvent,
+    resolveEvent,
+    learnAbility,
 
     // Local state setter (for optimistic updates)
     setCareerData

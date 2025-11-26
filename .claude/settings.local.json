@@ -5,7 +5,8 @@
       "Bash(node migrations/run_migration.js:*)",
       "Bash(npm run dev:*)",
       "Bash(npm run:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(npx eslint:*)"
     ],
     "deny": [],
     "ask": []

@@ -198,7 +198,12 @@ const CareerScreen = () => {
     careerData,
     setCareerData: setCareerDataLocal,
     updateCareer,
-    processBattle
+    processBattle,
+    trainStat,
+    generateTraining,
+    triggerEvent,
+    resolveEvent: resolveEventOnServer,
+    learnAbility: learnAbilityOnServer
   } = useCareer();
 
   // Wrapper function that updates both local state and backend
@@ -225,49 +230,11 @@ const CareerScreen = () => {
   // ============================================================================
 
   /**
-   * Generate training options with support assignments
+   * Request server to generate new training options (SERVER-AUTHORITATIVE)
    */
-  const generateTrainingOptions = () => {
-    const options = {};
-    const stats = ['HP', 'Attack', 'Defense', 'Instinct', 'Speed'];
-
-    stats.forEach(stat => {
-      options[stat] = {
-        supports: [],
-        hint: null
-      };
-    });
-
-    selectedSupports.forEach(supportName => {
-      const support = getSupportCardAttributes(supportName);
-      if (!support) return;
-
-      if (Math.random() < support.appearanceChance) {
-        const supportType = support.type || support.supportType;
-        const weights = stats.map(stat => stat === supportType ? support.typeAppearancePriority : 1);
-        const totalWeight = weights.reduce((a, b) => a + b, 0);
-        const roll = Math.random() * totalWeight;
-        let cumulative = 0;
-        let selectedStat = stats[0];
-        for (let i = 0; i < stats.length; i++) {
-          cumulative += weights[i];
-          if (roll < cumulative) {
-            selectedStat = stats[i];
-            break;
-          }
-        }
-
-        const hasHint = Math.random() < 0.15;
-        if (hasHint && support.moveHints && support.moveHints.length > 0) {
-          const hint = support.moveHints[Math.floor(Math.random() * support.moveHints.length)];
-          options[selectedStat].hint = { support: supportName, move: hint };
-        }
-
-        options[selectedStat].supports.push(supportName);
-      }
-    });
-
-    return options;
+  const requestNewTrainingOptions = async () => {
+    await generateTraining();
+    // Career state will be updated through CareerContext
   };
 
   /**
@@ -399,171 +366,61 @@ const CareerScreen = () => {
   };
 
   /**
-   * Perform training action
+   * Perform training action (SERVER-AUTHORITATIVE)
    */
-  const performTraining = (stat) => {
-    const energyCost = GAME_CONFIG.TRAINING.ENERGY_COSTS[stat];
-    const currentEnergy = careerData.energy;
+  const performTraining = async (stat) => {
+    // Call server-authoritative training endpoint
+    const result = await trainStat(stat);
 
-    // Calculate failure chance based on CURRENT energy (before deduction)
-    let failureChance = 0;
-    if (currentEnergy <= 75) {
-      if (currentEnergy <= 0) {
-        failureChance = 0.891; // Was 0.99
-      } else if (currentEnergy <= 20) {
-        failureChance = 0.891 - ((currentEnergy / 20) * 0.216);
-      } else if (currentEnergy <= 30) {
-        failureChance = 0.675 - (((currentEnergy - 20) / 10) * 0.225);
-      } else if (currentEnergy <= 50) {
-        failureChance = 0.45 - (((currentEnergy - 30) / 20) * 0.225);
-      } else {
-        failureChance = 0.225 - (((currentEnergy - 50) / 25) * 0.225);
-      }
-    }
-
-    // Speed training has 50% lower fail rate than other trainings
-    if (stat === 'Speed') {
-      failureChance *= 0.5;
-    }
-
-    const trainingFailed = Math.random() < failureChance;
-
-    if (trainingFailed) {
-      // Speed training doesn't reduce stats on failure
-      const statLoss = stat === 'Speed' ? 0 : GAME_CONFIG.TRAINING.STAT_LOSS_ON_FAILURE;
-
-      const logEntry = {
-        turn: careerData.turn,
-        type: 'training_fail',
-        stat,
-        message: stat === 'Speed'
-          ? `Training ${stat} failed! No stat loss.`
-          : `Training ${stat} failed! Lost ${statLoss} ${stat}.`
-      };
-
-      setCareerData(prev => ({
-        ...prev,
-        currentStats: {
-          ...prev.currentStats,
-          [stat]: Math.max(1, prev.currentStats[stat] - statLoss)
-        },
-        energy: Math.max(0, prev.energy - energyCost),
-        turn: prev.turn + 1,
-        turnLog: [logEntry, ...prev.turnLog],
-        currentTrainingOptions: null
-      }));
+    if (!result) {
+      console.error('Training failed - no result from server');
       return;
     }
 
-    // Training succeeded
-    let statGain = GAME_CONFIG.TRAINING.BASE_STAT_GAINS[stat];
-    const option = careerData.currentTrainingOptions[stat];
-    const friendshipGains = {};
+    // Server has already updated careerData through CareerContext
+    // Now handle client-side presentation (modals, animations)
+    const nextTurn = result.careerState.turn;
 
-    option.supports.forEach(supportName => {
-      const support = getSupportCardAttributes(supportName);
-      if (!support) return;
+    // Check for inspiration event
+    const inspirationResult = checkAndApplyInspiration(
+      nextTurn,
+      selectedInspirations,
+      result.careerState.currentStats,
+      result.careerState.pokemon.typeAptitudes
+    );
 
-      const friendship = careerData.supportFriendships[supportName] || 0;
-      const isMaxFriendship = friendship >= 100;
-      const supportType = support.type || support.supportType;
-
-      if (supportType === stat) {
-        statGain += isMaxFriendship ? support.friendshipBonusTraining : support.typeBonusTraining;
-      } else {
-        statGain += support.generalBonusTraining;
-      }
-
-      friendshipGains[supportName] = (friendshipGains[supportName] || 0) + GAME_CONFIG.TRAINING.FRIENDSHIP_GAIN;
-    });
-
-    const newMoveHints = { ...careerData.moveHints };
-    const newLearnableAbilities = [...careerData.pokemon.learnableAbilities];
-    if (option.hint) {
-      const moveName = option.hint.move;
-      newMoveHints[moveName] = (newMoveHints[moveName] || 0) + 1;
-      if (!newLearnableAbilities.includes(moveName) && !careerData.knownAbilities.includes(moveName)) {
-        newLearnableAbilities.push(moveName);
-      }
+    if (inspirationResult && inspirationResult.results.length > 0) {
+      setTimeout(() => {
+        setInspirationModal(inspirationResult);
+      }, 0);
     }
 
-    const newFriendships = { ...careerData.supportFriendships };
-    Object.keys(friendshipGains).forEach(support => {
-      const currentFriendship = newFriendships[support] || 0;
-      newFriendships[support] = Math.min(100, currentFriendship + friendshipGains[support]);
-    });
+    // Check for evolution
+    const evolutionCheck = checkForEvolution(
+      result.careerState.pokemon.name,
+      result.careerState.currentStats
+    );
 
-    const logEntry = {
-      turn: careerData.turn,
-      type: 'training_success',
-      stat,
-      statGain,
-      message: `Trained ${stat} successfully! Gained ${statGain} ${stat}.`
-    };
-
-    setCareerData(prev => {
-      const nextTurn = prev.turn + 1;
-      const newStats = {
-        ...prev.currentStats,
-        [stat]: prev.currentStats[stat] + statGain
-      };
-
-      // Check for inspiration event and apply before creating updatedData
-      let finalStats = { ...newStats };
-      let finalAptitudes = { ...prev.pokemon.typeAptitudes };
-      const inspirationResult = checkAndApplyInspiration(nextTurn, selectedInspirations, newStats, prev.pokemon.typeAptitudes);
-      if (inspirationResult && inspirationResult.results.length > 0) {
-        // Use the updated stats and aptitudes from inspiration result
-        finalStats = inspirationResult.updatedStats;
-        finalAptitudes = inspirationResult.updatedAptitudes;
-
-        setTimeout(() => {
-          setInspirationModal(inspirationResult);
-        }, 0);
+    if (evolutionCheck) {
+      const oldStats = result.careerState.currentStats;
+      const statBoost = EVOLUTION_CHAINS[result.careerState.basePokemonName || result.careerState.pokemon.name]?.stages === 2
+        ? EVOLUTION_CONFIG.STAT_BOOST.TWO_STAGE
+        : EVOLUTION_CONFIG.STAT_BOOST.ONE_STAGE;
+      const newStats = {};
+      for (const [s, value] of Object.entries(oldStats)) {
+        newStats[s] = Math.round(value * (1 + statBoost));
       }
 
-      const updatedData = {
-        ...prev,
-        currentStats: finalStats,
-        energy: Math.max(0, prev.energy - energyCost),
-        skillPoints: prev.skillPoints + GAME_CONFIG.TRAINING.SKILL_POINTS_GAIN,
-        supportFriendships: newFriendships,
-        moveHints: newMoveHints,
-        pokemon: {
-          ...prev.pokemon,
-          learnableAbilities: newLearnableAbilities,
-          typeAptitudes: finalAptitudes
-        },
-        turn: nextTurn,
-        turnLog: [logEntry, ...prev.turnLog],
-        currentTrainingOptions: null
-      };
-
-      // Check for evolution
-      const evolutionCheck = checkForEvolution(updatedData.pokemon.name, updatedData.currentStats);
-      if (evolutionCheck) {
-        const oldStats = updatedData.currentStats;
-        const statBoost = EVOLUTION_CHAINS[updatedData.basePokemonName || updatedData.pokemon.name]?.stages === 2
-          ? EVOLUTION_CONFIG.STAT_BOOST.TWO_STAGE
-          : EVOLUTION_CONFIG.STAT_BOOST.ONE_STAGE;
-        const newStats = {};
-        for (const [s, value] of Object.entries(oldStats)) {
-          newStats[s] = Math.round(value * (1 + statBoost));
-        }
-
-        setTimeout(() => {
-          setEvolutionModal({
-            fromName: updatedData.pokemon.name,
-            toName: evolutionCheck.toName,
-            toStage: evolutionCheck.toStage,
-            oldStats: oldStats,
-            newStats: newStats
-          });
-        }, 0);
-      }
-
-      return updatedData;
-    });
+      setTimeout(() => {
+        setEvolutionModal({
+          fromName: result.careerState.pokemon.name,
+          toName: evolutionCheck.toName,
+          toStage: evolutionCheck.toStage,
+          oldStats: oldStats,
+          newStats: newStats
+        });
+      }, 0);
+    }
   };
 
   /**
@@ -617,78 +474,19 @@ const CareerScreen = () => {
   };
 
   /**
-   * Resolve event outcome (stat changes, energy, friendship, etc.)
+   * Resolve event by making choice (SERVER-AUTHORITATIVE)
    */
-  const resolveEvent = (outcome) => {
-    const eventResult = outcome.effect || outcome; // Handle both full outcome object and just effect
-    const newStats = { ...careerData.currentStats };
-    let energyChange = 0;
-    let skillPointsChange = 0;
-    let friendshipChanges = {};
-    let moveHintReceived = null;
-    let flavorText = outcome.flavor || null;
+  const handleEventChoice = async (choiceIndex) => {
+    const outcome = await resolveEventOnServer(choiceIndex);
 
-    if (eventResult.stats) {
-      Object.keys(eventResult.stats).forEach(stat => {
-        newStats[stat] = Math.max(1, newStats[stat] + eventResult.stats[stat]);
-      });
+    if (!outcome) {
+      console.error('Event resolution failed - no outcome from server');
+      return;
     }
 
-    if (eventResult.energy !== undefined) energyChange = eventResult.energy;
-    if (eventResult.skillPoints !== undefined) skillPointsChange = eventResult.skillPoints;
-    if (eventResult.friendship && careerData.pendingEvent?.supportName) {
-      friendshipChanges[careerData.pendingEvent.supportName] = eventResult.friendship;
-    }
-    if (eventResult.moveHint) {
-      moveHintReceived = eventResult.moveHint;
-    }
-
-    const newMoveHints = { ...careerData.moveHints };
-    const newLearnableAbilities = [...careerData.pokemon.learnableAbilities];
-    if (moveHintReceived) {
-      newMoveHints[moveHintReceived] = (newMoveHints[moveHintReceived] || 0) + 1;
-      if (!newLearnableAbilities.includes(moveHintReceived) && !careerData.knownAbilities.includes(moveHintReceived)) {
-        newLearnableAbilities.push(moveHintReceived);
-      }
-    }
-
-    const newFriendships = { ...careerData.supportFriendships };
-    Object.keys(friendshipChanges).forEach(support => {
-      const currentFriendship = newFriendships[support] || 0;
-      newFriendships[support] = Math.min(100, currentFriendship + friendshipChanges[support]);
-    });
-
-    const completedHangouts = (careerData.pendingEvent?.type === 'hangout' && careerData.pendingEvent?.supportName)
-      ? [...careerData.completedHangouts, careerData.pendingEvent.supportName]
-      : careerData.completedHangouts;
-
-    // Show result screen for choice and hangout events
-    const shouldShowResult = careerData.pendingEvent?.type === 'choice' || careerData.pendingEvent?.type === 'hangout';
-
-    setCareerData(prev => ({
-      ...prev,
-      currentStats: newStats,
-      energy: Math.max(0, Math.min(GAME_CONFIG.CAREER.MAX_ENERGY, prev.energy + energyChange)),
-      skillPoints: prev.skillPoints + skillPointsChange,
-      supportFriendships: newFriendships,
-      moveHints: newMoveHints,
-      pokemon: {
-        ...prev.pokemon,
-        learnableAbilities: newLearnableAbilities
-      },
-      completedHangouts,
-      eventResult: shouldShowResult ? {
-        stats: eventResult.stats || {},
-        energy: energyChange,
-        skillPoints: skillPointsChange,
-        friendship: friendshipChanges,
-        moveHint: moveHintReceived,
-        flavor: flavorText
-      } : null,
-      pendingEvent: null,
-      // Generate training options immediately for events that don't show result screens
-      currentTrainingOptions: !shouldShowResult ? generateTrainingOptions() : prev.currentTrainingOptions
-    }));
+    // Server has already updated careerData with outcome applied
+    // The outcome returned contains presentation info (flavor text, etc.)
+    // No client-side processing needed - server handles all stat changes
   };
 
   /**
@@ -763,7 +561,9 @@ const CareerScreen = () => {
 
     // Check for available hangout events
     const availableHangouts = selectedSupports.filter(supportName => {
-      const friendship = careerData.supportFriendships[supportName] || 0;
+      const support = getSupportCardAttributes(supportName);
+      const initialFriendship = support?.initialFriendship || 0;
+      const friendship = careerData.supportFriendships?.[supportName] ?? initialFriendship;
       return friendship >= 80 && !careerData.completedHangouts.includes(supportName);
     });
 
@@ -807,21 +607,16 @@ const CareerScreen = () => {
   };
 
   /**
-   * Learn a new move
+   * Learn a new move (SERVER-AUTHORITATIVE)
    */
-  const learnMove = (moveName) => {
-    const move = MOVES[moveName];
-    const hintsReceived = careerData.moveHints[moveName] || 0;
-    const discount = Math.min(hintsReceived * GAME_CONFIG.MOVES.HINT_DISCOUNT, GAME_CONFIG.MOVES.MAX_HINT_DISCOUNT);
-    const finalCost = Math.ceil(move.cost * (1 - discount));
+  const learnMove = async (moveName) => {
+    const success = await learnAbilityOnServer(moveName);
 
-    if (careerData.skillPoints >= finalCost && !careerData.knownAbilities.includes(moveName)) {
-      setCareerData(prev => ({
-        ...prev,
-        knownAbilities: [...prev.knownAbilities, moveName],
-        skillPoints: prev.skillPoints - finalCost
-      }));
+    if (!success) {
+      console.error('Failed to learn ability:', moveName);
     }
+
+    // Server has already updated careerData with the new ability and SP cost
   };
 
   /**
@@ -870,26 +665,15 @@ const CareerScreen = () => {
       // Mark this turn as processed
       lastProcessedTurnRef.current = careerData.turn;
 
-      // Check for random event first (only if not turn 1 and not gym turn)
-      let eventToSet = null;
-      if (careerData.turn > 1 && careerData.turn !== nextGymTurn && !justExitedBattle) {
-        // 50% chance for an event
-        if (Math.random() < 0.50) {
-          eventToSet = generateRandomEvent();
-        }
-      }
+      // SERVER-AUTHORITATIVE: Let server decide if event should trigger
+      const shouldCheckForEvent = careerData.turn > 1 && careerData.turn !== nextGymTurn && !justExitedBattle;
 
-      if (eventToSet) {
-        setCareerData(prev => ({
-          ...prev,
-          pendingEvent: eventToSet
-        }));
+      if (shouldCheckForEvent) {
+        // Server will decide if an event occurs (50% chance) or generate training options
+        triggerEvent();
       } else {
-        // Generate training options
-        setCareerData(prev => ({
-          ...prev,
-          currentTrainingOptions: generateTrainingOptions()
-        }));
+        // No event possible, generate training options from server
+        generateTraining();
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1028,14 +812,11 @@ const CareerScreen = () => {
           </div>
 
           <button
-            onClick={() => {
+            onClick={async () => {
               setInspirationModal(null);
               // Generate training options after closing modal
               if (careerData && !careerData.currentTrainingOptions) {
-                setCareerData(prev => ({
-                  ...prev,
-                  currentTrainingOptions: generateTrainingOptions()
-                }));
+                await requestNewTrainingOptions();
               }
             }}
             className="w-full mt-6 bg-yellow-400 text-purple-900 py-3 rounded-lg font-bold text-xl hover:bg-yellow-300 transition"
@@ -1358,7 +1139,7 @@ const CareerScreen = () => {
                     className="flex items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-1.5 sm:py-2 bg-blue-100 hover:bg-blue-200 rounded transition cursor-pointer text-xs sm:text-sm"
                   >
                     <Book size={12} className="sm:w-3.5 sm:h-3.5" />
-                    <span className="font-bold">{careerData.skillPoints}</span>
+                    <span className="font-bold">{careerData.skillPoints ?? 0}</span>
                   </button>
                   <button
                     onClick={() => setViewMode('gym')}
@@ -1429,7 +1210,7 @@ const CareerScreen = () => {
                       </div>
                     </div>
                     <button
-                      onClick={() => resolveEvent(careerData.pendingEvent.effect)}
+                      onClick={() => handleEventChoice(0)}
                       className="w-full bg-green-600 text-white py-2 sm:py-3 rounded-lg font-bold hover:bg-green-700 transition"
                     >
                       Continue
@@ -1442,17 +1223,7 @@ const CareerScreen = () => {
                     {careerData.pendingEvent.choices.map((choice, idx) => (
                       <button
                         key={idx}
-                        onClick={() => {
-                          const roll = Math.random();
-                          let cumulative = 0;
-                          for (const outcome of choice.outcomes) {
-                            cumulative += outcome.chance;
-                            if (roll < cumulative) {
-                              resolveEvent(outcome);
-                              break;
-                            }
-                          }
-                        }}
+                        onClick={() => handleEventChoice(idx)}
                         className="w-full bg-blue-600 text-white py-2 sm:py-3 px-4 rounded-lg font-bold hover:bg-blue-700 transition text-left"
                       >
                         {choice.text}
@@ -1512,13 +1283,13 @@ const CareerScreen = () => {
                         Accept Challenge
                       </button>
                       <button
-                        onClick={() => {
+                        onClick={async () => {
                           // Decline the battle - clear event and generate training options
                           setCareerData(prev => ({
                             ...prev,
-                            pendingEvent: null,
-                            currentTrainingOptions: generateTrainingOptions()
+                            pendingEvent: null
                           }));
+                          await requestNewTrainingOptions();
                         }}
                         className="bg-gray-600 text-white py-2 sm:py-3 rounded-lg font-bold hover:bg-gray-700 transition"
                       >
@@ -1538,7 +1309,7 @@ const CareerScreen = () => {
                       </div>
                     </div>
                     <button
-                      onClick={() => resolveEvent({ effect: careerData.pendingEvent.effect, flavor: careerData.pendingEvent.flavor })}
+                      onClick={() => handleEventChoice(0)}
                       className="w-full bg-blue-600 text-white py-2 sm:py-3 rounded-lg font-bold hover:bg-blue-700 transition"
                     >
                       Spend Time Together
@@ -1562,7 +1333,7 @@ const CareerScreen = () => {
                       )}
                     </div>
                     <button
-                      onClick={() => resolveEvent(careerData.pendingEvent.effect)}
+                      onClick={() => handleEventChoice(0)}
                       className="w-full bg-gray-600 text-white py-2 sm:py-3 rounded-lg font-bold hover:bg-gray-700 transition"
                     >
                       Continue
@@ -1655,11 +1426,13 @@ const CareerScreen = () => {
                 )}
 
                 <button
-                  onClick={() => setCareerData(prev => ({
-                    ...prev,
-                    eventResult: null,
-                    currentTrainingOptions: generateTrainingOptions()
-                  }))}
+                  onClick={async () => {
+                    setCareerData(prev => ({
+                      ...prev,
+                      eventResult: null
+                    }));
+                    await requestNewTrainingOptions();
+                  }}
                   className="w-full mt-4 bg-purple-600 text-white py-2 sm:py-3 rounded-lg font-bold hover:bg-purple-700 transition"
                 >
                   Continue
@@ -1810,7 +1583,7 @@ const CareerScreen = () => {
           {viewMode === 'learn' && (
             <div className="bg-white rounded-lg p-2 sm:p-3 shadow-lg">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2 sm:mb-3">
-                <h3 className="font-bold text-sm sm:text-base">Learn Abilities ({careerData.skillPoints} SP)</h3>
+                <h3 className="font-bold text-sm sm:text-base">Learn Abilities ({careerData.skillPoints ?? 0} SP)</h3>
                 <button onClick={() => setViewMode('training')} className="text-xs sm:text-sm text-purple-600 hover:underline self-start sm:self-auto">
                   Back
                 </button>
@@ -1850,7 +1623,7 @@ const CareerScreen = () => {
                       const hintsReceived = careerData.moveHints[moveName] || 0;
                       const discount = Math.min(hintsReceived * GAME_CONFIG.MOVES.HINT_DISCOUNT, GAME_CONFIG.MOVES.MAX_HINT_DISCOUNT);
                       const finalCost = Math.ceil(move.cost * (1 - discount));
-                      const canAfford = careerData.skillPoints >= finalCost;
+                      const canAfford = (careerData.skillPoints ?? 0) >= finalCost;
 
                       return (
                         <div key={moveName} className={`border-2 rounded p-1.5 sm:p-2 ${isKnown ? 'bg-green-50' : ''}`} style={{ borderColor: isKnown ? '#22c55e' : getTypeColor(move.type) }}>
@@ -1945,7 +1718,8 @@ const CareerScreen = () => {
                       const support = getSupportCardAttributes(supportName);
                       if (!support) return;
 
-                      const friendship = careerData.supportFriendships[supportName] || 0;
+                      const initialFriendship = support?.initialFriendship || 0;
+                      const friendship = careerData.supportFriendships?.[supportName] ?? initialFriendship;
                       const isMaxFriendship = friendship >= 100;
                       const supportType = support.type || support.supportType;
 
@@ -1978,7 +1752,10 @@ const CareerScreen = () => {
                         {option.supports.length > 0 && (
                           <div className="space-y-0.5">
                             {option.supports.map(supportName => {
-                              const friendship = careerData.supportFriendships[supportName] || 0;
+                              // Use stored friendship, or fall back to initial friendship from support card
+                              const support = getSupportCardAttributes(supportName);
+                              const initialFriendship = support?.initialFriendship || 0;
+                              const friendship = careerData.supportFriendships?.[supportName] ?? initialFriendship;
                               return (
                                 <div key={supportName} className="bg-blue-100 text-blue-800 text-[8px] sm:text-xs px-0.5 sm:px-1 py-0.5 rounded">
                                   <div className="font-bold truncate">{supportName.split(' ')[0]}</div>
