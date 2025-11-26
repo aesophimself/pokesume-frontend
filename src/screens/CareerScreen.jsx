@@ -556,59 +556,6 @@ const CareerScreen = () => {
   };
 
   /**
-   * Generate random event or hangout event
-   */
-  const generateRandomEvent = () => {
-    if (!careerData || !selectedSupports) return null;
-
-    // Check for available hangout events
-    const availableHangouts = selectedSupports.filter(supportName => {
-      const support = getSupportCardAttributes(supportName);
-      const initialFriendship = support?.initialFriendship || 0;
-      const friendship = careerData.supportFriendships?.[supportName] ?? initialFriendship;
-      return friendship >= 80 && !careerData.completedHangouts.includes(supportName);
-    });
-
-    // If hangouts are available, 50% chance to pick a hangout event
-    if (availableHangouts.length > 0 && Math.random() < 0.5) {
-      const supportName = availableHangouts[Math.floor(Math.random() * availableHangouts.length)];
-      const hangoutEvent = HANGOUT_EVENTS[supportName];
-      if (hangoutEvent) {
-        return {
-          type: 'hangout',
-          supportName,
-          ...hangoutEvent
-        };
-      }
-    }
-
-    // Filter events: 70% chance to exclude negative events (30% reduction in incidence)
-    const eventKeys = Object.keys(RANDOM_EVENTS);
-    let filteredKeys = eventKeys;
-
-    if (Math.random() < 0.7) {
-      // Exclude negative events 70% of the time
-      filteredKeys = eventKeys.filter(key => RANDOM_EVENTS[key].type !== 'negative');
-    }
-
-    // If we filtered out all events (shouldn't happen but safety check)
-    if (filteredKeys.length === 0) {
-      filteredKeys = eventKeys;
-    }
-
-    const randomKey = filteredKeys[Math.floor(Math.random() * filteredKeys.length)];
-    const event = RANDOM_EVENTS[randomKey];
-
-    // Safety check: ensure event exists and has required properties
-    if (!event || !event.type || !event.name) {
-      console.error('Invalid event generated:', randomKey, event);
-      return null;
-    }
-
-    return { ...event, key: randomKey };
-  };
-
-  /**
    * Learn a new move (SERVER-AUTHORITATIVE)
    */
   const learnMove = async (moveName) => {
