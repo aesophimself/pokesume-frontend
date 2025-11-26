@@ -58,7 +58,9 @@ export const InventoryProvider = ({ children }) => {
     setPokemonLoading(true);
     try {
       const data = await apiGetPokemonInventory(limit, offset, authToken);
-      setPokemonInventory(data.pokemon || []);
+      // Extract just the pokemon names from the inventory objects
+      const pokemonNames = (data.pokemon || []).map(item => item.pokemon_name);
+      setPokemonInventory(pokemonNames);
       setPokemonTotal(data.total || 0);
     } catch (error) {
       console.error('Failed to load Pokemon inventory:', error);
@@ -108,7 +110,9 @@ export const InventoryProvider = ({ children }) => {
     setSupportLoading(true);
     try {
       const data = await apiGetSupportInventory(limit, offset, authToken);
-      setSupportInventory(data.supports || []);
+      // Extract just the support names from the inventory objects
+      const supportNames = (data.supports || []).map(item => item.support_name);
+      setSupportInventory(supportNames);
       setSupportTotal(data.total || 0);
     } catch (error) {
       console.error('Failed to load Support inventory:', error);

@@ -15,7 +15,7 @@ import { SUPPORT_CARDS, SUPPORT_GACHA_RARITY } from '../shared/gameData';
 
 const SupportGachaScreen = () => {
   const { setGameState } = useGame();
-  const { primos, supportInventory, addSupportToInventory, updatePrimos } = useInventory();
+  const { primos, supportInventory, addSupport, updatePrimos } = useInventory();
   const [rollResult, setRollResult] = useState(null);
 
   const handleSupportRoll = () => {
@@ -39,7 +39,8 @@ const SupportGachaScreen = () => {
     const isDuplicate = supportInventory.includes(support);
 
     if (!isDuplicate) {
-      addSupportToInventory(support);
+      const supportData = SUPPORT_CARDS[support];
+      addSupport(support, supportData);
     }
 
     const newPrimos = isDuplicate ? primos : primos - 100;

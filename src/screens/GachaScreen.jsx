@@ -19,7 +19,7 @@ import { POKEMON, GACHA_RARITY } from '../shared/gameData';
 
 const GachaScreen = () => {
   const { setGameState } = useGame();
-  const { primos, pokemonInventory, addPokemonToInventory, updatePrimos } = useInventory();
+  const { primos, pokemonInventory, addPokemon, updatePrimos } = useInventory();
   const [rollResult, setRollResult] = useState(null);
 
   const rollForPokemon = () => {
@@ -47,7 +47,8 @@ const GachaScreen = () => {
 
     // Add to inventory if not duplicate
     if (!isDuplicate) {
-      addPokemonToInventory(pokemon);
+      const pokemonData = POKEMON[pokemon];
+      addPokemon(pokemon, pokemonData);
     }
 
     // Update primos (refund if duplicate)
