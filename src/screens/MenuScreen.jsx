@@ -19,7 +19,7 @@ import { POKEMON, ICONS } from '../shared/gameData';
 const MenuScreen = () => {
   const { user, logout } = useAuth();
   const { setGameState, setShowResetConfirm } = useGame();
-  const { pokemonInventory, supportInventory, trainedPokemon, primos, loadPokemonInventory } = useInventory();
+  const { pokemonInventory, supportInventory, trainedPokemon, primos, loadPokemonInventory, addPokemon } = useInventory();
 
   // Starter selection (if user has no pokemon)
   if (pokemonInventory.length === 0) {
@@ -39,9 +39,14 @@ const MenuScreen = () => {
                 <div
                   key={starter}
                   onClick={async () => {
-                    // TODO: Add to server inventory
-                    // For now, just reload inventory which will trigger this screen again
-                    await loadPokemonInventory();
+                    // Add starter Pokemon to inventory
+                    const result = await addPokemon(starter, pokemon);
+                    if (result) {
+                      // Successfully added, reload inventory to show new Pokemon
+                      await loadPokemonInventory();
+                    } else {
+                      alert('Failed to add starter Pokemon. Please try again.');
+                    }
                   }}
                   className="bg-gradient-to-b from-gray-50 to-gray-100 rounded-lg p-4 cursor-pointer hover:shadow-xl transition transform hover:scale-105 border-2 border-purple-300"
                 >

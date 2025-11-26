@@ -37,37 +37,29 @@ import TournamentDetailsScreen from './screens/TournamentDetailsScreen';
 import TournamentBracketScreen from './screens/TournamentBracketScreen';
 import TournamentReplayScreen from './screens/TournamentReplayScreen';
 
-// Temporary placeholder component until screens are extracted
-const PlaceholderScreen = ({ screenName }) => {
-  const { gameState, setGameState } = useGame();
-
-  return (
-    <div className="w-full h-screen bg-gradient-to-b from-purple-400 to-blue-500 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg p-8 max-w-2xl w-full shadow-2xl">
-        <h1 className="text-3xl font-bold mb-4 text-purple-600">
-          {screenName || gameState}
-        </h1>
-        <p className="text-gray-600 mb-6">
-          This screen is being modularized. Current state: {gameState}
-        </p>
-        <button
-          onClick={() => setGameState('menu')}
-          className="w-full bg-purple-600 text-white py-3 rounded-lg font-bold hover:bg-purple-700 transition"
-        >
-          Return to Menu
-        </button>
-      </div>
-    </div>
-  );
-};
-
 /**
  * GameRouter
  *
  * Routes to different screens based on gameState
  */
 const GameRouter = () => {
-  const { gameState } = useGame();
+  const { gameState, setGameState } = useGame();
+
+  // Redirect unknown states to menu
+  React.useEffect(() => {
+    const validStates = [
+      'menu', 'pokemonSelect', 'pokemonSelection', 'inspirationSelect', 'inspirationSelection',
+      'supportSelect', 'supportSelection', 'myPokemon', 'pokemonInventory', 'mySupports',
+      'supportInventory', 'trainedPokemon', 'gacha', 'supportGacha', 'career', 'battle',
+      'victory', 'gameOver', 'careerEnd', 'history', 'tournaments', 'tournamentDetails',
+      'tournamentBracket', 'tournamentReplay'
+    ];
+
+    if (!validStates.includes(gameState)) {
+      console.warn(`Unknown game state: ${gameState}, redirecting to menu`);
+      setGameState('menu');
+    }
+  }, [gameState, setGameState]);
 
   // Routing to different screens based on gameState
   switch (gameState) {
@@ -138,11 +130,8 @@ const GameRouter = () => {
     case 'tournamentReplay':
       return <TournamentReplayScreen />;
 
-    case 'leaderboard':
-      return <PlaceholderScreen screenName="Leaderboard Screen" />;
-
     default:
-      return <PlaceholderScreen screenName="Unknown Screen" />;
+      return <MenuScreen />;
   }
 };
 
