@@ -1,7 +1,7 @@
 /**
  * CareerScreen Component
  *
- * THE CORE GAMEPLAY LOOP - Where players train their Pokemon over 60 turns
+ * THE CORE GAMEPLAY LOOP - Where players train their Pokemon over 63 turns
  *
  * Features:
  * - Training system (5 stats with energy costs and fail chances)
@@ -9,7 +9,8 @@
  * - Random events (50 types) and Hangout events (30 types)
  * - Evolution system with modal
  * - Inspiration triggers at turns 11, 23, 35, 47, 59
- * - Gym battles at turns 12, 24, 36, 48, 60
+ * - Gym battles at turns 12, 24, 36, 48 (4 gyms)
+ * - Elite Four gauntlet at turns 60, 61, 62, 63
  * - Ability learning system
  * - Multiple view modes (Training, Battle, Log, Abilities, Learn, Gym)
  * - 4 modal components (Evolution, Inspiration, Pokeclock, Help)
@@ -37,7 +38,8 @@ import {
   RANDOM_EVENTS,
   HANGOUT_EVENTS,
   EVOLUTION_CHAINS,
-  EVOLUTION_CONFIG
+  EVOLUTION_CONFIG,
+  ELITE_FOUR
 } from '../shared/gameData';
 
 // ============================================================================
@@ -653,10 +655,13 @@ const CareerScreen = () => {
 
   useEffect(() => {
     if (careerData && !careerData.currentTrainingOptions && !careerData.pendingEvent && !evolutionModal && !inspirationModal) {
-      // Don't generate training on gym turns
+      // Don't generate training on gym turns or Elite 4 turns
       const nextGymTurn = (careerData.currentGymIndex + 1) * GAME_CONFIG.CAREER.GYM_LEADER_INTERVAL;
-      const isGymTurn = careerData.turn === nextGymTurn && careerData.currentGymIndex < 5;
-      if (isGymTurn) return;
+      const isGymTurn = careerData.turn === nextGymTurn && careerData.currentGymIndex < 4;
+      const eliteFourStartTurn = GAME_CONFIG.CAREER.ELITE_FOUR_START_TURN || 60;
+      const eliteFourIdx = careerData.turn - eliteFourStartTurn;
+      const isEliteFourTurn = careerData.turn >= eliteFourStartTurn && eliteFourIdx >= 0 && eliteFourIdx < 4 && !careerData.eliteFourDefeated?.[eliteFourIdx];
+      if (isGymTurn || isEliteFourTurn) return;
 
       // Check if we've already processed this turn
       const justExitedBattle = !battleState && lastProcessedTurnRef.current === careerData.turn;
@@ -1035,10 +1040,19 @@ const CareerScreen = () => {
   // RENDER MAIN SCREEN
   // ============================================================================
 
-  // Show gym battle when turn matches the next gym's designated turn
+  // Show gym battle when turn matches the next gym's designated turn (turns 12, 24, 36, 48 = 4 gyms)
   const nextGymTurn = (careerData.currentGymIndex + 1) * GAME_CONFIG.CAREER.GYM_LEADER_INTERVAL;
-  const isGymTurn = careerData.turn === nextGymTurn && careerData.currentGymIndex < 5;
-  const nextGymLeader = careerData.gymLeaders[careerData.currentGymIndex];
+  const isGymTurn = careerData.turn === nextGymTurn && careerData.currentGymIndex < 4;
+  const nextGymLeader = careerData.gymLeaders?.[careerData.currentGymIndex];
+
+  // Elite 4 battles on turns 60, 61, 62, 63
+  const eliteFourStartTurn = GAME_CONFIG.CAREER.ELITE_FOUR_START_TURN || 60;
+  const eliteFourIndex = careerData.turn - eliteFourStartTurn;
+  const isEliteFourTurn = careerData.turn >= eliteFourStartTurn && eliteFourIndex >= 0 && eliteFourIndex < 4 && !careerData.eliteFourDefeated?.[eliteFourIndex];
+  const currentEliteFour = isEliteFourTurn && ELITE_FOUR ? ELITE_FOUR[eliteFourIndex] : null;
+
+  // Combined battle turn check
+  const isBattleTurn = isGymTurn || isEliteFourTurn;
 
   return (
     <>
@@ -1124,7 +1138,12 @@ const CareerScreen = () => {
               <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3">
                 <div className="text-left sm:text-right flex-shrink-0">
                   <div className="font-bold text-sm sm:text-base">Turn {careerData.turn}/{GAME_CONFIG.CAREER.TOTAL_TURNS}</div>
-                  <div className="text-xs text-gray-600">Gym: {(careerData.currentGymIndex + 1) * 12}</div>
+                  <div className="text-xs text-gray-600">
+                    {careerData.turn < eliteFourStartTurn
+                      ? `Next: Turn ${careerData.currentGymIndex < 4 ? (careerData.currentGymIndex + 1) * 12 : eliteFourStartTurn}`
+                      : `Elite 4: ${(careerData.eliteFourDefeated?.filter(Boolean)?.length || 0)}/4`
+                    }
+                  </div>
                 </div>
                 <div className="flex gap-1 sm:gap-2 flex-wrap">
                   <button
@@ -1146,7 +1165,7 @@ const CareerScreen = () => {
                     className="flex items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-1.5 sm:py-2 bg-yellow-100 hover:bg-yellow-200 rounded transition cursor-pointer text-xs sm:text-sm"
                   >
                     <Trophy size={12} className="sm:w-3.5 sm:h-3.5" />
-                    <span className="font-bold">{careerData.currentGymIndex}/5</span>
+                    <span className="font-bold">{careerData.currentGymIndex}/4</span>
                   </button>
                   <div className="flex items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-1.5 sm:py-2 bg-red-100 rounded text-xs sm:text-sm">
                     <Zap size={12} className="sm:w-3.5 sm:h-3.5" />
@@ -1167,7 +1186,7 @@ const CareerScreen = () => {
             </div>
           </div>
 
-          {isGymTurn && (
+          {isGymTurn && nextGymLeader && (
             <div className="bg-red-600 text-white rounded-lg p-3 shadow-lg">
               <div className="flex items-center justify-between flex-col sm:flex-row gap-3">
                 <div className="flex items-center gap-2 sm:gap-3">
@@ -1187,8 +1206,54 @@ const CareerScreen = () => {
             </div>
           )}
 
+          {isEliteFourTurn && currentEliteFour && (
+            <div className="bg-gradient-to-r from-purple-700 to-indigo-800 text-white rounded-lg p-4 shadow-lg">
+              <div className="flex items-center justify-between flex-col sm:flex-row gap-4">
+                <div className="flex items-center gap-3 sm:gap-4">
+                  {generateTrainerSprite(eliteFourIndex + 10)}
+                  <div>
+                    <div className="text-xs uppercase tracking-wider text-purple-300 font-semibold">Elite Four Member {eliteFourIndex + 1}/4</div>
+                    <h3 className="text-xl sm:text-2xl font-bold">{currentEliteFour.name}</h3>
+                    <p className="text-sm text-purple-200">{currentEliteFour.title}</p>
+                    <p className="text-xs mt-1">Ace: {currentEliteFour.pokemon.name} ({currentEliteFour.type})</p>
+                  </div>
+                </div>
+                <div className="text-center sm:text-right">
+                  <div className="text-xs text-purple-300 mb-2">Stat Multiplier: {currentEliteFour.statMultiplier}x</div>
+                  <button
+                    onClick={() => {
+                      // Create the Elite 4 opponent with scaled stats
+                      const pokemon = currentEliteFour.pokemon;
+                      const mult = currentEliteFour.statMultiplier;
+                      const eliteOpponent = {
+                        name: currentEliteFour.name,
+                        pokemon: pokemon.name,
+                        primaryType: pokemon.primaryType,
+                        stats: {
+                          HP: Math.floor(pokemon.baseStats.HP * mult),
+                          Attack: Math.floor(pokemon.baseStats.Attack * mult),
+                          Defense: Math.floor(pokemon.baseStats.Defense * mult),
+                          Instinct: Math.floor(pokemon.baseStats.Instinct * mult),
+                          Speed: Math.floor(pokemon.baseStats.Speed * mult)
+                        },
+                        abilities: [...pokemon.defaultAbilities, ...pokemon.learnableAbilities],
+                        typeAptitudes: pokemon.typeAptitudes,
+                        strategy: pokemon.strategy,
+                        strategyGrade: pokemon.strategyGrade
+                      };
+                      startBattle(eliteOpponent, true);
+                    }}
+                    className="bg-yellow-400 text-purple-900 px-6 py-3 rounded-lg font-bold hover:bg-yellow-300 transition text-lg"
+                  >
+                    Challenge Elite Four!
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* PENDING EVENT SCREEN */}
-          {!isGymTurn && careerData.pendingEvent && (
+          {!isBattleTurn && careerData.pendingEvent && (
             <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg p-2 sm:p-4 shadow-lg mb-3 sm:mb-4">
               <div className="bg-white rounded-lg p-2 sm:p-4">
                 <h3 className="text-xl sm:text-2xl font-bold mb-2 text-purple-600">{careerData.pendingEvent.name}</h3>
@@ -1679,7 +1744,7 @@ const CareerScreen = () => {
           )}
 
           {/* TRAINING VIEW */}
-          {viewMode === 'training' && careerData.currentTrainingOptions && !careerData.pendingEvent && !careerData.eventResult && !isGymTurn && !inspirationModal && (
+          {viewMode === 'training' && careerData.currentTrainingOptions && !careerData.pendingEvent && !careerData.eventResult && !isBattleTurn && !inspirationModal && (
             <>
               <div className="bg-white rounded-lg p-2 sm:p-3 shadow-lg">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
