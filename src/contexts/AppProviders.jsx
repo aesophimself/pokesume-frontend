@@ -9,14 +9,17 @@ import React from 'react';
 import { AuthProvider } from './AuthContext';
 import { GameProvider } from './GameContext';
 import { InventoryProvider } from './InventoryContext';
+import { CareerProvider } from './CareerContext';
 
 export const AppProviders = ({ children }) => {
   return (
     <AuthProvider>
       <InventoryProvider>
-        <GameProvider>
-          {children}
-        </GameProvider>
+        <CareerProvider>
+          <GameProvider>
+            {children}
+          </GameProvider>
+        </CareerProvider>
       </InventoryProvider>
     </AuthProvider>
   );

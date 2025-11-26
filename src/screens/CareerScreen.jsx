@@ -18,6 +18,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Sparkles, Book, Trophy, Zap, Clock } from 'lucide-react';
 import { useGame } from '../contexts/GameContext';
+import { useCareer } from '../contexts/CareerContext';
 import {
   generatePokemonSprite,
   getTypeColor,
@@ -187,13 +188,32 @@ const getSupportCardAttributes = (supportKey) => {
 const CareerScreen = () => {
   const {
     setGameState,
-    careerData,
-    setCareerData,
     selectedSupports,
     selectedInspirations,
     battleState,
     setBattleState
   } = useGame();
+
+  const {
+    careerData,
+    setCareerData: setCareerDataLocal,
+    updateCareer,
+    processBattle,
+    hasActiveCareer,
+    careerLoading
+  } = useCareer();
+
+  // Wrapper function that updates both local state and backend
+  const setCareerData = (updaterFn) => {
+    setCareerDataLocal(prev => {
+      const newData = typeof updaterFn === 'function' ? updaterFn(prev) : updaterFn;
+      // Async update to backend (fire and forget for now)
+      if (newData) {
+        updateCareer(newData).catch(err => console.error('Failed to sync career to backend:', err));
+      }
+      return newData;
+    });
+  };
 
   const [viewMode, setViewMode] = useState('training');
   const [showHelp, setShowHelp] = useState(false);
@@ -674,12 +694,29 @@ const CareerScreen = () => {
   /**
    * Start battle with opponent
    */
-  const startBattle = (opponent, isGymLeader = false) => {
+  const startBattle = async (opponent, isGymLeader = false) => {
     // Prevent wild battles at 0 energy
     if (!isGymLeader && careerData.energy <= 0) {
       return; // Don't start battle
     }
 
+    console.log('[startBattle] Processing server-side battle:', {
+      opponent: opponent.name,
+      isGymLeader
+    });
+
+    // Call server to process battle
+    const battleResult = await processBattle(opponent, isGymLeader);
+
+    if (!battleResult) {
+      console.error('[startBattle] Failed to get battle result from server');
+      alert('Battle failed to process. Please try again.');
+      return;
+    }
+
+    console.log('[startBattle] Server returned battle result:', battleResult);
+
+    // Create player and opponent objects for battle replay
     const playerPokemon = {
       name: careerData.pokemon.name,
       primaryType: careerData.pokemon.primaryType,
@@ -690,18 +727,7 @@ const CareerScreen = () => {
       strategyGrade: careerData.pokemon.strategyGrade
     };
 
-    // Debug logging for Mewtwo
-    if (playerPokemon.name === 'Mewtwo') {
-      console.log('[startBattle] Mewtwo debug:', {
-        name: playerPokemon.name,
-        primaryType: playerPokemon.primaryType,
-        abilities: playerPokemon.abilities,
-        typeAptitudes: playerPokemon.typeAptitudes,
-        strategy: playerPokemon.strategy,
-        strategyGrade: playerPokemon.strategyGrade
-      });
-    }
-
+    // Set battle state with server's battle log for replay
     setBattleState({
       player: {
         ...playerPokemon,
@@ -709,7 +735,7 @@ const CareerScreen = () => {
         currentStamina: GAME_CONFIG.BATTLE.MAX_STAMINA,
         moveStates: {},
         isResting: false,
-        statusEffects: [] // Array of active status effects
+        statusEffects: []
       },
       opponent: {
         ...opponent,
@@ -720,8 +746,11 @@ const CareerScreen = () => {
         statusEffects: []
       },
       tick: 0,
-      log: [],
-      isGymLeader
+      log: battleResult.battleLog || [], // Use server's battle log
+      isGymLeader,
+      winner: battleResult.winner, // 'player' or 'opponent'
+      rewards: battleResult.rewards, // { statGain, skillPoints, energyChange }
+      serverResult: true // Flag to indicate this came from server
     });
     setGameState('battle');
   };

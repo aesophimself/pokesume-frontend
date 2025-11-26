@@ -25,10 +25,7 @@ export const GameProvider = ({ children }) => {
   const [selectedSupports, setSelectedSupports] = useState([]);
   const [selectedInspirations, setSelectedInspirations] = useState([]);
 
-  // Career mode data
-  const [careerData, setCareerData] = useState(null);
-
-  // Battle state
+  // Battle state (used for displaying battle replays)
   const [battleState, setBattleState] = useState(null);
   const [battleSpeed, setBattleSpeed] = useState(1);
 
@@ -80,7 +77,6 @@ export const GameProvider = ({ children }) => {
     setSelectedPokemon(null);
     setSelectedSupports([]);
     setSelectedInspirations([]);
-    setCareerData(null);
     setBattleState(null);
     setViewMode('training');
     setRollResult(null);
@@ -99,9 +95,7 @@ export const GameProvider = ({ children }) => {
     selectedInspirations,
     setSelectedInspirations,
 
-    // Career
-    careerData,
-    setCareerData,
+    // Career history (local storage - for career log display)
     careerHistory,
     setCareerHistory,
 

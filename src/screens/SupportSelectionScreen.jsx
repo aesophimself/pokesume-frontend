@@ -8,12 +8,13 @@
 import React from 'react';
 import { useGame } from '../contexts/GameContext';
 import { useInventory } from '../contexts/InventoryContext';
+import { useCareer } from '../contexts/CareerContext';
 import {
   getTypeColor,
   getRarityColor,
   getSupportCardAttributes
 } from '../utils/gameUtils';
-import { SUPPORT_CARDS, ICONS } from '../shared/gameData';
+import { SUPPORT_CARDS, ICONS, POKEMON } from '../shared/gameData';
 
 const SupportSelectionScreen = () => {
   const {
@@ -26,6 +27,7 @@ const SupportSelectionScreen = () => {
   } = useGame();
 
   const { supportInventory } = useInventory();
+  const { startCareer, careerLoading } = useCareer();
 
   // Sort support inventory
   const sortSupportInventory = () => {
@@ -56,14 +58,39 @@ const SupportSelectionScreen = () => {
 
   const sortedSupportInventory = sortSupportInventory();
 
-  const handleBeginCareer = () => {
-    // TODO: Initialize career with server API
-    console.log('[SupportSelection] Beginning career with:', {
-      pokemon: selectedPokemon,
-      supports: selectedSupports
+  const handleBeginCareer = async () => {
+    if (!selectedPokemon || selectedSupports.length === 0) {
+      alert('Please select at least one support card');
+      return;
+    }
+
+    // Get full Pokemon data from POKEMON database
+    const pokemonData = POKEMON[selectedPokemon];
+    if (!pokemonData) {
+      alert('Invalid Pokemon selected');
+      return;
+    }
+
+    // Prepare Pokemon object for backend
+    const pokemon = {
+      name: selectedPokemon,
+      ...pokemonData
+    };
+
+    // Start career via backend API
+    console.log('[SupportSelection] Starting career with:', {
+      pokemon,
+      selectedSupports
     });
-    // For now, go to career screen (placeholder)
-    setGameState('career');
+
+    const careerState = await startCareer(pokemon, selectedSupports);
+
+    if (careerState) {
+      console.log('[SupportSelection] Career started successfully:', careerState);
+      setGameState('career');
+    } else {
+      alert('Failed to start career. Please try again.');
+    }
   };
 
   return (
@@ -230,9 +257,14 @@ const SupportSelectionScreen = () => {
         {/* Begin Career Button */}
         <button
           onClick={handleBeginCareer}
-          className="w-full bg-green-600 text-white py-2 sm:py-3 sm:py-4 rounded-lg font-bold text-lg sm:text-xl hover:bg-green-700 transition"
+          disabled={careerLoading || selectedSupports.length === 0}
+          className={`w-full py-2 sm:py-3 sm:py-4 rounded-lg font-bold text-lg sm:text-xl transition ${
+            careerLoading || selectedSupports.length === 0
+              ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+              : 'bg-green-600 text-white hover:bg-green-700'
+          }`}
         >
-          Begin Career
+          {careerLoading ? 'Starting Career...' : 'Begin Career'}
         </button>
       </div>
     </div>

@@ -16,8 +16,8 @@ import {
 } from '../utils/gameUtils';
 
 const GameOverScreen = () => {
-  const { careerData, setGameState, setSelectedPokemon, setSelectedSupports, setCareerData } = useGame();
-  const { trainedPokemon } = useInventory();
+  const { setGameState, setSelectedPokemon, setSelectedSupports } = useGame();
+  const { trainedPokemon, loadTrainedPokemon } = useInventory();
 
   // Get the most recent trained pokemon (just added)
   const completedPokemon = trainedPokemon[trainedPokemon.length - 1];
@@ -123,7 +123,8 @@ const GameOverScreen = () => {
             setGameState('menu');
             setSelectedPokemon(null);
             setSelectedSupports([]);
-            setCareerData(null);
+            // Refresh trained Pokemon to show the newly completed one
+            loadTrainedPokemon();
           }}
           className="w-full bg-purple-600 text-white py-3 rounded-lg font-bold hover:bg-purple-700 transition"
         >

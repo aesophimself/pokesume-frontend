@@ -32,8 +32,15 @@ const TournamentReplayScreen = () => {
   const [replayTick, setReplayTick] = useState(0);
   const [replaySpeed, setReplaySpeed] = useState(1);
   const [isPlaying, setIsPlaying] = useState(true);
+  const [selectedBattleIndex, setSelectedBattleIndex] = useState(0);
 
-  const battleLog = battleResults?.battleLog || [];
+  // Handle both old single-battle format and new 3v3 format
+  const is3v3Format = battleResults?.battles && Array.isArray(battleResults.battles);
+  const currentBattle = is3v3Format
+    ? battleResults.battles[selectedBattleIndex]
+    : battleResults;
+
+  const battleLog = currentBattle?.battleLog || [];
   const maxTicks = battleLog.length;
 
   useEffect(() => {
@@ -46,7 +53,7 @@ const TournamentReplayScreen = () => {
     return () => clearTimeout(timer);
   }, [replayTick, isPlaying, maxTicks, replaySpeed]);
 
-  if (!battleResults || !battleResults.battleLog) {
+  if (!battleResults || (!battleResults.battleLog && !is3v3Format)) {
     return (
       <div className="w-full h-screen bg-gradient-to-b from-gray-700 to-gray-900 flex items-center justify-center p-4">
         <div className="bg-white rounded-lg p-8 max-w-md w-full text-center">
@@ -70,8 +77,15 @@ const TournamentReplayScreen = () => {
   return (
     <div className="w-full h-screen bg-gradient-to-b from-gray-700 to-gray-900 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg p-8 max-w-6xl w-full">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-purple-600">Tournament Replay</h2>
+        <div className="flex justify-between items-center mb-4">
+          <div>
+            <h2 className="text-2xl font-bold text-purple-600">Tournament Replay</h2>
+            {is3v3Format && (
+              <div className="text-sm text-gray-600 mt-1">
+                Match Score: {battleResults.player1Wins} - {battleResults.player2Wins}
+              </div>
+            )}
+          </div>
           <button
             onClick={() => {
               setSelectedReplay(null);
@@ -82,6 +96,30 @@ const TournamentReplayScreen = () => {
             Back to Bracket
           </button>
         </div>
+
+        {/* Battle selector for 3v3 matches */}
+        {is3v3Format && (
+          <div className="flex gap-2 mb-4">
+            {battleResults.battles.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  setSelectedBattleIndex(index);
+                  setReplayTick(0);
+                  setIsPlaying(true);
+                }}
+                className={`px-4 py-2 rounded-lg font-bold transition ${
+                  selectedBattleIndex === index
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                Battle {index + 1}
+                {battleResults.battles[index].winner === 1 ? ' ✓' : ' ✗'}
+              </button>
+            ))}
+          </div>
+        )}
 
         <div className="grid grid-cols-2 gap-8 mb-6">
           <div className="bg-blue-50 rounded-lg p-4">
