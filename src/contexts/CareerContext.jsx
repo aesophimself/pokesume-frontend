@@ -115,6 +115,10 @@ export const CareerProvider = ({ children }) => {
       const result = await apiProcessBattle(opponent, isGymLeader, authToken);
       console.log('[processBattle] Server response:', result);
       if (result && result.success) {
+        // Update career data with the new state from server
+        if (result.careerState) {
+          setCareerData(result.careerState);
+        }
         return result.battleResult;
       }
       console.error('[processBattle] Server returned failure or missing battleResult:', result);

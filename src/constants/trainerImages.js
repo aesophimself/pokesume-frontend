@@ -23,17 +23,39 @@ export const GYM_LEADER_IMAGES = {
 
 // Support Card Trainer Images (maps trainer names from support cards)
 export const SUPPORT_TRAINER_IMAGES = {
+  // Legendary tier
   'Cynthia': '/images/trainers/supports/cynthia.png',
   'Red': '/images/trainers/supports/red.png',
   'Steven': '/images/trainers/supports/steven.png',
+  'N': '/images/trainers/supports/n.png',
+  'Professor Oak': '/images/trainers/supports/professor_oak.png',
+  'Diantha': '/images/trainers/supports/diantha.png',
+  // Rare tier
   'Lance': '/images/trainers/supports/lance.png',
+  'Sabrina': '/images/trainers/supports/sabrina.png',
+  'Morty': '/images/trainers/supports/morty.png',
+  'Wallace': '/images/trainers/supports/wallace.png',
+  'Iris': '/images/trainers/supports/iris.png',
+  'Blue': '/images/trainers/supports/blue.png',
+  'Giovanni': '/images/trainers/supports/giovanni.png',
+  'Maxie': '/images/trainers/supports/maxie.png',
+  'Archie': '/images/trainers/supports/archie.png',
+  // Uncommon tier
   'Misty': '/images/trainers/supports/misty.png',
   'Brock': '/images/trainers/supports/brock.png',
   'Erika': '/images/trainers/supports/erika.png',
-  'Sabrina': '/images/trainers/supports/sabrina.png',
   'Blaine': '/images/trainers/supports/blaine.png',
-  'May': '/images/trainers/supports/may.png',
-  'Brendan': '/images/trainers/supports/brendan.png',
+  'Koga': '/images/trainers/supports/koga.png',
+  'Jasmine': '/images/trainers/supports/jasmine.png',
+  'Winona': '/images/trainers/supports/winona.png',
+  'Karen': '/images/trainers/supports/karen.png',
+  'Agatha': '/images/trainers/supports/agatha.png',
+  // Common tier
+  'Whitney': '/images/trainers/supports/whitney.png',
+  'Chuck': '/images/trainers/supports/chuck.png',
+  'Pryce': '/images/trainers/supports/pryce.png',
+  'Wattson': '/images/trainers/supports/wattson.png',
+  'Flannery': '/images/trainers/supports/flannery.png',
 };
 
 // Helper function to get gym leader image with fallback
@@ -41,9 +63,10 @@ export const getGymLeaderImage = (name) => {
   return GYM_LEADER_IMAGES[name] || '/images/trainers/gym-leaders/default.png';
 };
 
-// Helper function to get support trainer image with fallback
+// Helper function to get support trainer image with fallback to gym leader images
 export const getSupportTrainerImage = (trainerName) => {
-  return SUPPORT_TRAINER_IMAGES[trainerName] || null;
+  // First check support images, then fallback to gym leader images
+  return SUPPORT_TRAINER_IMAGES[trainerName] || GYM_LEADER_IMAGES[trainerName] || '/images/trainers/supports/default.png';
 };
 
 // Helper function to extract trainer name from support card name

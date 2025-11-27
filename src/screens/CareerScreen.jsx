@@ -227,6 +227,7 @@ const CareerScreen = () => {
   const [inspirationModal, setInspirationModal] = useState(null);
   const [pokeclockModal] = useState(null);
   const [isProcessingEvent, setIsProcessingEvent] = useState(false);
+  const [isProcessingAction, setIsProcessingAction] = useState(false);
   const lastProcessedTurnRef = useRef(null);
 
   // ============================================================================
@@ -373,115 +374,132 @@ const CareerScreen = () => {
    * Perform training action (SERVER-AUTHORITATIVE)
    */
   const performTraining = async (stat) => {
-    // Call server-authoritative training endpoint
-    const result = await trainStat(stat);
+    // Prevent double-clicks
+    if (isProcessingAction) return;
+    setIsProcessingAction(true);
 
-    if (!result) {
-      console.error('Training failed - no result from server');
-      return;
-    }
+    try {
+      // Call server-authoritative training endpoint
+      const result = await trainStat(stat);
 
-    // Server has already updated careerData through CareerContext
-    // Now handle client-side presentation (modals, animations)
-    const nextTurn = result.careerState.turn;
-
-    // Check for inspiration event
-    const inspirationResult = checkAndApplyInspiration(
-      nextTurn,
-      selectedInspirations,
-      result.careerState.currentStats,
-      result.careerState.pokemon.typeAptitudes
-    );
-
-    if (inspirationResult && inspirationResult.results.length > 0) {
-      setTimeout(() => {
-        setInspirationModal(inspirationResult);
-      }, 0);
-    }
-
-    // Check for evolution
-    const evolutionCheck = checkForEvolution(
-      result.careerState.pokemon.name,
-      result.careerState.currentStats
-    );
-
-    if (evolutionCheck) {
-      const oldStats = result.careerState.currentStats;
-      const statBoost = EVOLUTION_CHAINS[result.careerState.basePokemonName || result.careerState.pokemon.name]?.stages === 2
-        ? EVOLUTION_CONFIG.STAT_BOOST.TWO_STAGE
-        : EVOLUTION_CONFIG.STAT_BOOST.ONE_STAGE;
-      const newStats = {};
-      for (const [s, value] of Object.entries(oldStats)) {
-        newStats[s] = Math.round(value * (1 + statBoost));
+      if (!result) {
+        console.error('Training failed - no result from server');
+        return;
       }
 
-      setTimeout(() => {
-        setEvolutionModal({
-          fromName: result.careerState.pokemon.name,
-          toName: evolutionCheck.toName,
-          toStage: evolutionCheck.toStage,
-          oldStats: oldStats,
-          newStats: newStats
-        });
-      }, 0);
+      // Server has already updated careerData through CareerContext
+      // Now handle client-side presentation (modals, animations)
+      const nextTurn = result.careerState.turn;
+
+      // Check for inspiration event
+      const inspirationResult = checkAndApplyInspiration(
+        nextTurn,
+        selectedInspirations,
+        result.careerState.currentStats,
+        result.careerState.pokemon.typeAptitudes
+      );
+
+      if (inspirationResult && inspirationResult.results.length > 0) {
+        setTimeout(() => {
+          setInspirationModal(inspirationResult);
+        }, 0);
+      }
+
+      // Check for evolution
+      const evolutionCheck = checkForEvolution(
+        result.careerState.pokemon.name,
+        result.careerState.currentStats
+      );
+
+      if (evolutionCheck) {
+        const oldStats = result.careerState.currentStats;
+        const statBoost = EVOLUTION_CHAINS[result.careerState.basePokemonName || result.careerState.pokemon.name]?.stages === 2
+          ? EVOLUTION_CONFIG.STAT_BOOST.TWO_STAGE
+          : EVOLUTION_CONFIG.STAT_BOOST.ONE_STAGE;
+        const newStats = {};
+        for (const [s, value] of Object.entries(oldStats)) {
+          newStats[s] = Math.round(value * (1 + statBoost));
+        }
+
+        setTimeout(() => {
+          setEvolutionModal({
+            fromName: result.careerState.pokemon.name,
+            toName: evolutionCheck.toName,
+            toStage: evolutionCheck.toStage,
+            oldStats: oldStats,
+            newStats: newStats
+          });
+        }, 0);
+      }
+    } finally {
+      setIsProcessingAction(false);
     }
   };
 
   /**
    * Perform rest action to restore energy
    */
-  const performRest = () => {
-    const roll = Math.random();
-    let energyGain = GAME_CONFIG.REST.ENERGY_GAINS[1];
-    if (roll < GAME_CONFIG.REST.PROBMOVES[0]) energyGain = GAME_CONFIG.REST.ENERGY_GAINS[0];
-    else if (roll > 1 - GAME_CONFIG.REST.PROBMOVES[2]) energyGain = GAME_CONFIG.REST.ENERGY_GAINS[2];
+  const performRest = async () => {
+    // Prevent double-clicks
+    if (isProcessingAction) return;
+    setIsProcessingAction(true);
 
-    console.log('[performRest] Starting rest with energyGain:', energyGain, 'current energy:', careerData.energy);
+    try {
+      const roll = Math.random();
+      let energyGain = GAME_CONFIG.REST.ENERGY_GAINS[1];
+      if (roll < GAME_CONFIG.REST.PROBMOVES[0]) energyGain = GAME_CONFIG.REST.ENERGY_GAINS[0];
+      else if (roll > 1 - GAME_CONFIG.REST.PROBMOVES[2]) energyGain = GAME_CONFIG.REST.ENERGY_GAINS[2];
 
-    const logEntry = {
-      turn: careerData.turn,
-      type: 'rest',
-      energyGain,
-      message: `Rested and recovered ${energyGain} energy.`
-    };
-
-    setCareerData(prev => {
-      console.log('[performRest] prev.energy:', prev.energy, 'energyGain:', energyGain);
-      const nextTurn = prev.turn + 1;
-
-      // Check for inspiration event and apply before creating updatedData
-      let finalStats = { ...prev.currentStats };
-      let finalAptitudes = { ...prev.pokemon.typeAptitudes };
-      const inspirationResult = checkAndApplyInspiration(nextTurn, selectedInspirations, prev.currentStats, prev.pokemon.typeAptitudes);
-      if (inspirationResult && inspirationResult.results.length > 0) {
-        // Use the updated stats and aptitudes from inspiration result
-        finalStats = inspirationResult.updatedStats;
-        finalAptitudes = inspirationResult.updatedAptitudes;
-
-        setTimeout(() => {
-          setInspirationModal(inspirationResult);
-        }, 0);
-      }
-
-      const currentEnergy = prev.energy ?? GAME_CONFIG.CAREER.STARTING_ENERGY;
-      const newEnergy = Math.min(GAME_CONFIG.CAREER.MAX_ENERGY, currentEnergy + energyGain);
-      console.log('[performRest] currentEnergy:', currentEnergy, 'newEnergy:', newEnergy);
-
-      const updatedData = {
-        ...prev,
-        currentStats: finalStats,
-        energy: newEnergy,
-        pokemon: {
-          ...prev.pokemon,
-          typeAptitudes: finalAptitudes
-        },
-        turn: nextTurn,
-        turnLog: [logEntry, ...prev.turnLog],
-        currentTrainingOptions: null
+      const logEntry = {
+        turn: careerData.turn,
+        type: 'rest',
+        energyGain,
+        message: `Rested and recovered ${energyGain} energy.`
       };
 
-      return updatedData;
-    });
+      // Use a promise to ensure state update completes before releasing lock
+      await new Promise(resolve => {
+        setCareerData(prev => {
+          const nextTurn = prev.turn + 1;
+
+          // Check for inspiration event and apply before creating updatedData
+          let finalStats = { ...prev.currentStats };
+          let finalAptitudes = { ...prev.pokemon.typeAptitudes };
+          const inspirationResult = checkAndApplyInspiration(nextTurn, selectedInspirations, prev.currentStats, prev.pokemon.typeAptitudes);
+          if (inspirationResult && inspirationResult.results.length > 0) {
+            finalStats = inspirationResult.updatedStats;
+            finalAptitudes = inspirationResult.updatedAptitudes;
+
+            setTimeout(() => {
+              setInspirationModal(inspirationResult);
+            }, 0);
+          }
+
+          const currentEnergy = prev.energy ?? GAME_CONFIG.CAREER.STARTING_ENERGY;
+          const newEnergy = Math.min(GAME_CONFIG.CAREER.MAX_ENERGY, currentEnergy + energyGain);
+
+          const updatedData = {
+            ...prev,
+            currentStats: finalStats,
+            energy: newEnergy,
+            pokemon: {
+              ...prev.pokemon,
+              typeAptitudes: finalAptitudes
+            },
+            turn: nextTurn,
+            turnLog: [logEntry, ...prev.turnLog],
+            currentTrainingOptions: null
+          };
+
+          // Resolve after state is computed
+          setTimeout(resolve, 0);
+          return updatedData;
+        });
+      });
+    } finally {
+      // Small delay to allow backend sync to complete
+      setTimeout(() => setIsProcessingAction(false), 300);
+    }
   };
 
   /**
@@ -574,6 +592,7 @@ const CareerScreen = () => {
       },
       tick: 0,
       log: battleResult.battleLog || [], // Use server's battle log
+      displayLog: [], // Initialize empty display log - will be populated tick-by-tick
       isGymLeader,
       winner: battleResult.winner, // 'player' or 'opponent'
       rewards: battleResult.rewards, // { statGain, skillPoints, energyChange }
@@ -1574,49 +1593,50 @@ const CareerScreen = () => {
                   Back to Training
                 </button>
               </div>
-              {nextGymLeader && (
+              {nextGymLeader && nextGymLeader.pokemon && (
                 <div className="border-2 border-yellow-500 rounded-lg p-3">
                   <div className="flex items-center gap-2 sm:p-4 mb-3">
                     {generateTrainerSprite(careerData.currentGymIndex + 1)}
                     <div>
                       <h4 className="text-lg font-bold">{nextGymLeader.name}</h4>
                       <p className="text-sm text-gray-600">
-                        {nextGymLeader.pokemon} (
-                        <span style={{ color: getTypeColor(nextGymLeader.type), fontWeight: 'bold' }}>
-                          {nextGymLeader.type}
+                        {nextGymLeader.pokemon.name} (
+                        <span style={{ color: getTypeColor(nextGymLeader.pokemon.primaryType), fontWeight: 'bold' }}>
+                          {nextGymLeader.pokemon.primaryType}
                         </span>
                         )
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">Strategy: {nextGymLeader.strategy} ({nextGymLeader.strategyGrade})</p>
+                      <p className="text-xs text-gray-500 mt-1">Strategy: {nextGymLeader.pokemon.strategy} ({nextGymLeader.pokemon.strategyGrade})</p>
                     </div>
                   </div>
                   <div className="grid grid-cols-6 gap-2 text-sm mb-3">
                     <div className="bg-gray-100 rounded p-2">
                       <div className="text-xs text-gray-500">HP</div>
-                      <div className="font-bold">{nextGymLeader.stats.HP}</div>
+                      <div className="font-bold">{nextGymLeader.pokemon.baseStats.HP}</div>
                     </div>
                     <div className="bg-gray-100 rounded p-2">
                       <div className="text-xs text-gray-500">ATK</div>
-                      <div className="font-bold">{nextGymLeader.stats.Attack}</div>
+                      <div className="font-bold">{nextGymLeader.pokemon.baseStats.Attack}</div>
                     </div>
                     <div className="bg-gray-100 rounded p-2">
                       <div className="text-xs text-gray-500">DEF</div>
-                      <div className="font-bold">{nextGymLeader.stats.Defense}</div>
+                      <div className="font-bold">{nextGymLeader.pokemon.baseStats.Defense}</div>
                     </div>
                     <div className="bg-gray-100 rounded p-2">
                       <div className="text-xs text-gray-500">INS</div>
-                      <div className="font-bold">{nextGymLeader.stats.Instinct}</div>
+                      <div className="font-bold">{nextGymLeader.pokemon.baseStats.Instinct}</div>
                     </div>
                     <div className="bg-gray-100 rounded p-2">
                       <div className="text-xs text-gray-500">SPE</div>
-                      <div className="font-bold">{nextGymLeader.stats.Speed}</div>
+                      <div className="font-bold">{nextGymLeader.pokemon.baseStats.Speed}</div>
                     </div>
                   </div>
                   <div className="mb-2">
                     <div className="font-bold text-sm mb-2">Abilities:</div>
                     <div className="grid grid-cols-2 gap-2">
-                      {nextGymLeader.abilities.map(moveName => {
+                      {[...(nextGymLeader.pokemon.defaultAbilities || []), ...(nextGymLeader.pokemon.learnableAbilities || [])].map(moveName => {
                         const move = MOVES[moveName];
+                        if (!move) return null;
                         return (
                           <div key={moveName} className="border rounded p-2 bg-gray-50">
                             <div className="flex justify-between items-start mb-1">
@@ -1746,9 +1766,14 @@ const CareerScreen = () => {
                   <div className="flex gap-1 sm:gap-2 flex-wrap">
                     <button
                       onClick={performRest}
-                      className="px-3 sm:px-4 py-1.5 sm:py-2 bg-green-600 text-white rounded font-bold hover:bg-green-700 transition text-xs sm:text-sm flex-1 sm:flex-none"
+                      disabled={isProcessingAction}
+                      className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded font-bold transition text-xs sm:text-sm flex-1 sm:flex-none ${
+                        isProcessingAction
+                          ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                          : 'bg-green-600 text-white hover:bg-green-700'
+                      }`}
                     >
-                      Rest
+                      {isProcessingAction ? 'Resting...' : 'Rest'}
                     </button>
                     <button
                       onClick={() => setViewMode('battle')}
@@ -1789,15 +1814,35 @@ const CareerScreen = () => {
                       }
                     });
 
+                    // Apply training level bonus
+                    const trainingLevel = careerData.trainingLevels?.[stat] || 0;
+                    const levelBonus = trainingLevel * (GAME_CONFIG.TRAINING.LEVEL_BONUS_MULTIPLIER || 0.10);
+                    statGain = Math.floor(statGain * (1 + levelBonus));
+
+                    // Get training progress
+                    const trainingProgress = careerData.trainingProgress?.[stat] || 0;
+
                     const currentStatValue = careerData.currentStats[stat];
 
                     return (
                       <button
                         key={stat}
                         onClick={() => performTraining(stat)}
-                        className="border-2 rounded p-1 sm:p-2 text-left transition border-purple-500 hover:bg-purple-50 cursor-pointer"
+                        disabled={isProcessingAction}
+                        className={`border-2 rounded p-1 sm:p-2 text-left transition ${
+                          isProcessingAction
+                            ? 'border-gray-300 bg-gray-100 cursor-not-allowed opacity-60'
+                            : 'border-purple-500 hover:bg-purple-50 cursor-pointer'
+                        }`}
                       >
-                        <div className="font-bold text-[10px] sm:text-sm mb-0.5 sm:mb-1">{stat}</div>
+                        <div className="flex items-center justify-between mb-0.5 sm:mb-1">
+                          <div className="font-bold text-[10px] sm:text-sm">{stat}</div>
+                          {trainingLevel > 0 && (
+                            <div className="bg-purple-600 text-white text-[8px] sm:text-xs px-1 py-0.5 rounded font-bold">
+                              Lv.{trainingLevel}
+                            </div>
+                          )}
+                        </div>
                         <div className="text-[9px] sm:text-xs mb-0.5 sm:mb-1">
                           <span className="text-gray-600">{currentStatValue}</span>
                           <span className="text-green-600 font-bold"> +{statGain}</span>
@@ -1807,6 +1852,19 @@ const CareerScreen = () => {
                         </div>
                         <div className="text-[9px] sm:text-xs font-bold mb-0.5 sm:mb-1" style={{ color: failChance === 0 ? '#16a34a' : failChance <= 25 ? '#eab308' : '#ef4444' }}>
                           Fail: {failChance}%
+                        </div>
+                        {/* Training progress bar */}
+                        <div className="mb-0.5 sm:mb-1">
+                          <div className="flex items-center justify-between text-[8px] sm:text-xs text-gray-500 mb-0.5">
+                            <span>Progress</span>
+                            <span>{trainingProgress}/4</span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded h-1">
+                            <div
+                              className="bg-purple-600 h-1 rounded transition-all"
+                              style={{ width: `${(trainingProgress / 4) * 100}%` }}
+                            />
+                          </div>
                         </div>
                         {option.supports.length > 0 && (
                           <div className="space-y-0.5">
@@ -1860,6 +1918,7 @@ const CareerScreen = () => {
                       <div
                         className={`p-2 rounded text-sm ${
                           entry.type === 'training_success' ? 'bg-green-50 border-l-4 border-green-500' :
+                          entry.type === 'training_levelup' ? 'bg-purple-50 border-l-4 border-purple-500' :
                           entry.type === 'training_fail' ? 'bg-red-50 border-l-4 border-red-500' :
                           entry.type === 'battle_victory' || entry.type === 'gym_victory' ? 'bg-blue-50 border-l-4 border-blue-500' :
                           entry.type === 'battle_loss' ? 'bg-orange-50 border-l-4 border-orange-500' :

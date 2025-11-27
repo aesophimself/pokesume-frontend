@@ -39,6 +39,26 @@ const BattleController = () => {
           return prev;
         }
 
+        // Convert current tick's message to display format
+        const message = logEntry.message || '';
+        let type = 'normal';
+
+        if (message.includes('CRITICAL HIT')) type = 'crit';
+        else if (message.includes('Victory!')) type = 'victory';
+        else if (message.includes('defeated')) type = message.includes(prev.player.name) ? 'defeat' : 'victory';
+        else if (message.includes('damage')) type = 'hit';
+        else if (message.includes('missed')) type = 'miss';
+
+        // Add current message to display log (only if there's a message)
+        const newDisplayLog = prev.displayLog || [];
+        if (message) {
+          newDisplayLog.push({
+            text: message,
+            type: type,
+            tick: nextTick
+          });
+        }
+
         // Update battle state with data from log entry
         return {
           ...prev,
@@ -55,25 +75,7 @@ const BattleController = () => {
             currentStamina: logEntry.player2.energy,
             statusEffects: logEntry.player2.statusEffects || []
           },
-          // Convert message to log format expected by BattleScreen
-          log: prev.log.map((entry, idx) => {
-            if (idx > nextTick) return entry; // Don't process future entries
-
-            const message = entry.message || '';
-            let type = 'normal';
-
-            if (message.includes('CRITICAL HIT')) type = 'crit';
-            else if (message.includes('Victory!')) type = 'victory';
-            else if (message.includes('defeated')) type = message.includes(prev.player.name) ? 'defeat' : 'victory';
-            else if (message.includes('damage')) type = 'hit';
-            else if (message.includes('missed')) type = 'miss';
-
-            return {
-              ...entry,
-              text: message,
-              type: type
-            };
-          })
+          displayLog: newDisplayLog
         };
       });
     }, tickDuration);

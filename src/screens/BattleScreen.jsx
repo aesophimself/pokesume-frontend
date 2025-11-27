@@ -5,7 +5,7 @@
  * Shows HP bars, stamina, battle log, and playback speed controls.
  */
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Clock } from 'lucide-react';
 import { useGame } from '../contexts/GameContext';
 import {
@@ -16,10 +16,43 @@ import {
 } from '../utils/gameUtils';
 import { ICONS } from '../shared/gameData';
 import { getGymLeaderImage } from '../constants/trainerImages';
+import { getGymLeaderBadge } from '../constants/badgeImages';
+import BadgeModal from '../components/BadgeModal';
 
 const BattleScreen = () => {
-  const { battleState, battleSpeed, setBattleSpeed } = useGame();
+  const { battleState, battleSpeed, setBattleSpeed, setGameState, setBattleState } = useGame();
   const battleLogRef = useRef(null);
+  const [showBadgeModal, setShowBadgeModal] = useState(false);
+  const [earnedBadge, setEarnedBadge] = useState(null);
+
+  // Auto-scroll battle log to bottom when new messages appear
+  useEffect(() => {
+    if (battleLogRef.current) {
+      battleLogRef.current.scrollTop = battleLogRef.current.scrollHeight;
+    }
+  }, [battleState?.displayLog?.length]);
+
+  // Check if battle is over and show badge modal for gym leader victories
+  useEffect(() => {
+    if (!battleState) return;
+
+    const battleOver = battleState.player.currentHP <= 0 || battleState.opponent.currentHP <= 0;
+    const playerWon = battleState.winner === 'player';
+    const isGymLeader = battleState.isGymLeader;
+    const badge = battleState.rewards?.badge;
+
+    // Show badge modal if player won against gym leader and has a badge
+    if (battleOver && playerWon && isGymLeader && badge && !showBadgeModal) {
+      const badgeInfo = getGymLeaderBadge(badge.gymLeaderName);
+      if (badgeInfo) {
+        setEarnedBadge({ ...badgeInfo, gymLeaderName: badge.gymLeaderName });
+        // Small delay to let battle complete animation finish
+        setTimeout(() => {
+          setShowBadgeModal(true);
+        }, 1500);
+      }
+    }
+  }, [battleState?.player.currentHP, battleState?.opponent.currentHP, battleState, showBadgeModal]);
 
   if (!battleState) {
     return null;
@@ -30,6 +63,12 @@ const BattleScreen = () => {
       return `${combatant.name} (Gym Leader)`;
     }
     return combatant.name;
+  };
+
+  const handleContinue = () => {
+    // Clear battle state and return to career screen
+    setBattleState(null);
+    setGameState('career');
   };
 
   const playerPct = (battleState.player.currentHP / battleState.player.stats.HP) * 100;
@@ -195,7 +234,7 @@ const BattleScreen = () => {
         <div ref={battleLogRef} className="bg-white rounded-lg p-2 sm:p-4 shadow-lg" style={{ height: '400px', overflowY: 'auto' }}>
           <h3 className="text-lg font-bold mb-3 sticky top-0 bg-white pb-2">Battle Log</h3>
           <div className="space-y-1">
-            {battleState.log.slice(-30).map((entry, idx) => (
+            {(battleState.displayLog || []).map((entry, idx) => (
               <div
                 key={idx}
                 className={`py-1 border-b border-gray-100 ${
@@ -212,7 +251,27 @@ const BattleScreen = () => {
             ))}
           </div>
         </div>
+
+        {/* Continue Button - appears when battle is over */}
+        {battleOver && (
+          <div className="mt-4">
+            <button
+              onClick={handleContinue}
+              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-4 px-6 rounded-lg shadow-lg transition text-lg"
+            >
+              {battleState.winner === 'player' ? 'Continue ▶' : 'Return to Career'}
+            </button>
+          </div>
+        )}
       </div>
+
+      {/* Badge Modal for Gym Leader Victories */}
+      <BadgeModal
+        isOpen={showBadgeModal}
+        onClose={() => setShowBadgeModal(false)}
+        badge={earnedBadge}
+        gymLeaderName={earnedBadge?.gymLeaderName}
+      />
     </div>
   );
 };
