@@ -138,24 +138,40 @@ export const CareerProvider = ({ children }) => {
     }
   };
 
-  // Complete career
-  const completeCareer = async (completionType) => {
-    if (!authToken || !careerData) return false;
+  // Complete career - returns the result including trainedPokemon data
+  const completeCareer = async (completionType, inspirations = null) => {
+    if (!authToken || !careerData) return null;
+
+    // Save career data before clearing it (for use in GameOver screen)
+    const savedCareerData = { ...careerData };
+
+    // Include inspirations in career data for the server to save
+    const careerDataWithInspirations = {
+      ...careerData,
+      inspirations: inspirations
+    };
 
     setCareerLoading(true);
     setCareerError(null);
     try {
-      const result = await apiCompleteCareer(careerData, completionType, authToken);
+      const result = await apiCompleteCareer(careerDataWithInspirations, completionType, authToken);
       if (result && result.success) {
         setCareerData(null);
         setHasActiveCareer(false);
-        return true;
+        // Return the full result including trainedPokemon and savedCareerData
+        return {
+          ...result,
+          savedCareerData: {
+            ...savedCareerData,
+            inspirations: inspirations
+          }
+        };
       }
-      return false;
+      return null;
     } catch (error) {
       console.error('Failed to complete career:', error);
       setCareerError(error.message);
-      return false;
+      return null;
     } finally {
       setCareerLoading(false);
     }

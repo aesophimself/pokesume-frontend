@@ -72,6 +72,9 @@ export const GameProvider = ({ children }) => {
     }
   });
 
+  // Completed career data (for GameOver/Victory screens)
+  const [completedCareerData, setCompletedCareerData] = useState(null);
+
   // Reset game state (for starting new career or returning to menu)
   const resetGameState = () => {
     setSelectedPokemon(null);
@@ -98,6 +101,10 @@ export const GameProvider = ({ children }) => {
     // Career history (local storage - for career log display)
     careerHistory,
     setCareerHistory,
+
+    // Completed career data (for GameOver/Victory screens)
+    completedCareerData,
+    setCompletedCareerData,
 
     // Battle
     battleState,

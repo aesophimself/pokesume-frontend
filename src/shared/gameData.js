@@ -2132,15 +2132,23 @@ const ELITE_FOUR = [
 // ============================================================================
 
 const SUPPORT_CARDS = {
+  // ============================================================================
+  // LEGENDARY TIER - ~20% stronger than Rare
+  // Base power ~90, appearance 25-35%, initialFriendship 40-60, maxFriendship 100
+  // ============================================================================
   CynthiaGarchomp: {
     name: 'Cynthia & Garchomp',
     trainer: 'Cynthia',
     pokemon: 'Garchomp',
     rarity: 'Legendary',
     supportType: 'Attack',
+    appearanceChance: 0.28,
+    initialFriendship: 45,
+    maxFriendship: 100,
+    typeMatchBonus: 1.25,
     effect: {
       type: 'stat_boost',
-      stats: { HP: 0, Attack: 50, Defense: 0, Instinct: 30, Speed: 0 },
+      stats: { HP: 0, Attack: 50, Defense: 0, Instinct: 30, Speed: 10 },
       description: 'The Sinnoh Champion grants overwhelming power'
     },
     moveHints: ['Earthquake', 'DragonClaw', 'Outrage', 'StoneEdge']
@@ -2151,6 +2159,10 @@ const SUPPORT_CARDS = {
     pokemon: 'Charizard',
     rarity: 'Legendary',
     supportType: 'Attack',
+    appearanceChance: 0.25,
+    initialFriendship: 40,
+    maxFriendship: 100,
+    typeMatchBonus: 1.30,
     effect: {
       type: 'stat_boost',
       stats: { HP: 0, Attack: 55, Defense: 0, Instinct: 35, Speed: 0 },
@@ -2164,34 +2176,260 @@ const SUPPORT_CARDS = {
     pokemon: 'Metagross',
     rarity: 'Legendary',
     supportType: 'Defense',
+    appearanceChance: 0.30,
+    initialFriendship: 50,
+    maxFriendship: 100,
+    typeMatchBonus: 1.20,
     effect: {
       type: 'stat_boost',
-      stats: { HP: 0, Attack: 0, Defense: 60, Instinct: 30, Speed: 0 },
+      stats: { HP: 15, Attack: 0, Defense: 55, Instinct: 20, Speed: 0 },
       description: 'The Hoenn Champion fortifies iron defenses'
     },
     moveHints: ['MeteorMash', 'ZenHeadbutt', 'BulletPunch', 'IronDefense']
   },
+  NReshiram: {
+    name: 'N & Reshiram',
+    trainer: 'N',
+    pokemon: 'Reshiram',
+    rarity: 'Legendary',
+    supportType: 'Attack',
+    appearanceChance: 0.32,
+    initialFriendship: 55,
+    maxFriendship: 100,
+    typeMatchBonus: 1.15,
+    effect: {
+      type: 'stat_boost',
+      stats: { HP: 0, Attack: 45, Defense: 0, Instinct: 35, Speed: 10 },
+      description: 'The King of Team Plasma wields truth'
+    },
+    moveHints: ['BlueFlare', 'FusionFlare', 'DragonPulse', 'DracoMeteor']
+  },
+  ProfessorOakMew: {
+    name: 'Professor Oak & Mew',
+    trainer: 'Professor Oak',
+    pokemon: 'Mew',
+    rarity: 'Legendary',
+    supportType: 'Instinct',
+    appearanceChance: 0.35,
+    initialFriendship: 60,
+    maxFriendship: 100,
+    typeMatchBonus: 1.10,
+    effect: {
+      type: 'experience_boost',
+      skillPointMultiplier: 1.5,
+      friendshipBonus: 25,
+      description: 'The Professor grants knowledge and wisdom'
+    },
+    moveHints: ['Psychic', 'AuraSphere', 'Transform', 'Metronome', 'AncientPower']
+  },
+  DianthaDiancie: {
+    name: 'Diantha & Diancie',
+    trainer: 'Diantha',
+    pokemon: 'Diancie',
+    rarity: 'Legendary',
+    supportType: 'Defense',
+    appearanceChance: 0.27,
+    initialFriendship: 48,
+    maxFriendship: 100,
+    typeMatchBonus: 1.22,
+    effect: {
+      type: 'stat_boost',
+      stats: { HP: 25, Attack: 0, Defense: 50, Instinct: 15, Speed: 0 },
+      description: 'The Kalos Champion radiates brilliance'
+    },
+    moveHints: ['DiamondStorm', 'Moonblast', 'DazzlingGleam', 'RockPolish']
+  },
+
+  // ============================================================================
+  // RARE TIER - ~20% stronger than Uncommon
+  // Base power ~75, appearance 32-45%, initialFriendship 30-50, maxFriendship 90
+  // ============================================================================
   LanceDragonite: {
     name: 'Lance & Dragonite',
     trainer: 'Lance',
     pokemon: 'Dragonite',
     rarity: 'Rare',
     supportType: 'Instinct',
-    appearanceChance: 0.45,
+    appearanceChance: 0.38,
+    initialFriendship: 40,
+    maxFriendship: 90,
+    typeMatchBonus: 1.18,
     effect: {
       type: 'stat_boost',
-      stats: { HP: 0, Attack: 25, Defense: 0, Instinct: 40, Speed: 0 },
+      stats: { HP: 0, Attack: 25, Defense: 0, Instinct: 40, Speed: 10 },
       description: 'The Dragon Master enhances draconic power'
     },
     moveHints: ['DragonDance', 'Outrage', 'ExtremeSpeed', 'DragonRush']
   },
+  SabrinaAlakazam: {
+    name: 'Sabrina & Alakazam',
+    trainer: 'Sabrina',
+    pokemon: 'Alakazam',
+    rarity: 'Rare',
+    supportType: 'Instinct',
+    appearanceChance: 0.35,
+    initialFriendship: 35,
+    maxFriendship: 90,
+    typeMatchBonus: 1.20,
+    effect: {
+      type: 'stat_boost',
+      stats: { HP: 0, Attack: 0, Defense: 0, Instinct: 45, Speed: 20 },
+      description: 'The Saffron Gym Leader sharpens the mind'
+    },
+    moveHints: ['Psychic', 'FutureSight', 'FocusBlast', 'CalmMind', 'ShadowBall']
+  },
+  MortyGengar: {
+    name: 'Morty & Gengar',
+    trainer: 'Morty',
+    pokemon: 'Gengar',
+    rarity: 'Rare',
+    supportType: 'Instinct',
+    appearanceChance: 0.42,
+    initialFriendship: 45,
+    maxFriendship: 90,
+    typeMatchBonus: 1.12,
+    effect: {
+      type: 'stat_boost',
+      stats: { HP: 0, Attack: 10, Defense: 0, Instinct: 35, Speed: 20 },
+      description: 'The Ecruteak Gym Leader channels ghostly power'
+    },
+    moveHints: ['ShadowBall', 'SludgeBomb', 'Hypnosis', 'DreamEater', 'Hex']
+  },
+  WallaceMillotic: {
+    name: 'Wallace & Milotic',
+    trainer: 'Wallace',
+    pokemon: 'Milotic',
+    rarity: 'Rare',
+    supportType: 'Defense',
+    appearanceChance: 0.40,
+    initialFriendship: 50,
+    maxFriendship: 90,
+    typeMatchBonus: 1.15,
+    effect: {
+      type: 'stat_boost',
+      stats: { HP: 30, Attack: 0, Defense: 30, Instinct: 0, Speed: 5 },
+      description: 'The Hoenn Champion exudes elegance'
+    },
+    moveHints: ['Surf', 'IceBeam', 'Recover', 'DragonTail', 'AquaRing']
+  },
+  CynthiaLucario: {
+    name: 'Cynthia & Lucario',
+    trainer: 'Cynthia',
+    pokemon: 'Lucario',
+    rarity: 'Rare',
+    supportType: 'Attack',
+    appearanceChance: 0.32,
+    initialFriendship: 30,
+    maxFriendship: 90,
+    typeMatchBonus: 1.25,
+    effect: {
+      type: 'training_boost',
+      trainingMultiplier: 1.25,
+      failureReduction: 0.15,
+      description: 'The Champion refines battle technique'
+    },
+    moveHints: ['AuraSphere', 'CloseCombat', 'ExtremeSpeed', 'BulletPunch', 'SwordsDance']
+  },
+  IrisHaxorus: {
+    name: 'Iris & Haxorus',
+    trainer: 'Iris',
+    pokemon: 'Haxorus',
+    rarity: 'Rare',
+    supportType: 'Attack',
+    appearanceChance: 0.36,
+    initialFriendship: 38,
+    maxFriendship: 90,
+    typeMatchBonus: 1.18,
+    effect: {
+      type: 'stat_boost',
+      stats: { HP: 0, Attack: 40, Defense: 0, Instinct: 10, Speed: 15 },
+      description: 'The Unova Champion commands dragons'
+    },
+    moveHints: ['DragonDance', 'Outrage', 'Earthquake', 'DragonClaw', 'SwordsDance']
+  },
+  BluePidgeot: {
+    name: 'Blue & Pidgeot',
+    trainer: 'Blue',
+    pokemon: 'Pidgeot',
+    rarity: 'Rare',
+    supportType: 'Speed',
+    appearanceChance: 0.44,
+    initialFriendship: 42,
+    maxFriendship: 90,
+    typeMatchBonus: 1.10,
+    effect: {
+      type: 'stat_boost',
+      stats: { HP: 0, Attack: 20, Defense: 0, Instinct: 10, Speed: 35 },
+      description: 'The rival trainer pushes limits'
+    },
+    moveHints: ['Hurricane', 'BraveBird', 'AirSlash', 'Roost', 'UTurn']
+  },
+  GiovanniPersian: {
+    name: 'Giovanni & Persian',
+    trainer: 'Giovanni',
+    pokemon: 'Persian',
+    rarity: 'Rare',
+    supportType: 'Attack',
+    appearanceChance: 0.38,
+    initialFriendship: 32,
+    maxFriendship: 90,
+    typeMatchBonus: 1.22,
+    effect: {
+      type: 'stat_boost',
+      stats: { HP: 0, Attack: 35, Defense: 0, Instinct: 20, Speed: 10 },
+      description: 'The Rocket Boss commands ruthlessly'
+    },
+    moveHints: ['Slash', 'PowerGem', 'FeintAttack', 'NastyPlot']
+  },
+  MaxieGroudon: {
+    name: 'Maxie & Groudon',
+    trainer: 'Maxie',
+    pokemon: 'Groudon',
+    rarity: 'Rare',
+    supportType: 'Attack',
+    appearanceChance: 0.34,
+    initialFriendship: 35,
+    maxFriendship: 90,
+    typeMatchBonus: 1.20,
+    effect: {
+      type: 'stat_boost',
+      stats: { HP: 20, Attack: 35, Defense: 10, Instinct: 0, Speed: 0 },
+      description: 'The Magma Leader harnesses earth power'
+    },
+    moveHints: ['Earthquake', 'PrecipiceBlades', 'FirePunch', 'BulkUp', 'LavaPlume']
+  },
+  ArchieKyogre: {
+    name: 'Archie & Kyogre',
+    trainer: 'Archie',
+    pokemon: 'Kyogre',
+    rarity: 'Rare',
+    supportType: 'HP',
+    appearanceChance: 0.36,
+    initialFriendship: 38,
+    maxFriendship: 90,
+    typeMatchBonus: 1.18,
+    effect: {
+      type: 'stat_boost',
+      stats: { HP: 40, Attack: 0, Defense: 20, Instinct: 5, Speed: 0 },
+      description: 'The Aqua Leader commands the seas'
+    },
+    moveHints: ['OriginPulse', 'HydroPump', 'IceBeam', 'Thunder', 'AquaRing']
+  },
+
+  // ============================================================================
+  // UNCOMMON TIER - ~20% stronger than Common
+  // Base power ~60, appearance 40-52%, initialFriendship 25-40, maxFriendship 80
+  // ============================================================================
   MistyStarmie: {
     name: 'Misty & Starmie',
     trainer: 'Misty',
     pokemon: 'Starmie',
     rarity: 'Uncommon',
     supportType: 'Instinct',
-    appearanceChance: 0.40,
+    appearanceChance: 0.45,
+    initialFriendship: 35,
+    maxFriendship: 80,
+    typeMatchBonus: 1.12,
     effect: {
       type: 'training_boost',
       trainingMultiplier: 1.15,
@@ -2206,10 +2444,13 @@ const SUPPORT_CARDS = {
     pokemon: 'Onix',
     rarity: 'Uncommon',
     supportType: 'Defense',
-    appearanceChance: 0.42,
+    appearanceChance: 0.48,
+    initialFriendship: 40,
+    maxFriendship: 80,
+    typeMatchBonus: 1.08,
     effect: {
       type: 'stat_boost',
-      stats: { HP: 20, Attack: 0, Defense: 40, Instinct: 0, Speed: 0 },
+      stats: { HP: 15, Attack: 0, Defense: 35, Instinct: 0, Speed: 0 },
       description: 'The Pewter Gym Leader hardens defenses'
     },
     moveHints: ['RockSlide', 'IronTail', 'StealthRock', 'Sandstorm']
@@ -2220,27 +2461,16 @@ const SUPPORT_CARDS = {
     pokemon: 'Tangela',
     rarity: 'Uncommon',
     supportType: 'HP',
-    appearanceChance: 0.42,
+    appearanceChance: 0.50,
+    initialFriendship: 38,
+    maxFriendship: 80,
+    typeMatchBonus: 1.10,
     effect: {
       type: 'stat_boost',
-      stats: { HP: 40, Attack: 0, Defense: 20, Instinct: 0, Speed: 0 },
+      stats: { HP: 35, Attack: 0, Defense: 15, Instinct: 0, Speed: 0 },
       description: 'The Celadon Gym Leader nurtures vitality'
     },
     moveHints: ['GigaDrain', 'SleepPowder', 'Synthesis', 'PowerWhip']
-  },
-  SabrinaAlakazam: {
-    name: 'Sabrina & Alakazam',
-    trainer: 'Sabrina',
-    pokemon: 'Alakazam',
-    rarity: 'Rare',
-    supportType: 'Instinct',
-    appearanceChance: 0.43,
-    effect: {
-      type: 'stat_boost',
-      stats: { HP: 0, Attack: 0, Defense: 0, Instinct: 45, Speed: 20 },
-      description: 'The Saffron Gym Leader sharpens the mind'
-    },
-    moveHints: ['Psychic', 'FutureSight', 'FocusBlast', 'CalmMind', 'ShadowBall']
   },
   BlaineMagmar: {
     name: 'Blaine & Magmar',
@@ -2248,10 +2478,13 @@ const SUPPORT_CARDS = {
     pokemon: 'Magmar',
     rarity: 'Uncommon',
     supportType: 'Attack',
-    appearanceChance: 0.45,
+    appearanceChance: 0.46,
+    initialFriendship: 32,
+    maxFriendship: 80,
+    typeMatchBonus: 1.15,
     effect: {
       type: 'stat_boost',
-      stats: { HP: 0, Attack: 35, Defense: 0, Instinct: 20, Speed: 0 },
+      stats: { HP: 0, Attack: 30, Defense: 0, Instinct: 15, Speed: 5 },
       description: 'The Cinnabar Gym Leader ignites fiery passion'
     },
     moveHints: ['FireBlast', 'Flamethrower', 'FirePunch', 'LavaPlume']
@@ -2262,55 +2495,16 @@ const SUPPORT_CARDS = {
     pokemon: 'Weezing',
     rarity: 'Uncommon',
     supportType: 'Instinct',
-    appearanceChance: 0.48,
+    appearanceChance: 0.52,
+    initialFriendship: 30,
+    maxFriendship: 80,
+    typeMatchBonus: 1.08,
     effect: {
       type: 'stat_boost',
-      stats: { HP: 0, Attack: 0, Defense: 0, Instinct: 30, Speed: 15 },
+      stats: { HP: 10, Attack: 0, Defense: 10, Instinct: 25, Speed: 5 },
       description: 'The Fuchsia Gym Leader masters poison tactics'
     },
     moveHints: ['SludgeBomb', 'Toxic', 'WillOWisp', 'Explosion']
-  },
-  WhitneyMiltank: {
-    name: 'Whitney & Miltank',
-    trainer: 'Whitney',
-    pokemon: 'Miltank',
-    rarity: 'Common',
-    supportType: 'HP',
-    appearanceChance: 0.52,
-    effect: {
-      type: 'stat_boost',
-      stats: { HP: 20, Attack: 0, Defense: 15, Instinct: 0, Speed: 0 },
-      description: 'The Goldenrod Gym Leader boosts endurance'
-    },
-    moveHints: ['Rollout', 'BodySlam', 'MilkDrink', 'Attract']
-  },
-  MortyGengar: {
-    name: 'Morty & Gengar',
-    trainer: 'Morty',
-    pokemon: 'Gengar',
-    rarity: 'Rare',
-    supportType: 'Instinct',
-    appearanceChance: 0.50,
-    effect: {
-      type: 'stat_boost',
-      stats: { HP: 0, Attack: 0, Defense: 0, Instinct: 30, Speed: 20 },
-      description: 'The Ecruteak Gym Leader channels ghostly power'
-    },
-    moveHints: ['ShadowBall', 'SludgeBomb', 'Hypnosis', 'DreamEater', 'Hex']
-  },
-  ChuckPoliwrath: {
-    name: 'Chuck & Poliwrath',
-    trainer: 'Chuck',
-    pokemon: 'Poliwrath',
-    rarity: 'Common',
-    supportType: 'Attack',
-    appearanceChance: 0.52,
-    effect: {
-      type: 'stat_boost',
-      stats: { HP: 15, Attack: 20, Defense: 0, Instinct: 0, Speed: 0 },
-      description: 'The Cianwood Gym Leader builds strength'
-    },
-    moveHints: ['DynamicPunch', 'Waterfall', 'Submission', 'BulkUp']
   },
   JasminSteelix: {
     name: 'Jasmine & Steelix',
@@ -2318,7 +2512,10 @@ const SUPPORT_CARDS = {
     pokemon: 'Steelix',
     rarity: 'Uncommon',
     supportType: 'Defense',
-    appearanceChance: 0.46,
+    appearanceChance: 0.44,
+    initialFriendship: 35,
+    maxFriendship: 80,
+    typeMatchBonus: 1.12,
     effect: {
       type: 'stat_boost',
       stats: { HP: 20, Attack: 0, Defense: 30, Instinct: 0, Speed: 0 },
@@ -2326,118 +2523,22 @@ const SUPPORT_CARDS = {
     },
     moveHints: ['IronTail', 'Earthquake', 'Screech', 'IronDefense']
   },
-  PryceDelibird: {
-    name: 'Pryce & Delibird',
-    trainer: 'Pryce',
-    pokemon: 'Delibird',
-    rarity: 'Common',
-    supportType: 'HP',
-    appearanceChance: 0.55,
-    effect: {
-      type: 'energy_boost',
-      energyBonus: 15,
-      restBonus: 10,
-      description: 'The Mahogany Gym Leader aids recovery'
-    },
-    moveHints: ['Present', 'IceBeam', 'IcePunch', 'Blizzard']
-  },
-  WallaceMillotic: {
-    name: 'Wallace & Milotic',
-    trainer: 'Wallace',
-    pokemon: 'Milotic',
-    rarity: 'Rare',
-    supportType: 'Defense',
-    appearanceChance: 0.47,
-    effect: {
-      type: 'stat_boost',
-      stats: { HP: 25, Attack: 0, Defense: 30, Instinct: 0, Speed: 0 },
-      description: 'The Hoenn Champion exudes elegance'
-    },
-    moveHints: ['Surf', 'IceBeam', 'Recover', 'DragonTail', 'AquaRing']
-  },
   WinonaSkarmory: {
     name: 'Winona & Skarmory',
     trainer: 'Winona',
     pokemon: 'Skarmory',
     rarity: 'Uncommon',
     supportType: 'Speed',
-    appearanceChance: 0.46,
+    appearanceChance: 0.42,
+    initialFriendship: 28,
+    maxFriendship: 80,
+    typeMatchBonus: 1.15,
     effect: {
       type: 'stat_boost',
-      stats: { HP: 0, Attack: 0, Defense: 25, Instinct: 0, Speed: 25 },
+      stats: { HP: 0, Attack: 0, Defense: 20, Instinct: 5, Speed: 25 },
       description: 'The Fortree Gym Leader soars with grace'
     },
     moveHints: ['SteelWing', 'BraveBird', 'Spikes', 'Roost']
-  },
-  WattsonMagneton: {
-    name: 'Wattson & Magneton',
-    trainer: 'Wattson',
-    pokemon: 'Magneton',
-    rarity: 'Common',
-    supportType: 'Instinct',
-    appearanceChance: 0.54,
-    effect: {
-      type: 'stat_boost',
-      stats: { HP: 0, Attack: 0, Defense: 0, Instinct: 20, Speed: 12 },
-      description: 'The Mauville Gym Leader electrifies training'
-    },
-    moveHints: ['Thunderbolt', 'ThunderWave', 'FlashCannon', 'VoltSwitch']
-  },
-  FlanneryCamerupt: {
-    name: 'Flannery & Camerupt',
-    trainer: 'Flannery',
-    pokemon: 'Camerupt',
-    rarity: 'Common',
-    supportType: 'Attack',
-    appearanceChance: 0.52,
-    effect: {
-      type: 'stat_boost',
-      stats: { HP: 15, Attack: 20, Defense: 0, Instinct: 0, Speed: 0 },
-      description: 'The Lavaridge Gym Leader unleashes volcanic fury'
-    },
-    moveHints: ['Eruption', 'EarthPower', 'LavaPlume', 'Earthquake']
-  },
-  CynthiaLucario: {
-    name: 'Cynthia & Lucario',
-    trainer: 'Cynthia',
-    pokemon: 'Lucario',
-    rarity: 'Rare',
-    supportType: 'Attack',
-    appearanceChance: 0.42,
-    effect: {
-      type: 'training_boost',
-      trainingMultiplier: 1.25,
-      failureReduction: 0.15,
-      description: 'The Champion refines battle technique'
-    },
-    moveHints: ['AuraSphere', 'CloseCombat', 'ExtremeSpeed', 'BulletPunch', 'SwordsDance']
-  },
-  NReshiram: {
-    name: 'N & Reshiram',
-    trainer: 'N',
-    pokemon: 'Reshiram',
-    rarity: 'Legendary',
-    supportType: 'Attack',
-    effect: {
-      type: 'stat_boost',
-      stats: { HP: 0, Attack: 45, Defense: 0, Instinct: 35, Speed: 0 },
-      description: 'The King of Team Plasma wields truth'
-    },
-    moveHints: ['BlueFlare', 'FusionFlare', 'DragonPulse', 'DracoMeteor']
-  },
-  IrisHaxorus: {
-    name: 'Iris & Haxorus',
-    trainer: 'Iris',
-    pokemon: 'Haxorus',
-    rarity: 'Rare',
-    supportType: 'Attack',
-    appearanceChance: 0.44,
-    effect: {
-      type: 'stat_boost',
-      stats: { HP: 0, Attack: 40, Defense: 0, Instinct: 0, Speed: 25 },
-      description: 'The Unova Champion commands dragons'
-    },
-    moveHints: ['DragonDance', 'Outrage', 'Earthquake', 'DragonClaw', 'SwordsDance']
   },
   ElitesFourKaren: {
     name: 'Karen & Umbreon',
@@ -2445,10 +2546,13 @@ const SUPPORT_CARDS = {
     pokemon: 'Umbreon',
     rarity: 'Uncommon',
     supportType: 'Defense',
-    appearanceChance: 0.44,
+    appearanceChance: 0.40,
+    initialFriendship: 25,
+    maxFriendship: 80,
+    typeMatchBonus: 1.18,
     effect: {
       type: 'stat_boost',
-      stats: { HP: 0, Attack: 0, Defense: 30, Instinct: 25, Speed: 0 },
+      stats: { HP: 10, Attack: 0, Defense: 25, Instinct: 15, Speed: 0 },
       description: 'The Elite Four member embraces darkness'
     },
     moveHints: ['FoulPlay', 'Moonlight', 'Toxic', 'Curse']
@@ -2459,96 +2563,107 @@ const SUPPORT_CARDS = {
     pokemon: 'Gengar',
     rarity: 'Uncommon',
     supportType: 'Instinct',
-    appearanceChance: 0.46,
+    appearanceChance: 0.43,
+    initialFriendship: 27,
+    maxFriendship: 80,
+    typeMatchBonus: 1.14,
     effect: {
       type: 'stat_boost',
-      stats: { HP: 0, Attack: 0, Defense: 0, Instinct: 30, Speed: 20 },
+      stats: { HP: 0, Attack: 5, Defense: 0, Instinct: 30, Speed: 15 },
       description: 'The Elite Four member masters ghosts'
     },
     moveHints: ['ShadowBall', 'SludgeWave', 'DestinyBond', 'Hypnosis']
   },
-  BluePidgeot: {
-    name: 'Blue & Pidgeot',
-    trainer: 'Blue',
-    pokemon: 'Pidgeot',
-    rarity: 'Rare',
-    supportType: 'Speed',
-    appearanceChance: 0.48,
-    effect: {
-      type: 'stat_boost',
-      stats: { HP: 0, Attack: 25, Defense: 0, Instinct: 0, Speed: 30 },
-      description: 'The rival trainer pushes limits'
-    },
-    moveHints: ['Hurricane', 'BraveBird', 'AirSlash', 'Roost', 'UTurn']
-  },
-  GiovanniPersian: {
-    name: 'Giovanni & Persian',
-    trainer: 'Giovanni',
-    pokemon: 'Persian',
-    rarity: 'Rare',
-    supportType: 'Attack',
-    appearanceChance: 0.46,
-    effect: {
-      type: 'stat_boost',
-      stats: { HP: 0, Attack: 35, Defense: 0, Instinct: 25, Speed: 0 },
-      description: 'The Rocket Boss commands ruthlessly'
-    },
-    moveHints: ['Slash', 'PowerGem', 'FeintAttack', 'NastyPlot']
-  },
-  ProfessorOakMew: {
-    name: 'Professor Oak & Mew',
-    trainer: 'Professor Oak',
-    pokemon: 'Mew',
-    rarity: 'Legendary',
-    supportType: 'Instinct',
-    effect: {
-      type: 'experience_boost',
-      skillPointMultiplier: 1.5,
-      friendshipBonus: 20,
-      description: 'The Professor grants knowledge and wisdom'
-    },
-    moveHints: ['Psychic', 'AuraSphere', 'Transform', 'Metronome', 'AncientPower']
-  },
-  DianthaDiancie: {
-    name: 'Diantha & Diancie',
-    trainer: 'Diantha',
-    pokemon: 'Diancie',
-    rarity: 'Legendary',
-    supportType: 'Defense',
-    effect: {
-      type: 'stat_boost',
-      stats: { HP: 30, Attack: 0, Defense: 50, Instinct: 0, Speed: 0 },
-      description: 'The Kalos Champion radiates brilliance'
-    },
-    moveHints: ['DiamondStorm', 'Moonblast', 'DazzlingGleam', 'RockPolish']
-  },
-  MaxieGroudon: {
-    name: 'Maxie & Groudon',
-    trainer: 'Maxie',
-    pokemon: 'Groudon',
-    rarity: 'Rare',
-    supportType: 'Attack',
-    appearanceChance: 0.44,
-    effect: {
-      type: 'stat_boost',
-      stats: { HP: 25, Attack: 35, Defense: 0, Instinct: 0, Speed: 0 },
-      description: 'The Magma Leader harnesses earth power'
-    },
-    moveHints: ['Earthquake', 'PrecipiceBlades', 'FirePunch', 'BulkUp', 'LavaPlume']
-  },
-  ArchieKyogre: {
-    name: 'Archie & Kyogre',
-    trainer: 'Archie',
-    pokemon: 'Kyogre',
-    rarity: 'Rare',
+
+  // ============================================================================
+  // COMMON TIER - Base level
+  // Base power ~50, appearance 48-60%, initialFriendship 20-35, maxFriendship 70
+  // ============================================================================
+  WhitneyMiltank: {
+    name: 'Whitney & Miltank',
+    trainer: 'Whitney',
+    pokemon: 'Miltank',
+    rarity: 'Common',
     supportType: 'HP',
-    appearanceChance: 0.45,
+    appearanceChance: 0.55,
+    initialFriendship: 35,
+    maxFriendship: 70,
+    typeMatchBonus: 1.05,
     effect: {
       type: 'stat_boost',
-      stats: { HP: 35, Attack: 0, Defense: 25, Instinct: 0, Speed: 0 },
-      description: 'The Aqua Leader commands the seas'
+      stats: { HP: 25, Attack: 0, Defense: 10, Instinct: 0, Speed: 5 },
+      description: 'The Goldenrod Gym Leader boosts endurance'
     },
-    moveHints: ['OriginPulse', 'HydroPump', 'IceBeam', 'Thunder', 'AquaRing']
+    moveHints: ['Rollout', 'BodySlam', 'MilkDrink', 'Attract']
+  },
+  ChuckPoliwrath: {
+    name: 'Chuck & Poliwrath',
+    trainer: 'Chuck',
+    pokemon: 'Poliwrath',
+    rarity: 'Common',
+    supportType: 'Attack',
+    appearanceChance: 0.52,
+    initialFriendship: 30,
+    maxFriendship: 70,
+    typeMatchBonus: 1.08,
+    effect: {
+      type: 'stat_boost',
+      stats: { HP: 10, Attack: 20, Defense: 5, Instinct: 0, Speed: 0 },
+      description: 'The Cianwood Gym Leader builds strength'
+    },
+    moveHints: ['DynamicPunch', 'Waterfall', 'Submission', 'BulkUp']
+  },
+  PryceDelibird: {
+    name: 'Pryce & Delibird',
+    trainer: 'Pryce',
+    pokemon: 'Delibird',
+    rarity: 'Common',
+    supportType: 'HP',
+    appearanceChance: 0.60,
+    initialFriendship: 32,
+    maxFriendship: 70,
+    typeMatchBonus: 1.02,
+    effect: {
+      type: 'energy_boost',
+      energyBonus: 12,
+      restBonus: 8,
+      description: 'The Mahogany Gym Leader aids recovery'
+    },
+    moveHints: ['Present', 'IceBeam', 'IcePunch', 'Blizzard']
+  },
+  WattsonMagneton: {
+    name: 'Wattson & Magneton',
+    trainer: 'Wattson',
+    pokemon: 'Magneton',
+    rarity: 'Common',
+    supportType: 'Instinct',
+    appearanceChance: 0.56,
+    initialFriendship: 28,
+    maxFriendship: 70,
+    typeMatchBonus: 1.06,
+    effect: {
+      type: 'stat_boost',
+      stats: { HP: 0, Attack: 5, Defense: 5, Instinct: 18, Speed: 8 },
+      description: 'The Mauville Gym Leader electrifies training'
+    },
+    moveHints: ['Thunderbolt', 'ThunderWave', 'FlashCannon', 'VoltSwitch']
+  },
+  FlanneryCamerupt: {
+    name: 'Flannery & Camerupt',
+    trainer: 'Flannery',
+    pokemon: 'Camerupt',
+    rarity: 'Common',
+    supportType: 'Attack',
+    appearanceChance: 0.48,
+    initialFriendship: 20,
+    maxFriendship: 70,
+    typeMatchBonus: 1.12,
+    effect: {
+      type: 'stat_boost',
+      stats: { HP: 10, Attack: 22, Defense: 0, Instinct: 5, Speed: 0 },
+      description: 'The Lavaridge Gym Leader unleashes volcanic fury'
+    },
+    moveHints: ['Eruption', 'EarthPower', 'LavaPlume', 'Earthquake']
   }
 };
 

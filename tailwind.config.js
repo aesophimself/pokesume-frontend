@@ -5,21 +5,29 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Pokemon TCG Pocket Style Colors
-        'pocket-bg': '#E8F4FC',
-        'pocket-bg-alt': '#D4E9F7',
+        // Clean Pokedex Style Colors
+        'pocket-bg': '#F5F6FA',
+        'pocket-bg-alt': '#EBEDF3',
         'pocket-card': '#FFFFFF',
         'pocket-blue': '#4A9FD4',
         'pocket-blue-dark': '#3182A8',
         'pocket-yellow': '#FFD93D',
         'pocket-yellow-dark': '#E6B800',
-        'pocket-red': '#E85D5D',
+        'pocket-red': '#E3350D',
         'pocket-green': '#5DBE8A',
         'pocket-purple': '#9B7ED9',
         'pocket-orange': '#F5A623',
         'pocket-gray': '#8E9AAF',
         'pocket-text': '#2D3748',
         'pocket-text-light': '#718096',
+
+        // Stat colors (matching the screenshot)
+        'stat-hp': '#FF5959',
+        'stat-atk': '#F5AC78',
+        'stat-def': '#FAE078',
+        'stat-ins': '#9DB7F5',
+        'stat-spe': '#FA92B2',
+        'stat-total': '#7AC7C4',
 
         // Pokemon Brand Colors
         'poke-red': '#E3350D',
@@ -51,15 +59,21 @@ module.exports = {
         'pokemon': ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
       },
       boxShadow: {
-        // Neumorphic shadows for Pokemon Pocket style
+        // Clean card shadows (Pokedex style)
+        'card': '0 2px 8px rgba(0, 0, 0, 0.08)',
+        'card-hover': '0 8px 24px rgba(0, 0, 0, 0.12)',
+        'card-lg': '0 4px 16px rgba(0, 0, 0, 0.1)',
+        // Legacy neumorphic (keeping for compatibility)
         'neu': '6px 6px 12px rgba(163, 177, 198, 0.5), -6px -6px 12px rgba(255, 255, 255, 0.9)',
         'neu-sm': '3px 3px 6px rgba(163, 177, 198, 0.4), -3px -3px 6px rgba(255, 255, 255, 0.8)',
         'neu-pressed': 'inset 4px 4px 8px rgba(163, 177, 198, 0.5), inset -4px -4px 8px rgba(255, 255, 255, 0.9)',
-        'neu-card': '0 8px 32px rgba(74, 159, 212, 0.15), 0 2px 8px rgba(0, 0, 0, 0.05)',
+        'neu-card': '0 2px 8px rgba(0, 0, 0, 0.08)',
         'neu-button': '0 4px 14px rgba(74, 159, 212, 0.25), 0 2px 4px rgba(0, 0, 0, 0.08)',
         'neu-button-hover': '0 6px 20px rgba(74, 159, 212, 0.35), 0 3px 6px rgba(0, 0, 0, 0.1)',
         'soft': '0 2px 15px rgba(0, 0, 0, 0.08)',
         'soft-lg': '0 4px 25px rgba(0, 0, 0, 0.1)',
+        // Pill/badge shadows
+        'pill': '0 1px 3px rgba(0, 0, 0, 0.1)',
       },
       animation: {
         'bounce-soft': 'bounceSoft 0.3s ease-out',

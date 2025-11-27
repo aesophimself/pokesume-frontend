@@ -14,7 +14,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(180deg, #E8F4FC 0%, #D4E9F7 100%);
+  background: #F5F6FA;
   min-height: 100vh;
 }
 
@@ -224,4 +224,103 @@ body {
   );
   background-size: 200% 200%;
   animation: rainbow-sheen 3s ease infinite;
+}
+
+/* Pokedex Style Components */
+@layer components {
+  /* Type pill badge (like in the Pokedex screenshot) */
+  .type-pill {
+    @apply inline-flex items-center justify-center px-3 py-1 rounded-full;
+    @apply text-xs font-bold text-white uppercase tracking-wide;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Stat circle (compact stat display) */
+  .stat-circle {
+    @apply w-10 h-10 rounded-full flex flex-col items-center justify-center;
+    @apply text-white font-bold text-xs;
+  }
+
+  .stat-circle-label {
+    @apply text-[8px] uppercase opacity-90 leading-none;
+  }
+
+  .stat-circle-value {
+    @apply text-sm font-bold leading-none;
+  }
+
+  /* Pokemon card (clean white card with subtle shadow) */
+  .pokemon-card {
+    @apply bg-white rounded-2xl p-4 flex flex-col items-center;
+    @apply transition-all duration-200 cursor-pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .pokemon-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+  }
+
+  /* Filter pill button */
+  .filter-pill {
+    @apply inline-flex items-center gap-1.5 px-4 py-2 rounded-full;
+    @apply bg-white text-gray-600 text-sm font-medium;
+    @apply transition-all duration-200 cursor-pointer;
+    @apply border border-gray-200;
+  }
+
+  .filter-pill:hover {
+    @apply border-gray-300 bg-gray-50;
+  }
+
+  .filter-pill.active {
+    @apply bg-pocket-red text-white border-pocket-red;
+  }
+
+  /* Search input (clean rounded style) */
+  .search-input {
+    @apply w-full px-4 py-3 rounded-full bg-white;
+    @apply text-gray-700 placeholder-gray-400;
+    @apply border border-gray-200 outline-none;
+    @apply transition-all duration-200;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  .search-input:focus {
+    @apply border-pocket-red;
+    box-shadow: 0 2px 12px rgba(227, 53, 13, 0.15);
+  }
+
+  /* Detail panel (floating sidebar) */
+  .detail-panel {
+    @apply bg-white rounded-3xl p-6;
+    @apply flex flex-col items-center;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Navigation tab */
+  .nav-tab {
+    @apply flex items-center gap-2 px-4 py-2 text-gray-500 font-medium;
+    @apply transition-all duration-200 cursor-pointer;
+    @apply border-b-2 border-transparent;
+  }
+
+  .nav-tab:hover {
+    @apply text-gray-700;
+  }
+
+  .nav-tab.active {
+    @apply text-pocket-red border-pocket-red;
+  }
+
+  /* Ability pill */
+  .ability-pill {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg;
+    @apply bg-gray-100 text-gray-700 text-sm font-medium;
+    @apply border border-gray-200;
+  }
+
+  .ability-pill.selected {
+    @apply bg-blue-50 text-blue-700 border-blue-300;
+  }
 }

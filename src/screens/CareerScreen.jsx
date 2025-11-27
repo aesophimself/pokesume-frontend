@@ -47,6 +47,32 @@ import { TypeIcon, TypeBadge, TYPE_COLORS } from '../components/TypeIcon';
 // ============================================================================
 
 /**
+ * Calculate difficulty multiplier for gym leaders based on turn
+ * Matches backend: 1.0x until turn 12, then scales to 3.5x at turn 60
+ */
+const calculateGymLeaderMultiplier = (turn) => {
+  if (turn < 12) {
+    return 1.0;
+  }
+  const growthPerTurn = 2.5 / 48; // ~0.052 per turn
+  return 1.0 + ((turn - 12) * growthPerTurn);
+};
+
+/**
+ * Scale stats based on turn for display purposes
+ */
+const getScaledStats = (baseStats, turn) => {
+  const multiplier = calculateGymLeaderMultiplier(turn);
+  return {
+    HP: Math.floor(baseStats.HP * multiplier),
+    Attack: Math.floor(baseStats.Attack * multiplier),
+    Defense: Math.floor(baseStats.Defense * multiplier),
+    Instinct: Math.floor(baseStats.Instinct * multiplier),
+    Speed: Math.floor(baseStats.Speed * multiplier)
+  };
+};
+
+/**
  * Check if current turn triggers inspiration and apply bonuses
  */
 const checkAndApplyInspiration = (turn, selectedInspirations, currentStats, currentAptitudes) => {
@@ -492,9 +518,33 @@ const CareerScreen = () => {
         return;
       }
 
-      // Server has already updated careerData with outcome applied
-      // The outcome returned contains presentation info (flavor text, etc.)
-      // No client-side processing needed - server handles all stat changes
+      // If outcome contains a moveHint, ensure it's added to learnableAbilities
+      // (Server should handle this, but we ensure it client-side as well)
+      if (outcome.moveHint) {
+        setCareerData(prev => {
+          // Check if move is already in learnableAbilities or known
+          const isAlreadyLearnable = prev.pokemon.learnableAbilities?.includes(outcome.moveHint);
+          const isAlreadyKnown = prev.knownAbilities?.includes(outcome.moveHint);
+
+          if (isAlreadyLearnable || isAlreadyKnown) {
+            return prev; // No update needed
+          }
+
+          // Add moveHint to learnableAbilities
+          return {
+            ...prev,
+            pokemon: {
+              ...prev.pokemon,
+              learnableAbilities: [...(prev.pokemon.learnableAbilities || []), outcome.moveHint]
+            },
+            // Also update moveHints count for discount calculation
+            moveHints: {
+              ...prev.moveHints,
+              [outcome.moveHint]: (prev.moveHints?.[outcome.moveHint] || 0) + 1
+            }
+          };
+        });
+      }
     } finally {
       setIsProcessingEvent(false);
     }
@@ -503,15 +553,16 @@ const CareerScreen = () => {
   /**
    * Start battle with opponent
    */
-  const startBattle = async (opponent, isGymLeader = false) => {
+  const startBattle = async (opponent, isGymLeader = false, isEliteFour = false) => {
     // Prevent wild battles at 0 energy
-    if (!isGymLeader && careerData.energy <= 0) {
+    if (!isGymLeader && !isEliteFour && careerData.energy <= 0) {
       return; // Don't start battle
     }
 
     console.log('[startBattle] Processing server-side battle:', {
       opponent: opponent.name,
-      isGymLeader
+      isGymLeader,
+      isEliteFour
     });
 
     // Call server to process battle
@@ -591,6 +642,8 @@ const CareerScreen = () => {
       log: battleResult.battleLog || [], // Use server's battle log
       displayLog: [], // Initialize empty display log - will be populated tick-by-tick
       isGymLeader,
+      isEliteFour,
+      eliteFourIndex: isEliteFour ? (careerData.turn - (GAME_CONFIG.CAREER.ELITE_FOUR_START_TURN || 60)) : null,
       winner: battleResult.winner, // 'player' or 'opponent'
       rewards: battleResult.rewards, // { statGain, skillPoints, energyChange }
       serverResult: true // Flag to indicate this came from server
@@ -1238,7 +1291,7 @@ const CareerScreen = () => {
                         strategy: pokemon.strategy,
                         strategyGrade: pokemon.strategyGrade
                       };
-                      startBattle(eliteOpponent, true);
+                      startBattle(eliteOpponent, true, true); // isGymLeader=true, isEliteFour=true
                     }}
                     className="bg-yellow-400 text-purple-900 px-6 py-3 rounded-lg font-bold hover:bg-yellow-300 transition text-lg"
                   >
@@ -1626,28 +1679,33 @@ const CareerScreen = () => {
                       <p className="text-xs text-gray-500 mt-1">Strategy: {nextGymLeader.pokemon.strategy} ({nextGymLeader.pokemon.strategyGrade})</p>
                     </div>
                   </div>
-                  <div className="grid grid-cols-6 gap-2 text-sm mb-3">
-                    <div className="bg-gray-100 rounded p-2">
-                      <div className="text-xs text-gray-500">HP</div>
-                      <div className="font-bold">{nextGymLeader.pokemon.baseStats.HP}</div>
-                    </div>
-                    <div className="bg-gray-100 rounded p-2">
-                      <div className="text-xs text-gray-500">ATK</div>
-                      <div className="font-bold">{nextGymLeader.pokemon.baseStats.Attack}</div>
-                    </div>
-                    <div className="bg-gray-100 rounded p-2">
-                      <div className="text-xs text-gray-500">DEF</div>
-                      <div className="font-bold">{nextGymLeader.pokemon.baseStats.Defense}</div>
-                    </div>
-                    <div className="bg-gray-100 rounded p-2">
-                      <div className="text-xs text-gray-500">INS</div>
-                      <div className="font-bold">{nextGymLeader.pokemon.baseStats.Instinct}</div>
-                    </div>
-                    <div className="bg-gray-100 rounded p-2">
-                      <div className="text-xs text-gray-500">SPE</div>
-                      <div className="font-bold">{nextGymLeader.pokemon.baseStats.Speed}</div>
-                    </div>
-                  </div>
+                  {(() => {
+                    const scaledStats = getScaledStats(nextGymLeader.pokemon.baseStats, nextGymTurn);
+                    return (
+                      <div className="grid grid-cols-6 gap-2 text-sm mb-3">
+                        <div className="bg-gray-100 rounded p-2">
+                          <div className="text-xs text-gray-500">HP</div>
+                          <div className="font-bold">{scaledStats.HP}</div>
+                        </div>
+                        <div className="bg-gray-100 rounded p-2">
+                          <div className="text-xs text-gray-500">ATK</div>
+                          <div className="font-bold">{scaledStats.Attack}</div>
+                        </div>
+                        <div className="bg-gray-100 rounded p-2">
+                          <div className="text-xs text-gray-500">DEF</div>
+                          <div className="font-bold">{scaledStats.Defense}</div>
+                        </div>
+                        <div className="bg-gray-100 rounded p-2">
+                          <div className="text-xs text-gray-500">INS</div>
+                          <div className="font-bold">{scaledStats.Instinct}</div>
+                        </div>
+                        <div className="bg-gray-100 rounded p-2">
+                          <div className="text-xs text-gray-500">SPE</div>
+                          <div className="font-bold">{scaledStats.Speed}</div>
+                        </div>
+                      </div>
+                    );
+                  })()}
                   <div className="mb-2">
                     <div className="font-bold text-sm mb-2">Abilities:</div>
                     <div className="grid grid-cols-2 gap-2">

@@ -1,7 +1,7 @@
 /**
  * MenuScreen Component
  *
- * Main menu with Pokemon TCG Pocket style UI.
+ * Main menu with clean Pokedex-style UI.
  * Features polished cards, smooth animations, and clean iconography.
  */
 
@@ -17,7 +17,8 @@ import {
   Trophy,
   Medal,
   CircleDot,
-  Gift
+  Gift,
+  Star
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useGame } from '../contexts/GameContext';
@@ -25,8 +26,6 @@ import { useInventory } from '../contexts/InventoryContext';
 import { generatePokemonSprite } from '../utils/gameUtils';
 import { TypeBadge, TYPE_COLORS } from '../components/TypeIcon';
 import { POKEMON } from '../shared/gameData';
-import { Button } from '../components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 import { MenuTile } from '../components/ui/menu-tile';
 
 // Animation variants
@@ -35,13 +34,13 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.05
+      staggerChildren: 0.06
     }
   }
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 15 },
   visible: { opacity: 1, y: 0 }
 };
 
@@ -51,14 +50,14 @@ const MENU_ITEMS = [
     key: 'career',
     label: 'New Career',
     icon: Swords,
-    color: '#9B7ED9',
+    color: '#E3350D',
     screen: 'pokemonSelect'
   },
   {
     key: 'pokemon',
     label: 'My Pokemon',
     icon: Box,
-    color: '#5DBE8A',
+    color: '#78C850',
     screen: 'pokemonInventory',
     badgeKey: 'pokemonInventory'
   },
@@ -66,7 +65,7 @@ const MENU_ITEMS = [
     key: 'supports',
     label: 'Supports',
     icon: Users,
-    color: '#4A9FD4',
+    color: '#6890F0',
     screen: 'supportInventory',
     badgeKey: 'supportInventory'
   },
@@ -74,7 +73,7 @@ const MENU_ITEMS = [
     key: 'hallOfFame',
     label: 'Hall of Fame',
     icon: Trophy,
-    color: '#F5A623',
+    color: '#F8D030',
     screen: 'trainedPokemon',
     badgeKey: 'trainedPokemon'
   },
@@ -82,21 +81,21 @@ const MENU_ITEMS = [
     key: 'pokemonGacha',
     label: 'Pokemon Gacha',
     icon: CircleDot,
-    color: '#9B7ED9',
+    color: '#A040A0',
     screen: 'gacha'
   },
   {
     key: 'supportGacha',
     label: 'Support Gacha',
     icon: Gift,
-    color: '#4A9FD4',
+    color: '#F85888',
     screen: 'supportGacha'
   },
   {
     key: 'tournaments',
     label: 'Tournaments',
     icon: Medal,
-    color: '#E85D5D',
+    color: '#7038F8',
     screen: 'tournaments'
   }
 ];
@@ -110,8 +109,7 @@ const StarterCard = ({ pokemon, name, onSelect }) => {
       whileHover={{ scale: 1.03, y: -4 }}
       whileTap={{ scale: 0.98 }}
       onClick={onSelect}
-      className="bg-white rounded-2xl p-4 shadow-neu-card hover:shadow-[0_12px_40px_rgba(74,159,212,0.2)] transition-shadow duration-300 flex flex-col items-center"
-      style={{ borderTop: `4px solid ${typeColor}` }}
+      className="pokemon-card"
     >
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
@@ -121,8 +119,13 @@ const StarterCard = ({ pokemon, name, onSelect }) => {
       >
         {generatePokemonSprite(pokemon.primaryType, name)}
       </motion.div>
-      <h3 className="text-pocket-text font-bold text-lg mb-2">{name}</h3>
-      <TypeBadge type={pokemon.primaryType} size={14} />
+      <h3 className="text-pocket-text font-bold text-base mb-2">{name}</h3>
+      <span
+        className="type-pill"
+        style={{ backgroundColor: typeColor }}
+      >
+        {pokemon.primaryType}
+      </span>
     </motion.button>
   );
 };
@@ -149,25 +152,24 @@ const MenuScreen = () => {
   // Starter selection (if user has no pokemon)
   if (pokemonInventory.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-pocket-bg to-pocket-bg-alt p-4">
+      <div className="min-h-screen bg-pocket-bg p-4">
         <motion.div
           initial="hidden"
           animate="visible"
           variants={containerVariants}
-          className="max-w-lg mx-auto"
+          className="max-w-md mx-auto pt-8"
         >
           {/* Header */}
-          <motion.div variants={itemVariants}>
-            <Card className="mb-6 text-center">
-              <CardHeader>
-                <CardTitle className="text-2xl text-pocket-blue">
-                  Choose Your Starter!
-                </CardTitle>
-                <CardDescription>
-                  Select your first Pokemon partner to begin your journey
-                </CardDescription>
-              </CardHeader>
-            </Card>
+          <motion.div variants={itemVariants} className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-pocket-red/10 mb-4">
+              <Star size={32} className="text-pocket-red" />
+            </div>
+            <h1 className="text-2xl font-bold text-pocket-text mb-2">
+              Choose Your Starter!
+            </h1>
+            <p className="text-pocket-text-light">
+              Select your first Pokemon partner to begin your journey
+            </p>
           </motion.div>
 
           {/* Starter Grid */}
@@ -175,7 +177,7 @@ const MenuScreen = () => {
             variants={containerVariants}
             className="grid grid-cols-3 gap-3"
           >
-            {['Charmander', 'Squirtle', 'Bulbasaur'].map((starter, index) => {
+            {['Charmander', 'Squirtle', 'Bulbasaur'].map((starter) => {
               const pokemon = POKEMON[starter];
               return (
                 <motion.div key={starter} variants={itemVariants}>
@@ -199,7 +201,7 @@ const MenuScreen = () => {
           {/* Version */}
           <motion.p
             variants={itemVariants}
-            className="text-center text-pocket-text-light text-xs mt-6"
+            className="text-center text-pocket-text-light text-xs mt-8"
           >
             v4.0.0
           </motion.p>
@@ -210,41 +212,47 @@ const MenuScreen = () => {
 
   // Main menu
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pocket-bg to-pocket-bg-alt">
+    <div className="min-h-screen bg-pocket-bg">
       {/* Header Bar */}
       <motion.header
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-pocket-bg-alt px-4 py-3"
+        className="sticky top-0 z-10 bg-white shadow-card"
       >
-        <div className="max-w-lg mx-auto flex items-center justify-between">
+        <div className="max-w-lg mx-auto flex items-center justify-between px-4 py-3">
+          {/* Logo / Title */}
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-pocket-red flex items-center justify-center">
+              <Star size={16} className="text-white" />
+            </div>
+            <span className="font-bold text-pocket-text">Pokesume</span>
+          </div>
+
           {/* Currency */}
           <motion.div
             whileHover={{ scale: 1.05 }}
-            className="flex items-center gap-2 bg-gradient-to-r from-yellow-50 to-amber-50 px-3 py-1.5 rounded-full border border-yellow-200"
+            className="flex items-center gap-1.5 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200"
           >
-            <Sparkles size={16} className="text-yellow-500" />
+            <Sparkles size={14} className="text-amber-500" />
             <span className="text-pocket-text font-bold text-sm">
               {primos.toLocaleString()}
             </span>
           </motion.div>
 
           {/* User info */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <div className="text-right">
               <p className="text-pocket-text font-semibold text-sm">{user.username}</p>
               <p className="text-pocket-text-light text-xs">
-                Rating: {user.rating || 1000}
+                {user.rating || 1000}
               </p>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
+            <button
               onClick={logout}
-              className="text-pocket-red hover:bg-red-50"
+              className="p-2 text-gray-400 hover:text-pocket-red hover:bg-red-50 rounded-lg transition-colors"
             >
               <LogOut size={18} />
-            </Button>
+            </button>
           </div>
         </div>
       </motion.header>
@@ -256,18 +264,17 @@ const MenuScreen = () => {
         variants={containerVariants}
         className="p-4 pb-8 max-w-lg mx-auto"
       >
-        {/* Title Card */}
-        <motion.div variants={itemVariants}>
-          <Card className="text-center mb-5 overflow-hidden">
-            <div className="bg-gradient-to-r from-pocket-blue/10 via-pocket-purple/10 to-pocket-blue/10 p-4">
-              <h1 className="text-xl font-bold bg-gradient-to-r from-pocket-blue to-pocket-purple bg-clip-text text-transparent">
-                Pokesume Pretty Duel
-              </h1>
-              <p className="text-pocket-text-light text-sm mt-1">
-                Pick a buddy and prove you're the very best!
-              </p>
-            </div>
-          </Card>
+        {/* Welcome Card */}
+        <motion.div
+          variants={itemVariants}
+          className="bg-white rounded-2xl p-5 mb-5 shadow-card"
+        >
+          <h1 className="text-lg font-bold text-pocket-text mb-1">
+            Welcome back, {user.username}!
+          </h1>
+          <p className="text-pocket-text-light text-sm">
+            Pick a buddy and prove you're the very best!
+          </p>
         </motion.div>
 
         {/* Main Menu Grid */}
@@ -297,9 +304,9 @@ const MenuScreen = () => {
               e.stopPropagation();
               setShowResetConfirm(true);
             }}
-            className="w-full flex items-center justify-center gap-1.5 py-2 text-pocket-red/70 hover:text-pocket-red text-xs transition-colors"
+            className="w-full flex items-center justify-center gap-1.5 py-3 text-gray-400 hover:text-pocket-red text-xs transition-colors"
           >
-            <AlertTriangle size={14} />
+            <AlertTriangle size={12} />
             <span>Reset All Data</span>
           </button>
         </motion.div>
@@ -307,7 +314,7 @@ const MenuScreen = () => {
         {/* Version */}
         <motion.p
           variants={itemVariants}
-          className="text-center text-pocket-text-light text-xs mt-3"
+          className="text-center text-pocket-text-light text-[10px] mt-2"
         >
           v4.0.0
         </motion.p>
