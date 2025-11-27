@@ -209,7 +209,7 @@ const BattleScreen = () => {
                   </div>
                 </div>
                 <div className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20">
-                  {generatePokemonSprite(battleState.opponent.primaryType, getBattleDisplayName(battleState.opponent))}
+                  {generatePokemonSprite(battleState.opponent.primaryType, battleState.opponent.name)}
                 </div>
               </div>
               <div className="bg-gray-800 rounded p-2">

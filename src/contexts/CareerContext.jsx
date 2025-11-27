@@ -15,6 +15,7 @@ import {
   apiCompleteCareer,
   apiAbandonCareer,
   apiTrainStat,
+  apiRest,
   apiGenerateTraining,
   apiTriggerEvent,
   apiResolveEvent,
@@ -204,6 +205,28 @@ export const CareerProvider = ({ children }) => {
     }
   };
 
+  // Server-authoritative rest
+  const restOnServer = async () => {
+    if (!authToken) return null;
+
+    setCareerLoading(true);
+    setCareerError(null);
+    try {
+      const result = await apiRest(authToken);
+      if (result && result.success) {
+        setCareerData(result.careerState);
+        return result;
+      }
+      return null;
+    } catch (error) {
+      console.error('Failed to rest:', error);
+      setCareerError(error.message);
+      return null;
+    } finally {
+      setCareerLoading(false);
+    }
+  };
+
   // Server-authoritative training generation
   const generateTraining = async () => {
     if (!authToken) return null;
@@ -321,6 +344,7 @@ export const CareerProvider = ({ children }) => {
 
     // Server-authoritative operations
     trainStat,
+    restOnServer,
     generateTraining,
     triggerEvent,
     resolveEvent,

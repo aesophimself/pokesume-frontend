@@ -203,6 +203,7 @@ const CareerScreen = () => {
     updateCareer,
     processBattle,
     trainStat,
+    restOnServer,
     generateTraining,
     triggerEvent,
     resolveEvent: resolveEventOnServer,
@@ -437,7 +438,7 @@ const CareerScreen = () => {
   };
 
   /**
-   * Perform rest action to restore energy
+   * Perform rest action to restore energy (SERVER-AUTHORITATIVE)
    */
   const performRest = async () => {
     // Prevent double-clicks
@@ -445,61 +446,33 @@ const CareerScreen = () => {
     setIsProcessingAction(true);
 
     try {
-      const roll = Math.random();
-      let energyGain = GAME_CONFIG.REST.ENERGY_GAINS[1];
-      if (roll < GAME_CONFIG.REST.PROBMOVES[0]) energyGain = GAME_CONFIG.REST.ENERGY_GAINS[0];
-      else if (roll > 1 - GAME_CONFIG.REST.PROBMOVES[2]) energyGain = GAME_CONFIG.REST.ENERGY_GAINS[2];
+      // Call server-authoritative rest endpoint
+      const result = await restOnServer();
 
-      const logEntry = {
-        turn: careerData.turn,
-        type: 'rest',
-        energyGain,
-        message: `Rested and recovered ${energyGain} energy.`
-      };
+      if (!result) {
+        console.error('Rest failed - no result from server');
+        return;
+      }
 
-      // Use a promise to ensure state update completes before releasing lock
-      await new Promise(resolve => {
-        setCareerData(prev => {
-          const nextTurn = prev.turn + 1;
+      // Server has already updated careerData through CareerContext
+      // Now handle client-side presentation (modals, animations)
+      const nextTurn = result.careerState.turn;
 
-          // Check for inspiration event and apply before creating updatedData
-          let finalStats = { ...prev.currentStats };
-          let finalAptitudes = { ...prev.pokemon.typeAptitudes };
-          const inspirationResult = checkAndApplyInspiration(nextTurn, selectedInspirations, prev.currentStats, prev.pokemon.typeAptitudes);
-          if (inspirationResult && inspirationResult.results.length > 0) {
-            finalStats = inspirationResult.updatedStats;
-            finalAptitudes = inspirationResult.updatedAptitudes;
+      // Check for inspiration event
+      const inspirationResult = checkAndApplyInspiration(
+        nextTurn,
+        selectedInspirations,
+        result.careerState.currentStats,
+        result.careerState.pokemon.typeAptitudes
+      );
 
-            setTimeout(() => {
-              setInspirationModal(inspirationResult);
-            }, 0);
-          }
+      if (inspirationResult && inspirationResult.results.length > 0) {
+        setInspirationModal(inspirationResult);
+      }
 
-          const currentEnergy = prev.energy ?? GAME_CONFIG.CAREER.STARTING_ENERGY;
-          const newEnergy = Math.min(GAME_CONFIG.CAREER.MAX_ENERGY, currentEnergy + energyGain);
-
-          console.log('[performRest] Current energy:', currentEnergy, 'Energy gain:', energyGain, 'New energy:', newEnergy);
-
-          const updatedData = {
-            ...prev,
-            currentStats: finalStats,
-            energy: newEnergy,
-            pokemon: {
-              ...prev.pokemon,
-              typeAptitudes: finalAptitudes
-            },
-            turn: nextTurn,
-            turnLog: [logEntry, ...prev.turnLog],
-            currentTrainingOptions: null
-          };
-
-          // Resolve after state is computed
-          setTimeout(resolve, 0);
-          return updatedData;
-        });
-      });
+      console.log('[performRest] Energy gain:', result.energyGain, 'New energy:', result.careerState.energy);
     } finally {
-      // Small delay to allow backend sync to complete
+      // Small delay to prevent rapid clicks
       setTimeout(() => setIsProcessingAction(false), 300);
     }
   };

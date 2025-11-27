@@ -786,6 +786,31 @@ export const apiTrainStat = async (stat, authToken) => {
   }
 };
 
+export const apiRest = async (authToken) => {
+  if (!authToken) return null;
+
+  try {
+    const response = await fetch(`${API_URL}/career/rest`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to process rest');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Rest error:', error);
+    return null;
+  }
+};
+
 export const apiGenerateTraining = async (authToken) => {
   if (!authToken) return null;
 

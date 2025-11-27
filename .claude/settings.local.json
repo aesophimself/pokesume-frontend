@@ -4,7 +4,10 @@
       "Bash(dir:*)",
       "Bash(curl:*)",
       "Bash(ren:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(tasklist:*)",
+      "Bash(findstr:*)",
+      "Bash(del \"c:\\pokesume\\pokesume backend\\pokesume-backend\\nul\")"
     ],
     "deny": [],
     "ask": []

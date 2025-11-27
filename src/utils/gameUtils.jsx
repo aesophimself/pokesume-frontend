@@ -330,6 +330,13 @@ export const PokemonSprite = ({ type, pokemonName }) => {
   const [spriteUrl, setSpriteUrl] = React.useState(spriteCache[pokemonName] || null);
 
   React.useEffect(() => {
+    // Guard against undefined pokemonName
+    if (!pokemonName) {
+      console.error('[PokemonSprite] pokemonName is undefined');
+      setSpriteUrl('error');
+      return;
+    }
+
     if (spriteCache[pokemonName]) {
       setSpriteUrl(spriteCache[pokemonName]);
       return;
