@@ -756,6 +756,31 @@ export const apiAbandonCareer = async (authToken) => {
   }
 };
 
+export const apiUsePokeclock = async (authToken) => {
+  if (!authToken) return null;
+
+  try {
+    const response = await fetch(`${API_URL}/career/use-pokeclock`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to use pokeclock');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Use pokeclock error:', error);
+    return null;
+  }
+};
+
 // ============================================================================
 // CAREER API - Server-Authoritative Actions
 // ============================================================================

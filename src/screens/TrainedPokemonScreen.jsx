@@ -159,7 +159,7 @@ const TrainedPokemonScreen = () => {
                     className="px-2 py-1 rounded text-xs font-bold text-white"
                     style={{ backgroundColor: getGradeColor(trained.grade) }}
                   >
-                    {trained.grade}
+                    {trained.grade || '?'}
                   </span>
                 </div>
                 <div className="text-xs text-gray-500 text-center mb-2">
@@ -196,28 +196,30 @@ const TrainedPokemonScreen = () => {
                   <div className="text-xs font-bold text-red-700 text-center">No Inspirations</div>
                 )}
 
-                <div className="grid grid-cols-2 gap-1 text-xs mt-2">
-                  <div className="flex items-center gap-1">
-                    <StatIcon stat="HP" size={10} />
-                    <span>{trained.stats.HP}</span>
+                {trained.stats && (
+                  <div className="grid grid-cols-2 gap-1 text-xs mt-2">
+                    <div className="flex items-center gap-1">
+                      <StatIcon stat="HP" size={10} />
+                      <span>{trained.stats.HP}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <StatIcon stat="Attack" size={10} />
+                      <span>{trained.stats.Attack}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <StatIcon stat="Defense" size={10} />
+                      <span>{trained.stats.Defense}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <StatIcon stat="Instinct" size={10} />
+                      <span>{trained.stats.Instinct}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <StatIcon stat="Speed" size={10} />
+                      <span>{trained.stats.Speed}</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <StatIcon stat="Attack" size={10} />
-                    <span>{trained.stats.Attack}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <StatIcon stat="Defense" size={10} />
-                    <span>{trained.stats.Defense}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <StatIcon stat="Instinct" size={10} />
-                    <span>{trained.stats.Instinct}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <StatIcon stat="Speed" size={10} />
-                    <span>{trained.stats.Speed}</span>
-                  </div>
-                </div>
+                )}
               </div>
             );
           })}

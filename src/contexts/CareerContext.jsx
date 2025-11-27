@@ -14,6 +14,7 @@ import {
   apiProcessBattle,
   apiCompleteCareer,
   apiAbandonCareer,
+  apiUsePokeclock,
   apiTrainStat,
   apiRest,
   apiGenerateTraining,

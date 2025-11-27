@@ -46,6 +46,7 @@ export const getAptitudeColor = (grade) => {
 };
 
 export const getGradeColor = (grade) => {
+  if (!grade) return '#6b7280'; // Default gray for undefined/null
   const baseGrade = grade.replace('+', '');
   const colors = {
     F: '#000000',

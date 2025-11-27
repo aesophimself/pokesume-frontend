@@ -18,25 +18,25 @@ import { useInventory } from '../contexts/InventoryContext';
 import { generatePokemonSprite, getTypeColor } from '../utils/gameUtils';
 import { POKEMON } from '../shared/gameData';
 
-// PokéSprite base URL for items and misc sprites
-const POKESPRITE_BASE = 'https://raw.githubusercontent.com/msikma/pokesprite/master';
+// SVGRepo base for flat vector Pokemon icons
+const SVGREPO_BASE = 'https://www.svgrepo.com/show';
 
-// Pokemon-themed icon mappings using PokéSprite
+// Flat, vector Pokemon-themed icons from SVGRepo
 const MENU_ICONS = {
-  // New Career - VS Recorder (battle item)
-  career: `${POKESPRITE_BASE}/items/key-item/vs-recorder.png`,
-  // My Pokemon - PC Box item
-  pokemon: `${POKESPRITE_BASE}/items/key-item/town-map.png`,
-  // Supports - Old Sea Map (trainer card style)
-  supports: `${POKESPRITE_BASE}/items/key-item/vs-seeker.png`,
-  // Hall of Fame - Champion Ribbon
-  hallOfFame: `${POKESPRITE_BASE}/misc/ribbon/champion-ribbon.png`,
-  // Tournaments - Battle Champion Ribbon
-  tournaments: `${POKESPRITE_BASE}/misc/ribbon/world-champion-ribbon.png`,
-  // Pokemon Gacha - Master Ball
-  pokemonGacha: `${POKESPRITE_BASE}/items/ball/master-ball.png`,
-  // Support Gacha - Premier Ball (gift/special)
-  supportGacha: `${POKESPRITE_BASE}/items/ball/premier-ball.png`,
+  // New Career - Pokemon Go icon (adventure/journey)
+  career: `${SVGREPO_BASE}/504755/pokemon-go.svg`,
+  // My Pokemon - Pokeball (collection)
+  pokemon: `${SVGREPO_BASE}/276264/pokeball-pokemon.svg`,
+  // Supports - Pokemon trainer silhouette
+  supports: `${SVGREPO_BASE}/276268/pokemon-go-pokemon.svg`,
+  // Hall of Fame - Trophy/medal
+  hallOfFame: `${SVGREPO_BASE}/513338/trophy.svg`,
+  // Tournaments - Championship/versus
+  tournaments: `${SVGREPO_BASE}/513124/podium.svg`,
+  // Pokemon Gacha - Pokeball catch
+  pokemonGacha: `${SVGREPO_BASE}/420929/pokeball-pokemon-catch.svg`,
+  // Support Gacha - Pokemon home (gift/storage)
+  supportGacha: `${SVGREPO_BASE}/518752/pokemon-home.svg`,
 };
 
 // Menu tile component with Pokemon sprite icon

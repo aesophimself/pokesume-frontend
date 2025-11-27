@@ -7,7 +7,11 @@
       "Bash(npm run build:*)",
       "Bash(tasklist:*)",
       "Bash(findstr:*)",
-      "Bash(del \"c:\\pokesume\\pokesume backend\\pokesume-backend\\nul\")"
+      "Bash(del \"c:\\pokesume\\pokesume backend\\pokesume-backend\\nul\")",
+      "Bash(netstat:*)",
+      "Bash(taskkill:*)",
+      "Bash(powershell -Command \"Stop-Process -Id 110208 -Force\")",
+      "Bash(powershell -Command \"Get-Process | Where-Object {$_ProcessName -eq ''node''} | Where-Object {$_MainWindowTitle -notlike ''*''} | Select-Object -First 1 | Stop-Process -Force\")"
     ],
     "deny": [],
     "ask": []

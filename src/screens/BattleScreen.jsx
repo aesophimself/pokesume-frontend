@@ -80,10 +80,12 @@ const BattleScreen = () => {
         // Use a pokeclock to retry the battle
         setShowPokeclockModal(true);
 
-        // Decrement pokeclocks locally (server already updated via processBattle)
+        // Decrement pokeclocks and revert turn so player can retry the gym battle
+        // The turn was incremented during battle processing, so we need to go back
         setCareerData(prev => ({
           ...prev,
-          pokeclocks: prev.pokeclocks - 1
+          pokeclocks: prev.pokeclocks - 1,
+          turn: prev.turn - 1  // Revert turn to retry gym battle
         }));
 
         // Hide modal after 2 seconds and return to career
