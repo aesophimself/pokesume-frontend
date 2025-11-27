@@ -12,6 +12,7 @@ import { useGame } from '../contexts/GameContext';
 import { useInventory } from '../contexts/InventoryContext';
 import { getRarityColor } from '../utils/gameUtils';
 import { SUPPORT_CARDS, SUPPORT_GACHA_RARITY } from '../shared/gameData';
+import { getSupportImageFromCardName } from '../constants/trainerImages';
 
 const SupportGachaScreen = () => {
   const { setGameState } = useGame();
@@ -111,6 +112,19 @@ const SupportGachaScreen = () => {
             </div>
             <div className="mb-4">
               <div className="bg-gradient-to-br from-purple-100 to-indigo-100 rounded-lg p-4 border-2" style={{ borderColor: getRarityColor(rollResult.rarity) }}>
+                {(() => {
+                  const trainerImage = getSupportImageFromCardName(SUPPORT_CARDS[rollResult.support].name);
+                  return trainerImage && (
+                    <div className="flex justify-center mb-3">
+                      <img
+                        src={trainerImage}
+                        alt={SUPPORT_CARDS[rollResult.support].trainer}
+                        className="w-24 h-24 sm:w-32 sm:h-32 object-contain rounded-lg border-4 bg-white"
+                        style={{ borderColor: getRarityColor(rollResult.rarity), imageRendering: 'pixelated' }}
+                      />
+                    </div>
+                  );
+                })()}
                 <h3 className="text-xl font-bold mb-2">{SUPPORT_CARDS[rollResult.support].name}</h3>
                 <p className="text-sm text-gray-600 mb-2">
                   <span className="font-bold">{SUPPORT_CARDS[rollResult.support].trainer}</span> & <span className="font-bold">{SUPPORT_CARDS[rollResult.support].pokemon}</span>

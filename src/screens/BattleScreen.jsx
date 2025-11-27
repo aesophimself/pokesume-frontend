@@ -15,6 +15,7 @@ import {
   getPokemonGrade
 } from '../utils/gameUtils';
 import { ICONS } from '../shared/gameData';
+import { getGymLeaderImage } from '../constants/trainerImages';
 
 const BattleScreen = () => {
   const { battleState, battleSpeed, setBattleSpeed } = useGame();
@@ -91,6 +92,21 @@ const BattleScreen = () => {
             </div>
 
             <div className="space-y-3">
+              {battleState.opponent.isGymLeader && (
+                <div className="flex justify-center sm:p-2">
+                  <div className="relative">
+                    <img
+                      src={getGymLeaderImage(battleState.opponent.name)}
+                      alt={`${battleState.opponent.name} - Gym Leader`}
+                      className="w-24 h-24 sm:w-32 sm:h-32 object-contain rounded-lg border-4 border-yellow-400 bg-gray-800 shadow-xl"
+                      style={{ imageRendering: 'pixelated' }}
+                    />
+                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-gray-900 px-3 py-1 rounded-full text-xs font-bold shadow-lg whitespace-nowrap">
+                      Gym Leader
+                    </div>
+                  </div>
+                </div>
+              )}
               <div className="flex items-center gap-2 sm:p-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 justify-end mb-1">

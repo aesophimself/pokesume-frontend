@@ -11,6 +11,7 @@ import React from 'react';
 import { AppProviders } from './contexts/AppProviders';
 import { useGame } from './contexts/GameContext';
 import AuthWrapper from './components/AuthWrapper';
+import BattleController from './components/BattleController';
 
 // Import screens
 import MenuScreen from './screens/MenuScreen';
@@ -139,6 +140,7 @@ const GameRouter = () => {
 const AuthenticatedApp = () => {
   return (
     <div className="w-full min-h-screen">
+      <BattleController />
       <GameRouter />
     </div>
   );

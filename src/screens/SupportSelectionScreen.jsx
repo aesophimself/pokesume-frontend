@@ -15,6 +15,7 @@ import {
   getSupportCardAttributes
 } from '../utils/gameUtils';
 import { SUPPORT_CARDS, ICONS, POKEMON } from '../shared/gameData';
+import { getSupportImageFromCardName } from '../constants/trainerImages';
 
 const SupportSelectionScreen = () => {
   const {
@@ -144,6 +145,7 @@ const SupportSelectionScreen = () => {
               if (!support) return null;
 
               const isSelected = selectedSupports.includes(supportKey);
+              const trainerImage = getSupportImageFromCardName(support.name);
 
               const statBonuses = Object.entries(support.baseStatIncrease)
                 .filter(([stat, value]) => value > 0)
@@ -165,23 +167,35 @@ const SupportSelectionScreen = () => {
                   }`}
                   style={{ borderColor: getRarityColor(support.rarity) }}
                 >
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <span
-                        className="px-2 py-0.5 rounded text-xs font-bold text-white"
-                        style={{ backgroundColor: getRarityColor(support.rarity) }}
-                      >
-                        {support.rarity}
-                      </span>
-                      <h3 className="text-base font-bold text-gray-800 mt-1">{support.name}</h3>
-                    </div>
-                    {isSelected && <span className="text-xl">{ICONS.CHECKMARK}</span>}
-                  </div>
+                  <div className="flex gap-3 mb-2">
+                    {trainerImage && (
+                      <img
+                        src={trainerImage}
+                        alt={support.trainer}
+                        className="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-lg border-2 bg-white flex-shrink-0"
+                        style={{ borderColor: getRarityColor(support.rarity), imageRendering: 'pixelated' }}
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start mb-1">
+                        <div>
+                          <span
+                            className="px-2 py-0.5 rounded text-xs font-bold text-white"
+                            style={{ backgroundColor: getRarityColor(support.rarity) }}
+                          >
+                            {support.rarity}
+                          </span>
+                          <h3 className="text-base font-bold text-gray-800 mt-1">{support.name}</h3>
+                        </div>
+                        {isSelected && <span className="text-xl">{ICONS.CHECKMARK}</span>}
+                      </div>
 
-                  <p className="text-xs text-gray-600 mb-2">
-                    <span className="font-semibold">{support.trainer}</span> &{' '}
-                    <span className="font-semibold">{support.pokemon}</span>
-                  </p>
+                      <p className="text-xs text-gray-600">
+                        <span className="font-semibold">{support.trainer}</span> &{' '}
+                        <span className="font-semibold">{support.pokemon}</span>
+                      </p>
+                    </div>
+                  </div>
 
                   {support.supportType && (
                     <p

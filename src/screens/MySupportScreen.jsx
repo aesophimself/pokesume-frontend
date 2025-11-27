@@ -15,6 +15,7 @@ import {
   getSupportCardAttributes
 } from '../utils/gameUtils';
 import { SUPPORT_CARDS } from '../shared/gameData';
+import { getSupportImageFromCardName } from '../constants/trainerImages';
 
 const MySupportScreen = () => {
   const {
@@ -149,6 +150,7 @@ const MySupportScreen = () => {
           {sortedSupportInventory.map((supportKey, idx) => {
               const support = getSupportCardAttributes(supportKey, SUPPORT_CARDS);
               if (!support) return null;
+              const trainerImage = getSupportImageFromCardName(support.name);
 
               return (
                 <div key={idx} className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-4 border-2 hover:shadow-lg transition" style={{ borderColor: getRarityColor(support.rarity) }}>
@@ -158,10 +160,22 @@ const MySupportScreen = () => {
                     </span>
                     <Users size={20} className="text-purple-600" />
                   </div>
-                  <h3 className="font-bold text-lg mb-1">{support.name}</h3>
-                  <p className="text-sm text-gray-600 mb-1">
-                    <span className="font-semibold">{support.trainer}</span> & <span className="font-semibold">{support.pokemon}</span>
-                  </p>
+                  <div className="flex gap-3 mb-2">
+                    {trainerImage && (
+                      <img
+                        src={trainerImage}
+                        alt={support.trainer}
+                        className="w-20 h-20 object-contain rounded-lg border-2 bg-white flex-shrink-0"
+                        style={{ borderColor: getRarityColor(support.rarity), imageRendering: 'pixelated' }}
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-lg mb-1">{support.name}</h3>
+                      <p className="text-sm text-gray-600 mb-1">
+                        <span className="font-semibold">{support.trainer}</span> & <span className="font-semibold">{support.pokemon}</span>
+                      </p>
+                    </div>
+                  </div>
                   {support.supportType && (
                     <p className="text-xs font-bold mb-2" style={{ color: getTypeColor(support.supportType === 'Attack' ? 'Fire' : support.supportType === 'Defense' ? 'Water' : support.supportType === 'HP' ? 'Grass' : support.supportType === 'Instinct' ? 'Psychic' : 'Electric') }}>
                       Focus: {support.supportType}

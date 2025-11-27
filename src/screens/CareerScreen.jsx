@@ -41,6 +41,7 @@ import {
   EVOLUTION_CONFIG,
   ELITE_FOUR
 } from '../shared/gameData';
+import { getSupportImageFromCardName } from '../constants/trainerImages';
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -225,6 +226,7 @@ const CareerScreen = () => {
   const [evolutionModal, setEvolutionModal] = useState(null);
   const [inspirationModal, setInspirationModal] = useState(null);
   const [pokeclockModal] = useState(null);
+  const [isProcessingEvent, setIsProcessingEvent] = useState(false);
   const lastProcessedTurnRef = useRef(null);
 
   // ============================================================================
@@ -434,6 +436,8 @@ const CareerScreen = () => {
     if (roll < GAME_CONFIG.REST.PROBMOVES[0]) energyGain = GAME_CONFIG.REST.ENERGY_GAINS[0];
     else if (roll > 1 - GAME_CONFIG.REST.PROBMOVES[2]) energyGain = GAME_CONFIG.REST.ENERGY_GAINS[2];
 
+    console.log('[performRest] Starting rest with energyGain:', energyGain, 'current energy:', careerData.energy);
+
     const logEntry = {
       turn: careerData.turn,
       type: 'rest',
@@ -442,6 +446,7 @@ const CareerScreen = () => {
     };
 
     setCareerData(prev => {
+      console.log('[performRest] prev.energy:', prev.energy, 'energyGain:', energyGain);
       const nextTurn = prev.turn + 1;
 
       // Check for inspiration event and apply before creating updatedData
@@ -458,10 +463,14 @@ const CareerScreen = () => {
         }, 0);
       }
 
+      const currentEnergy = prev.energy ?? GAME_CONFIG.CAREER.STARTING_ENERGY;
+      const newEnergy = Math.min(GAME_CONFIG.CAREER.MAX_ENERGY, currentEnergy + energyGain);
+      console.log('[performRest] currentEnergy:', currentEnergy, 'newEnergy:', newEnergy);
+
       const updatedData = {
         ...prev,
         currentStats: finalStats,
-        energy: Math.min(GAME_CONFIG.CAREER.MAX_ENERGY, prev.energy + energyGain),
+        energy: newEnergy,
         pokemon: {
           ...prev.pokemon,
           typeAptitudes: finalAptitudes
@@ -479,16 +488,24 @@ const CareerScreen = () => {
    * Resolve event by making choice (SERVER-AUTHORITATIVE)
    */
   const handleEventChoice = async (choiceIndex) => {
-    const outcome = await resolveEventOnServer(choiceIndex);
+    // Prevent double-clicks and flickering
+    if (isProcessingEvent) return;
+    setIsProcessingEvent(true);
 
-    if (!outcome) {
-      console.error('Event resolution failed - no outcome from server');
-      return;
+    try {
+      const outcome = await resolveEventOnServer(choiceIndex);
+
+      if (!outcome) {
+        console.error('Event resolution failed - no outcome from server');
+        return;
+      }
+
+      // Server has already updated careerData with outcome applied
+      // The outcome returned contains presentation info (flavor text, etc.)
+      // No client-side processing needed - server handles all stat changes
+    } finally {
+      setIsProcessingEvent(false);
     }
-
-    // Server has already updated careerData with outcome applied
-    // The outcome returned contains presentation info (flavor text, etc.)
-    // No client-side processing needed - server handles all stat changes
   };
 
   /**
@@ -527,6 +544,13 @@ const CareerScreen = () => {
       strategyGrade: careerData.pokemon.strategyGrade
     };
 
+    // Normalize opponent data - all data sources use baseStats, normalize to stats for display
+    // Handle: wild battles (direct stats), gym leaders (baseStats), Elite Four (pokemon.baseStats)
+    const pokemonData = opponent.pokemon || opponent; // Elite Four has nested pokemon object
+    const opponentStats = pokemonData.stats || pokemonData.baseStats;
+    const opponentName = pokemonData.name || opponent.name;
+    const opponentType = pokemonData.primaryType || opponent.primaryType;
+
     // Set battle state with server's battle log for replay
     setBattleState({
       player: {
@@ -539,7 +563,10 @@ const CareerScreen = () => {
       },
       opponent: {
         ...opponent,
-        currentHP: opponent.stats.HP,
+        name: opponentName,
+        primaryType: opponentType,
+        stats: opponentStats,
+        currentHP: opponentStats.HP,
         currentStamina: GAME_CONFIG.BATTLE.MAX_STAMINA,
         moveStates: {},
         isResting: false,
@@ -1223,9 +1250,14 @@ const CareerScreen = () => {
                     </div>
                     <button
                       onClick={() => handleEventChoice(0)}
-                      className="w-full bg-green-600 text-white py-2 sm:py-3 rounded-lg font-bold hover:bg-green-700 transition"
+                      disabled={isProcessingEvent}
+                      className={`w-full py-2 sm:py-3 rounded-lg font-bold transition ${
+                        isProcessingEvent
+                          ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                          : 'bg-green-600 text-white hover:bg-green-700'
+                      }`}
                     >
-                      Continue
+                      {isProcessingEvent ? 'Processing...' : 'Continue'}
                     </button>
                   </div>
                 )}
@@ -1236,9 +1268,14 @@ const CareerScreen = () => {
                       <button
                         key={idx}
                         onClick={() => handleEventChoice(idx)}
-                        className="w-full bg-blue-600 text-white py-2 sm:py-3 px-4 rounded-lg font-bold hover:bg-blue-700 transition text-left"
+                        disabled={isProcessingEvent}
+                        className={`w-full py-2 sm:py-3 px-4 rounded-lg font-bold transition text-left ${
+                          isProcessingEvent
+                            ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                            : 'bg-blue-600 text-white hover:bg-blue-700'
+                        }`}
                       >
-                        {choice.text}
+                        {isProcessingEvent ? 'Processing...' : choice.text}
                       </button>
                     ))}
                   </div>
@@ -1322,9 +1359,14 @@ const CareerScreen = () => {
                     </div>
                     <button
                       onClick={() => handleEventChoice(0)}
-                      className="w-full bg-blue-600 text-white py-2 sm:py-3 rounded-lg font-bold hover:bg-blue-700 transition"
+                      disabled={isProcessingEvent}
+                      className={`w-full py-2 sm:py-3 rounded-lg font-bold transition ${
+                        isProcessingEvent
+                          ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                          : 'bg-blue-600 text-white hover:bg-blue-700'
+                      }`}
                     >
-                      Spend Time Together
+                      {isProcessingEvent ? 'Processing...' : 'Spend Time Together'}
                     </button>
                   </div>
                 )}
@@ -1346,9 +1388,14 @@ const CareerScreen = () => {
                     </div>
                     <button
                       onClick={() => handleEventChoice(0)}
-                      className="w-full bg-gray-600 text-white py-2 sm:py-3 rounded-lg font-bold hover:bg-gray-700 transition"
+                      disabled={isProcessingEvent}
+                      className={`w-full py-2 sm:py-3 rounded-lg font-bold transition ${
+                        isProcessingEvent
+                          ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                          : 'bg-gray-600 text-white hover:bg-gray-700'
+                      }`}
                     >
-                      Continue
+                      {isProcessingEvent ? 'Processing...' : 'Continue'}
                     </button>
                   </div>
                 )}
@@ -1768,14 +1815,25 @@ const CareerScreen = () => {
                               const support = getSupportCardAttributes(supportName);
                               const initialFriendship = support?.initialFriendship || 0;
                               const friendship = careerData.supportFriendships?.[supportName] ?? initialFriendship;
+                              const trainerImage = getSupportImageFromCardName(supportName);
                               return (
-                                <div key={supportName} className="bg-blue-100 text-blue-800 text-[8px] sm:text-xs px-0.5 sm:px-1 py-0.5 rounded">
-                                  <div className="font-bold truncate">{supportName.split(' ')[0]}</div>
-                                  <div className="flex items-center gap-0.5 sm:gap-1">
-                                    <div className="flex-1 bg-blue-200 rounded h-1 min-w-0">
-                                      <div className="bg-blue-600 h-1 rounded" style={{ width: `${friendship}%` }} />
+                                <div key={supportName} className="bg-blue-100 text-blue-800 text-[8px] sm:text-xs px-0.5 sm:px-1 py-0.5 rounded flex items-center gap-1">
+                                  {trainerImage && (
+                                    <img
+                                      src={trainerImage}
+                                      alt={supportName}
+                                      className="w-6 h-6 sm:w-8 sm:h-8 object-contain rounded border border-blue-300"
+                                      style={{ imageRendering: 'pixelated' }}
+                                    />
+                                  )}
+                                  <div className="flex-1 min-w-0">
+                                    <div className="font-bold truncate">{supportName.split(' ')[0]}</div>
+                                    <div className="flex items-center gap-0.5 sm:gap-1">
+                                      <div className="flex-1 bg-blue-200 rounded h-1 min-w-0">
+                                        <div className="bg-blue-600 h-1 rounded" style={{ width: `${friendship}%` }} />
+                                      </div>
+                                      <span className="text-[8px] sm:text-xs">{friendship}</span>
                                     </div>
-                                    <span className="text-[8px] sm:text-xs">{friendship}</span>
                                   </div>
                                 </div>
                               );
