@@ -10,13 +10,13 @@ import { useGame } from '../contexts/GameContext';
 import { useInventory } from '../contexts/InventoryContext';
 import {
   generatePokemonSprite,
-  getTypeColor,
   getGradeColor,
   getPokemonGrade,
   getPokemonRarity,
   getRarityColor,
   StatIcon
 } from '../utils/gameUtils';
+import { TypeBadge, TYPE_COLORS } from '../components/TypeIcon';
 import { POKEMON } from '../shared/gameData';
 
 const MyPokemonScreen = () => {
@@ -128,7 +128,7 @@ const MyPokemonScreen = () => {
                 className={`px-3 py-1 rounded-lg text-sm font-bold transition ${
                   pokemonFilterType === type ? 'text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
-                style={pokemonFilterType === type ? { backgroundColor: getTypeColor(type) } : {}}
+                style={pokemonFilterType === type ? { backgroundColor: TYPE_COLORS[type] } : {}}
               >
                 {type}
               </button>
@@ -158,9 +158,9 @@ const MyPokemonScreen = () => {
                   {generatePokemonSprite(pokemon.primaryType, pokemonName)}
                 </div>
                 <h3 className="text-center font-bold text-lg">{pokemonName}</h3>
-                <p className="text-center text-sm" style={{ color: getTypeColor(pokemon.primaryType), fontWeight: 'bold' }}>
-                  {pokemon.primaryType}
-                </p>
+                <div className="flex justify-center mt-1">
+                  <TypeBadge type={pokemon.primaryType} size={14} />
+                </div>
                 <div className="text-center mt-2 mb-2 flex items-center justify-center gap-2">
                   <span
                     className="px-2 py-1 rounded text-xs font-bold text-white"

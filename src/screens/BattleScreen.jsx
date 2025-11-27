@@ -11,10 +11,10 @@ import { useGame } from '../contexts/GameContext';
 import { useCareer } from '../contexts/CareerContext';
 import {
   generatePokemonSprite,
-  getTypeColor,
   getGradeColor,
   getPokemonGrade
 } from '../utils/gameUtils';
+import { TypeBadge } from '../components/TypeIcon';
 import { ICONS } from '../shared/gameData';
 import { getGymLeaderImage } from '../constants/trainerImages';
 import { getGymLeaderBadge } from '../constants/badgeImages';
@@ -22,11 +22,19 @@ import BadgeModal from '../components/BadgeModal';
 
 const BattleScreen = () => {
   const { battleState, battleSpeed, setBattleSpeed, setGameState, setBattleState } = useGame();
-  const { careerData, completeCareer, usePokeclock } = useCareer();
+  const { careerData, completeCareer, consumePokeclock } = useCareer();
   const battleLogRef = useRef(null);
   const [showBadgeModal, setShowBadgeModal] = useState(false);
   const [earnedBadge, setEarnedBadge] = useState(null);
   const [showPokeclockModal, setShowPokeclockModal] = useState(false);
+  const badgeShownRef = useRef(false);
+
+  // Reset badge shown ref when battle state is cleared (new battle starting)
+  useEffect(() => {
+    if (!battleState) {
+      badgeShownRef.current = false;
+    }
+  }, [battleState]);
 
   // Auto-scroll battle log to bottom when new messages appear
   useEffect(() => {
@@ -38,6 +46,8 @@ const BattleScreen = () => {
   // Check if battle is over and show badge modal for gym leader victories
   useEffect(() => {
     if (!battleState) return;
+    // Prevent showing badge modal multiple times
+    if (badgeShownRef.current) return;
 
     const battleOver = battleState.player.currentHP <= 0 || battleState.opponent.currentHP <= 0;
     const playerWon = battleState.winner === 'player';
@@ -48,6 +58,8 @@ const BattleScreen = () => {
     if (battleOver && playerWon && isGymLeader && badge && !showBadgeModal) {
       const badgeInfo = getGymLeaderBadge(badge.gymLeaderName);
       if (badgeInfo) {
+        // Mark as shown immediately to prevent duplicate triggers
+        badgeShownRef.current = true;
         setEarnedBadge({ ...badgeInfo, gymLeaderName: badge.gymLeaderName });
         // Small delay to let battle complete animation finish
         setTimeout(() => {
@@ -81,7 +93,7 @@ const BattleScreen = () => {
         setShowPokeclockModal(true);
 
         // Call server to use pokeclock - this decrements pokeclocks and reverts turn
-        const result = await usePokeclock();
+        const result = await consumePokeclock();
 
         // Hide modal after 2 seconds and return to career for gym retry
         setTimeout(() => {
@@ -121,7 +133,7 @@ const BattleScreen = () => {
           <div className="grid grid-cols-2 gap-4 sm:p-6">
             <div className="space-y-3">
               <div className="flex items-center gap-2 sm:p-4">
-                <div className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20">
+                <div className="flex-shrink-0">
                   {generatePokemonSprite(battleState.player.primaryType, battleState.player.name)}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -134,11 +146,9 @@ const BattleScreen = () => {
                       {getPokemonGrade(battleState.player.stats)}
                     </span>
                   </div>
-                  <div className="text-xs text-gray-300 mb-2">
-                    <span style={{ color: getTypeColor(battleState.player.primaryType), fontWeight: 'bold' }}>
-                      {battleState.player.primaryType}
-                    </span>
-                    {' | ' + battleState.player.strategy}
+                  <div className="text-xs text-gray-300 mb-2 flex items-center gap-1">
+                    <TypeBadge type={battleState.player.primaryType} size={12} />
+                    <span>{battleState.player.strategy}</span>
                   </div>
                   <div className="grid grid-cols-3 gap-1 text-xs text-gray-300">
                     <div>HP: {battleState.player.stats.HP}</div>
@@ -195,11 +205,9 @@ const BattleScreen = () => {
                       {getPokemonGrade(battleState.opponent.stats)}
                     </span>
                   </div>
-                  <div className="text-xs text-gray-300 mb-2 text-right">
-                    <span style={{ color: getTypeColor(battleState.opponent.primaryType), fontWeight: 'bold' }}>
-                      {battleState.opponent.primaryType}
-                    </span>
-                    {' | ' + battleState.opponent.strategy}
+                  <div className="text-xs text-gray-300 mb-2 flex items-center gap-1 justify-end">
+                    <TypeBadge type={battleState.opponent.primaryType} size={12} />
+                    <span>{battleState.opponent.strategy}</span>
                   </div>
                   <div className="grid grid-cols-3 gap-1 text-xs text-gray-300 text-right">
                     <div>HP: {battleState.opponent.stats.HP}</div>
@@ -209,7 +217,7 @@ const BattleScreen = () => {
                     <div>SPE: {battleState.opponent.stats.Speed}</div>
                   </div>
                 </div>
-                <div className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20">
+                <div className="flex-shrink-0">
                   {generatePokemonSprite(battleState.opponent.primaryType, battleState.opponent.name)}
                 </div>
               </div>

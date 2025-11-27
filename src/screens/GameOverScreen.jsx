@@ -10,10 +10,10 @@ import { useGame } from '../contexts/GameContext';
 import { useInventory } from '../contexts/InventoryContext';
 import {
   generatePokemonSprite,
-  getTypeColor,
   getGradeColor,
   StatIcon
 } from '../utils/gameUtils';
+import { TypeBadge } from '../components/TypeIcon';
 
 const GameOverScreen = () => {
   const { setGameState, setSelectedPokemon, setSelectedSupports } = useGame();
@@ -38,9 +38,9 @@ const GameOverScreen = () => {
                 {generatePokemonSprite(completedPokemon.type, completedPokemon.name)}
               </div>
               <h2 className="text-2xl font-bold text-center mb-1">{completedPokemon.name}</h2>
-              <p className="text-center text-sm mb-2" style={{ color: getTypeColor(completedPokemon.type), fontWeight: 'bold' }}>
-                {completedPokemon.type}
-              </p>
+              <div className="flex justify-center mb-2">
+                <TypeBadge type={completedPokemon.type} size={16} />
+              </div>
               <div className="text-center mb-3">
                 <span className="px-3 py-1 rounded text-sm font-bold text-white" style={{ backgroundColor: getGradeColor(completedPokemon.grade) }}>
                   Grade: {completedPokemon.grade}

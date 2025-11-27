@@ -10,10 +10,10 @@ import { Users } from 'lucide-react';
 import { useGame } from '../contexts/GameContext';
 import { useInventory } from '../contexts/InventoryContext';
 import {
-  getTypeColor,
   getRarityColor,
   getSupportCardAttributes
 } from '../utils/gameUtils';
+import { TYPE_COLORS } from '../components/TypeIcon';
 import { SUPPORT_CARDS } from '../shared/gameData';
 import { getSupportImageFromCardName } from '../constants/trainerImages';
 
@@ -177,7 +177,7 @@ const MySupportScreen = () => {
                     </div>
                   </div>
                   {support.supportType && (
-                    <p className="text-xs font-bold mb-2" style={{ color: getTypeColor(support.supportType === 'Attack' ? 'Fire' : support.supportType === 'Defense' ? 'Water' : support.supportType === 'HP' ? 'Grass' : support.supportType === 'Instinct' ? 'Psychic' : 'Electric') }}>
+                    <p className="text-xs font-bold mb-2" style={{ color: TYPE_COLORS[support.supportType === 'Attack' ? 'Fire' : support.supportType === 'Defense' ? 'Water' : support.supportType === 'HP' ? 'Grass' : support.supportType === 'Instinct' ? 'Psychic' : 'Electric'] }}>
                       Focus: {support.supportType}
                     </p>
                   )}

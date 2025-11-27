@@ -198,3 +198,30 @@ body {
     padding-bottom: env(safe-area-inset-bottom);
   }
 }
+
+/* Rainbow sheen animation for support card type match */
+@keyframes rainbow-sheen {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.rainbow-sheen {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 200, 200, 0.4) 0%,
+    rgba(255, 255, 200, 0.4) 20%,
+    rgba(200, 255, 200, 0.4) 40%,
+    rgba(200, 255, 255, 0.4) 60%,
+    rgba(200, 200, 255, 0.4) 80%,
+    rgba(255, 200, 255, 0.4) 100%
+  );
+  background-size: 200% 200%;
+  animation: rainbow-sheen 3s ease infinite;
+}

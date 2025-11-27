@@ -185,7 +185,7 @@ export const CareerProvider = ({ children }) => {
   };
 
   // Use pokeclock to retry gym battle
-  const usePokeclock = async () => {
+  const consumePokeclock = async () => {
     if (!authToken) return null;
 
     setCareerLoading(true);
@@ -364,7 +364,7 @@ export const CareerProvider = ({ children }) => {
     processBattle,
     completeCareer,
     abandonCareer,
-    usePokeclock,
+    consumePokeclock,
 
     // Server-authoritative operations
     trainStat,

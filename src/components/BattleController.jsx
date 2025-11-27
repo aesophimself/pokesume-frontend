@@ -50,14 +50,10 @@ const BattleController = () => {
         else if (message.includes('missed')) type = 'miss';
 
         // Add current message to display log (only if there's a message)
-        const newDisplayLog = prev.displayLog || [];
-        if (message) {
-          newDisplayLog.push({
-            text: message,
-            type: type,
-            tick: nextTick
-          });
-        }
+        // Create a new array to ensure React detects the change in sync with HP updates
+        const newDisplayLog = message
+          ? [...(prev.displayLog || []), { text: message, type: type, tick: nextTick }]
+          : (prev.displayLog || []);
 
         // Update battle state with data from log entry
         return {

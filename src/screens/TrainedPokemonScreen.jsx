@@ -10,10 +10,10 @@ import { useGame } from '../contexts/GameContext';
 import { useInventory } from '../contexts/InventoryContext';
 import {
   generatePokemonSprite,
-  getTypeColor,
   getGradeColor,
   StatIcon
 } from '../utils/gameUtils';
+import { TypeBadge } from '../components/TypeIcon';
 
 const TrainedPokemonScreen = () => {
   const {
@@ -151,9 +151,9 @@ const TrainedPokemonScreen = () => {
                   {generatePokemonSprite(trained.type, trained.name)}
                 </div>
                 <h3 className="text-center font-bold text-lg">{trained.name}</h3>
-                <p className="text-center text-sm" style={{ color: getTypeColor(trained.type), fontWeight: 'bold' }}>
-                  {trained.type}
-                </p>
+                <div className="flex justify-center mt-1">
+                  <TypeBadge type={trained.type} size={14} />
+                </div>
                 <div className="text-center mt-2 mb-2">
                   <span
                     className="px-2 py-1 rounded text-xs font-bold text-white"

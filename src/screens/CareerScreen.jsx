@@ -22,11 +22,9 @@ import { useGame } from '../contexts/GameContext';
 import { useCareer } from '../contexts/CareerContext';
 import {
   generatePokemonSprite,
-  getTypeColor,
   getGradeColor,
   getPokemonGrade,
   getAptitudeColor,
-  generateTrainerSprite,
   StatIcon
 } from '../utils/gameUtils';
 import {
@@ -41,7 +39,8 @@ import {
   EVOLUTION_CONFIG,
   ELITE_FOUR
 } from '../shared/gameData';
-import { getSupportImageFromCardName } from '../constants/trainerImages';
+import { getSupportImageFromCardName, getGymLeaderImage } from '../constants/trainerImages';
+import { TypeIcon, TypeBadge, TYPE_COLORS } from '../components/TypeIcon';
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -147,33 +146,33 @@ const getSupportCardAttributes = (supportKey) => {
   const rarityDefaults = {
     'Legendary': {
       initialFriendship: 40,
-      typeBonusTraining: 20,
-      generalBonusTraining: 5,
-      friendshipBonusTraining: 30,
+      typeBonusTraining: 10,
+      generalBonusTraining: 2,
+      friendshipBonusTraining: 15,
       appearanceChance: 0.25,
       typeAppearancePriority: 3.0
     },
     'Rare': {
       initialFriendship: 30,
-      typeBonusTraining: 15,
-      generalBonusTraining: 4,
-      friendshipBonusTraining: 25,
+      typeBonusTraining: 8,
+      generalBonusTraining: 2,
+      friendshipBonusTraining: 12,
       appearanceChance: 0.35,
       typeAppearancePriority: 2.5
     },
     'Uncommon': {
       initialFriendship: 20,
-      typeBonusTraining: 12,
-      generalBonusTraining: 3,
-      friendshipBonusTraining: 20,
+      typeBonusTraining: 6,
+      generalBonusTraining: 2,
+      friendshipBonusTraining: 10,
       appearanceChance: 0.40,
       typeAppearancePriority: 2.0
     },
     'Common': {
       initialFriendship: 10,
-      typeBonusTraining: 10,
-      generalBonusTraining: 2,
-      friendshipBonusTraining: 15,
+      typeBonusTraining: 5,
+      generalBonusTraining: 1,
+      friendshipBonusTraining: 8,
       appearanceChance: 0.45,
       typeAppearancePriority: 1.5
     }
@@ -622,7 +621,10 @@ const CareerScreen = () => {
   // ============================================================================
 
   useEffect(() => {
-    if (careerData && !careerData.currentTrainingOptions && !careerData.pendingEvent && !evolutionModal && !inspirationModal) {
+    // Skip if still processing an event resolution (prevents flicker during state transition)
+    if (isProcessingEvent) return;
+
+    if (careerData && !careerData.currentTrainingOptions && !careerData.pendingEvent && !careerData.eventResult && !evolutionModal && !inspirationModal) {
       // Don't generate training on gym turns or Elite 4 turns
       const nextGymTurn = (careerData.currentGymIndex + 1) * GAME_CONFIG.CAREER.GYM_LEADER_INTERVAL;
       const isGymTurn = careerData.turn === nextGymTurn && careerData.currentGymIndex < 4;
@@ -650,7 +652,7 @@ const CareerScreen = () => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [careerData?.turn, careerData?.currentTrainingOptions, careerData?.pendingEvent, evolutionModal, inspirationModal, battleState]);
+  }, [careerData?.turn, careerData?.currentTrainingOptions, careerData?.pendingEvent, careerData?.eventResult, evolutionModal, inspirationModal, battleState, isProcessingEvent]);
 
   // Null check AFTER all hooks
   if (!careerData) {
@@ -1047,35 +1049,33 @@ const CareerScreen = () => {
                     </span>
                   </div>
                   <div className="text-xs text-gray-600">
-                    <span style={{ color: getTypeColor(careerData.pokemon.primaryType), fontWeight: 'bold' }}>
-                      {careerData.pokemon.primaryType}
-                    </span>
+                    <TypeBadge type={careerData.pokemon.primaryType} size={14} />
                   </div>
                   {/* Type Aptitudes - Show all 6 types */}
                   <div className="flex text-[10px] sm:text-xs mt-1 flex-wrap gap-x-2 gap-y-0.5">
-                    <span>
-                      <span style={{ color: getTypeColor('Fire'), fontWeight: 'bold' }}>Fir</span>
-                      <span style={{ color: getAptitudeColor(careerData.pokemon.typeAptitudes.Red), fontWeight: 'bold' }}>:{careerData.pokemon.typeAptitudes.Red}</span>
+                    <span className="inline-flex items-center gap-0.5">
+                      <TypeIcon type="Fire" size={12} />
+                      <span style={{ color: getAptitudeColor(careerData.pokemon.typeAptitudes.Red), fontWeight: 'bold' }}>{careerData.pokemon.typeAptitudes.Red}</span>
                     </span>
-                    <span>
-                      <span style={{ color: getTypeColor('Water'), fontWeight: 'bold' }}>Wat</span>
-                      <span style={{ color: getAptitudeColor(careerData.pokemon.typeAptitudes.Blue), fontWeight: 'bold' }}>:{careerData.pokemon.typeAptitudes.Blue}</span>
+                    <span className="inline-flex items-center gap-0.5">
+                      <TypeIcon type="Water" size={12} />
+                      <span style={{ color: getAptitudeColor(careerData.pokemon.typeAptitudes.Blue), fontWeight: 'bold' }}>{careerData.pokemon.typeAptitudes.Blue}</span>
                     </span>
-                    <span>
-                      <span style={{ color: getTypeColor('Grass'), fontWeight: 'bold' }}>Gra</span>
-                      <span style={{ color: getAptitudeColor(careerData.pokemon.typeAptitudes.Green), fontWeight: 'bold' }}>:{careerData.pokemon.typeAptitudes.Green}</span>
+                    <span className="inline-flex items-center gap-0.5">
+                      <TypeIcon type="Grass" size={12} />
+                      <span style={{ color: getAptitudeColor(careerData.pokemon.typeAptitudes.Green), fontWeight: 'bold' }}>{careerData.pokemon.typeAptitudes.Green}</span>
                     </span>
-                    <span>
-                      <span style={{ color: getTypeColor('Psychic'), fontWeight: 'bold' }}>Psy</span>
-                      <span style={{ color: getAptitudeColor(careerData.pokemon.typeAptitudes.Purple), fontWeight: 'bold' }}>:{careerData.pokemon.typeAptitudes.Purple}</span>
+                    <span className="inline-flex items-center gap-0.5">
+                      <TypeIcon type="Psychic" size={12} />
+                      <span style={{ color: getAptitudeColor(careerData.pokemon.typeAptitudes.Purple), fontWeight: 'bold' }}>{careerData.pokemon.typeAptitudes.Purple}</span>
                     </span>
-                    <span>
-                      <span style={{ color: getTypeColor('Electric'), fontWeight: 'bold' }}>Ele</span>
-                      <span style={{ color: getAptitudeColor(careerData.pokemon.typeAptitudes.Yellow), fontWeight: 'bold' }}>:{careerData.pokemon.typeAptitudes.Yellow}</span>
+                    <span className="inline-flex items-center gap-0.5">
+                      <TypeIcon type="Electric" size={12} />
+                      <span style={{ color: getAptitudeColor(careerData.pokemon.typeAptitudes.Yellow), fontWeight: 'bold' }}>{careerData.pokemon.typeAptitudes.Yellow}</span>
                     </span>
-                    <span>
-                      <span style={{ color: getTypeColor('Fighting'), fontWeight: 'bold' }}>Fig</span>
-                      <span style={{ color: getAptitudeColor(careerData.pokemon.typeAptitudes.Orange), fontWeight: 'bold' }}>:{careerData.pokemon.typeAptitudes.Orange}</span>
+                    <span className="inline-flex items-center gap-0.5">
+                      <TypeIcon type="Fighting" size={12} />
+                      <span style={{ color: getAptitudeColor(careerData.pokemon.typeAptitudes.Orange), fontWeight: 'bold' }}>{careerData.pokemon.typeAptitudes.Orange}</span>
                     </span>
                   </div>
                   {/* Stats Grid */}
@@ -1160,7 +1160,13 @@ const CareerScreen = () => {
             <div className="bg-red-600 text-white rounded-lg p-3 shadow-lg">
               <div className="flex items-center justify-between flex-col sm:flex-row gap-3">
                 <div className="flex items-center gap-2 sm:gap-3">
-                  {generateTrainerSprite(careerData.currentGymIndex + 1)}
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg border-2 border-yellow-400 overflow-hidden bg-gray-800 flex-shrink-0">
+                    <img
+                      src={getGymLeaderImage(nextGymLeader.name)}
+                      alt={nextGymLeader.name}
+                      className="w-full h-full object-cover object-top"
+                    />
+                  </div>
                   <div>
                     <h3 className="text-lg font-bold">GYM LEADER BATTLE!</h3>
                     <p className="text-sm">Face {nextGymLeader.name} now!</p>
@@ -1180,7 +1186,13 @@ const CareerScreen = () => {
             <div className="bg-gradient-to-r from-purple-700 to-indigo-800 text-white rounded-lg p-4 shadow-lg">
               <div className="flex items-center justify-between flex-col sm:flex-row gap-4">
                 <div className="flex items-center gap-3 sm:gap-4">
-                  {generateTrainerSprite(eliteFourIndex + 10)}
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg border-2 border-yellow-400 overflow-hidden bg-gray-800 flex-shrink-0">
+                    <img
+                      src={getGymLeaderImage(currentEliteFour.name)}
+                      alt={currentEliteFour.name}
+                      className="w-full h-full object-cover object-top"
+                    />
+                  </div>
                   <div>
                     <div className="text-xs uppercase tracking-wider text-purple-300 font-semibold">Elite Four Member {eliteFourIndex + 1}/4</div>
                     <h3 className="text-xl sm:text-2xl font-bold">{currentEliteFour.name}</h3>
@@ -1189,24 +1201,16 @@ const CareerScreen = () => {
                   </div>
                 </div>
                 <div className="text-center sm:text-right">
-                  <div className="text-xs text-purple-300 mb-2">Stat Multiplier: {currentEliteFour.statMultiplier}x</div>
                   <button
                     onClick={() => {
-                      // Create the Elite 4 opponent with scaled stats
+                      // Pass Elite 4 opponent data - server will scale stats based on turn
                       const pokemon = currentEliteFour.pokemon;
-                      const mult = currentEliteFour.statMultiplier;
                       const eliteOpponent = {
                         name: currentEliteFour.name,
-                        pokemon: pokemon.name,
+                        pokemon: pokemon,
                         primaryType: pokemon.primaryType,
-                        stats: {
-                          HP: Math.floor(pokemon.baseStats.HP * mult),
-                          Attack: Math.floor(pokemon.baseStats.Attack * mult),
-                          Defense: Math.floor(pokemon.baseStats.Defense * mult),
-                          Instinct: Math.floor(pokemon.baseStats.Instinct * mult),
-                          Speed: Math.floor(pokemon.baseStats.Speed * mult)
-                        },
-                        abilities: [...pokemon.defaultAbilities, ...pokemon.learnableAbilities],
+                        baseStats: pokemon.baseStats,
+                        abilities: [...(pokemon.defaultAbilities || []), ...(pokemon.learnableAbilities || [])],
                         typeAptitudes: pokemon.typeAptitudes,
                         strategy: pokemon.strategy,
                         strategyGrade: pokemon.strategyGrade
@@ -1515,12 +1519,10 @@ const CareerScreen = () => {
                   .map(moveName => {
                   const move = MOVES[moveName];
                   return (
-                    <div key={moveName} className="border-2 bg-green-50 rounded p-1.5 sm:p-2" style={{ borderColor: getTypeColor(move.type) }}>
+                    <div key={moveName} className="border-2 bg-green-50 rounded p-1.5 sm:p-2" style={{ borderColor: TYPE_COLORS[move.type] }}>
                       <div className="flex justify-between items-start mb-0.5 sm:mb-1">
                         <div className="font-bold text-xs sm:text-sm truncate pr-1">{moveName}</div>
-                        <div className="text-[10px] sm:text-xs px-0.5 sm:px-1 rounded font-bold flex-shrink-0 text-white" style={{ backgroundColor: getTypeColor(move.type) }}>
-                          {move.type}
-                        </div>
+                        <TypeBadge type={move.type} size={12} className="text-[10px] sm:text-xs flex-shrink-0" />
                       </div>
                       <div className="text-[10px] sm:text-xs text-gray-600 space-y-0.5">
                         <div>DMG: {move.damage}</div>
@@ -1573,15 +1575,17 @@ const CareerScreen = () => {
               {nextGymLeader && nextGymLeader.pokemon && (
                 <div className="border-2 border-yellow-500 rounded-lg p-3">
                   <div className="flex items-center gap-2 sm:p-4 mb-3">
-                    {generateTrainerSprite(careerData.currentGymIndex + 1)}
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg border-2 border-yellow-400 overflow-hidden bg-gray-800 flex-shrink-0">
+                      <img
+                        src={getGymLeaderImage(nextGymLeader.name)}
+                        alt={nextGymLeader.name}
+                        className="w-full h-full object-cover object-top"
+                      />
+                    </div>
                     <div>
                       <h4 className="text-lg font-bold">{nextGymLeader.name}</h4>
-                      <p className="text-sm text-gray-600">
-                        {nextGymLeader.pokemon.name} (
-                        <span style={{ color: getTypeColor(nextGymLeader.pokemon.primaryType), fontWeight: 'bold' }}>
-                          {nextGymLeader.pokemon.primaryType}
-                        </span>
-                        )
+                      <p className="text-sm text-gray-600 flex items-center gap-1">
+                        {nextGymLeader.pokemon.name} <TypeBadge type={nextGymLeader.pokemon.primaryType} size={12} />
                       </p>
                       <p className="text-xs text-gray-500 mt-1">Strategy: {nextGymLeader.pokemon.strategy} ({nextGymLeader.pokemon.strategyGrade})</p>
                     </div>
@@ -1618,9 +1622,7 @@ const CareerScreen = () => {
                           <div key={moveName} className="border rounded p-2 bg-gray-50">
                             <div className="flex justify-between items-start mb-1">
                               <div className="font-bold text-xs">{moveName}</div>
-                              <div className="text-xs px-1 rounded font-bold" style={{ backgroundColor: getTypeColor(move.type) + '20', color: getTypeColor(move.type) }}>
-                                {move.type}
-                              </div>
+                              <TypeBadge type={move.type} size={12} className="text-xs" />
                             </div>
                             <div className="text-xs text-gray-600 space-y-0.5">
                               <div>DMG: {move.damage}</div>
@@ -1682,12 +1684,10 @@ const CareerScreen = () => {
                       const canAfford = (careerData.skillPoints ?? 0) >= finalCost;
 
                       return (
-                        <div key={moveName} className={`border-2 rounded p-1.5 sm:p-2 ${isKnown ? 'bg-green-50' : ''}`} style={{ borderColor: isKnown ? '#22c55e' : getTypeColor(move.type) }}>
+                        <div key={moveName} className={`border-2 rounded p-1.5 sm:p-2 ${isKnown ? 'bg-green-50' : ''}`} style={{ borderColor: isKnown ? '#22c55e' : TYPE_COLORS[move.type] }}>
                           <div className="flex justify-between items-start mb-0.5 sm:mb-1">
                             <div className="font-bold text-xs sm:text-sm truncate pr-1">{moveName}</div>
-                            <div className="text-[10px] sm:text-xs px-0.5 sm:px-1 rounded font-bold flex-shrink-0 text-white" style={{ backgroundColor: getTypeColor(move.type) }}>
-                              {move.type}
-                            </div>
+                            <TypeBadge type={move.type} size={12} className="text-[10px] sm:text-xs flex-shrink-0" />
                           </div>
                           <div className="text-[10px] sm:text-xs text-gray-600 space-y-0.5 mb-1 sm:mb-2">
                             <div>DMG: {move.damage}</div>
@@ -1810,16 +1810,32 @@ const CareerScreen = () => {
 
                     const currentStatValue = careerData.currentStats[stat];
 
+                    // Check if any support card's type matches this stat AND is at max friendship
+                    const hasMaxFriendshipTypeMatch = option.supports.some(supportName => {
+                      const support = getSupportCardAttributes(supportName);
+                      if (!support) return false;
+                      const supportType = support.type || support.supportType;
+                      const initialFriendship = support?.initialFriendship || 0;
+                      const friendship = careerData.supportFriendships?.[supportName] ?? initialFriendship;
+                      const isMaxFriendship = friendship >= 100;
+                      return supportType === stat && isMaxFriendship;
+                    });
+
                     return (
                       <button
                         key={stat}
                         onClick={() => performTraining(stat)}
                         disabled={isProcessingAction}
-                        className={`border-2 rounded p-1 sm:p-2 text-left transition ${
+                        className={`border-2 rounded p-1 sm:p-2 text-left transition relative overflow-hidden ${
                           isProcessingAction
                             ? 'border-gray-300 bg-gray-100 cursor-not-allowed opacity-60'
                             : 'border-purple-500 hover:bg-purple-50 cursor-pointer'
                         }`}
+                        style={hasMaxFriendshipTypeMatch ? {
+                          background: 'linear-gradient(135deg, rgba(255,200,200,0.3) 0%, rgba(255,255,200,0.3) 20%, rgba(200,255,200,0.3) 40%, rgba(200,255,255,0.3) 60%, rgba(200,200,255,0.3) 80%, rgba(255,200,255,0.3) 100%)',
+                          animation: 'rainbow-sheen 3s ease infinite',
+                          backgroundSize: '200% 200%'
+                        } : {}}
                       >
                         <div className="flex items-center justify-between mb-0.5 sm:mb-1">
                           <div className="font-bold text-[10px] sm:text-sm">{stat}</div>
@@ -1871,7 +1887,7 @@ const CareerScreen = () => {
                                       <img
                                         src={trainerImage}
                                         alt={supportName}
-                                        className="w-full h-auto object-cover"
+                                        className="w-full h-full"
                                         style={{
                                           transform: 'scale(2.5)',
                                           transformOrigin: 'top center',
@@ -1945,11 +1961,9 @@ const CareerScreen = () => {
                   <div key={idx} className="border-2 border-red-500 rounded-lg p-2 bg-red-50">
                     <div className="mb-2">
                       <div className="font-bold text-sm mb-1">{opponent.name}</div>
-                      <div className="text-xs text-gray-600">
-                        <span style={{ color: getTypeColor(opponent.primaryType), fontWeight: 'bold' }}>
-                          {opponent.primaryType}
-                        </span>
-                        {' | ' + opponent.strategy + ' (' + opponent.strategyGrade + ')'}
+                      <div className="text-xs text-gray-600 flex items-center gap-1">
+                        <TypeBadge type={opponent.primaryType} size={12} />
+                        <span>{opponent.strategy} ({opponent.strategyGrade})</span>
                       </div>
                     </div>
                     <div className="grid grid-cols-3 gap-1 text-xs mb-2">
@@ -1983,9 +1997,7 @@ const CareerScreen = () => {
                             <div key={moveName} className="bg-white rounded p-1 text-xs">
                               <div className="flex justify-between items-center">
                                 <span className="font-bold">{moveName}</span>
-                                <span className="px-1 rounded text-xs" style={{ backgroundColor: getTypeColor(move.type) + '20', color: getTypeColor(move.type), fontWeight: 'bold' }}>
-                                  {move.type}
-                                </span>
+                                <TypeBadge type={move.type} size={10} className="text-[10px]" />
                               </div>
                               <div className="text-gray-600">DMG: {move.damage}</div>
                             </div>

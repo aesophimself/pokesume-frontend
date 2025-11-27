@@ -15,9 +15,9 @@ import { useGame } from '../contexts/GameContext';
 import { useAuth } from '../contexts/AuthContext';
 import {
   generatePokemonSprite,
-  getTypeColor,
   getGradeColor
 } from '../utils/gameUtils';
+import { TypeBadge } from '../components/TypeIcon';
 import { apiEnterTournament, apiGetTournamentDetails } from '../services/apiService';
 
 const TournamentDetailsScreen = () => {
@@ -181,9 +181,9 @@ const TournamentDetailsScreen = () => {
                           {generatePokemonSprite(selectedTeam[slotIndex].type, selectedTeam[slotIndex].name)}
                         </div>
                         <h5 className="text-center font-bold">{selectedTeam[slotIndex].name}</h5>
-                        <p className="text-center text-sm" style={{ color: getTypeColor(selectedTeam[slotIndex].type) }}>
-                          {selectedTeam[slotIndex].type}
-                        </p>
+                        <div className="flex justify-center mt-1">
+                          <TypeBadge type={selectedTeam[slotIndex].type} size={14} />
+                        </div>
                         <div className="text-center mt-2">
                           <span className="px-2 py-1 rounded text-xs font-bold text-white" style={{ backgroundColor: getGradeColor(selectedTeam[slotIndex].grade) }}>
                             {selectedTeam[slotIndex].grade}
@@ -258,9 +258,9 @@ const TournamentDetailsScreen = () => {
                         {generatePokemonSprite(pokemonData.primaryType || pokemonData.type, pokemonData.name)}
                       </div>
                       <h5 className="text-center font-bold text-sm">{pokemonData.name || 'Unknown'}</h5>
-                      <p className="text-center text-xs" style={{ color: getTypeColor(pokemonData.primaryType || pokemonData.type) }}>
-                        {pokemonData.primaryType || pokemonData.type || 'Normal'}
-                      </p>
+                      <div className="flex justify-center mt-1">
+                        <TypeBadge type={pokemonData.primaryType || pokemonData.type || 'Normal'} size={12} />
+                      </div>
                       <div className="text-center mt-1">
                         <span className="px-2 py-0.5 rounded text-xs font-bold text-white" style={{ backgroundColor: getGradeColor(pokemonData.grade) }}>
                           {pokemonData.grade || 'E'}

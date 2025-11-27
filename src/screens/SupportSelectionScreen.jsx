@@ -10,10 +10,10 @@ import { useGame } from '../contexts/GameContext';
 import { useInventory } from '../contexts/InventoryContext';
 import { useCareer } from '../contexts/CareerContext';
 import {
-  getTypeColor,
   getRarityColor,
   getSupportCardAttributes
 } from '../utils/gameUtils';
+import { TYPE_COLORS } from '../components/TypeIcon';
 import { SUPPORT_CARDS, ICONS, POKEMON } from '../shared/gameData';
 import { getSupportImageFromCardName } from '../constants/trainerImages';
 
@@ -201,7 +201,7 @@ const SupportSelectionScreen = () => {
                     <p
                       className="text-xs font-bold mb-2"
                       style={{
-                        color: getTypeColor(
+                        color: TYPE_COLORS[
                           support.supportType === 'Attack'
                             ? 'Fire'
                             : support.supportType === 'Defense'
@@ -211,7 +211,7 @@ const SupportSelectionScreen = () => {
                             : support.supportType === 'Instinct'
                             ? 'Psychic'
                             : 'Electric'
-                        )
+                        ]
                       }}
                     >
                       Focus: {support.supportType}

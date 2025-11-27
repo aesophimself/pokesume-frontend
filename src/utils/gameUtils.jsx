@@ -327,7 +327,7 @@ export const checkAndApplyInspiration = (turn, selectedInspirations, currentStat
 
 const spriteCache = {};
 
-export const PokemonSprite = ({ type, pokemonName }) => {
+export const PokemonSprite = ({ type, pokemonName, size = 120 }) => {
   const [spriteUrl, setSpriteUrl] = React.useState(spriteCache[pokemonName] || null);
 
   React.useEffect(() => {
@@ -357,14 +357,14 @@ export const PokemonSprite = ({ type, pokemonName }) => {
   }, [pokemonName]);
 
   if (!spriteUrl) {
-    return <div style={{width: 80, height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>Loading...</div>;
+    return <div style={{width: size, height: size, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>Loading...</div>;
   }
 
   if (spriteUrl === 'error') {
-    return <div style={{width: 80, height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px'}}>{pokemonName}</div>;
+    return <div style={{width: size, height: size, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px'}}>{pokemonName}</div>;
   }
 
-  return <img src={spriteUrl} alt={pokemonName} width="80" height="80" />;
+  return <img src={spriteUrl} alt={pokemonName} width={size} height={size} />;
 };
 
 // Backwards compatibility wrapper
@@ -401,39 +401,40 @@ export const getSupportCardAttributes = (supportKey, SUPPORT_CARDS) => {
   const card = SUPPORT_CARDS[supportKey];
   if (!card) return null;
 
-  // Get rarity-based defaults
+  // Get rarity-based defaults (fallback if card doesn't have explicit appearanceChance)
+  // Higher rarity = higher appearance chance (rarer cards are more powerful and appear more)
   const rarityDefaults = {
     'Legendary': {
       initialFriendship: 40,
-      typeBonusTraining: 20,
-      generalBonusTraining: 5,
-      friendshipBonusTraining: 30,
-      appearanceChance: 0.25,
-      typeAppearancePriority: 3.0
+      typeBonusTraining: 12,
+      generalBonusTraining: 4,
+      friendshipBonusTraining: 20,
+      appearanceChance: 0.55,
+      typeAppearancePriority: 4.0
     },
     'Rare': {
       initialFriendship: 30,
-      typeBonusTraining: 15,
-      generalBonusTraining: 4,
-      friendshipBonusTraining: 25,
-      appearanceChance: 0.35,
-      typeAppearancePriority: 2.5
+      typeBonusTraining: 10,
+      generalBonusTraining: 3,
+      friendshipBonusTraining: 16,
+      appearanceChance: 0.50,
+      typeAppearancePriority: 3.5
     },
     'Uncommon': {
       initialFriendship: 20,
-      typeBonusTraining: 12,
-      generalBonusTraining: 3,
-      friendshipBonusTraining: 20,
-      appearanceChance: 0.40,
-      typeAppearancePriority: 2.0
+      typeBonusTraining: 8,
+      generalBonusTraining: 2,
+      friendshipBonusTraining: 12,
+      appearanceChance: 0.45,
+      typeAppearancePriority: 3.0
     },
     'Common': {
       initialFriendship: 15,
-      typeBonusTraining: 10,
-      generalBonusTraining: 2,
-      friendshipBonusTraining: 15,
-      appearanceChance: 0.45,
-      typeAppearancePriority: 1.5
+      typeBonusTraining: 5,
+      generalBonusTraining: 1,
+      friendshipBonusTraining: 8,
+      appearanceChance: 0.40,
+      typeAppearancePriority: 2.5
     }
   };
 

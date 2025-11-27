@@ -12,9 +12,9 @@ import { useGame } from '../contexts/GameContext';
 import { useInventory } from '../contexts/InventoryContext';
 import {
   generatePokemonSprite,
-  getTypeColor,
   getRarityColor
 } from '../utils/gameUtils';
+import { TypeBadge } from '../components/TypeIcon';
 import { POKEMON, GACHA_RARITY } from '../shared/gameData';
 
 const GachaScreen = () => {
@@ -130,9 +130,9 @@ const GachaScreen = () => {
             </div>
             <h3 className="text-2xl font-bold mb-2">{rollResult.pokemon}</h3>
             {POKEMON[rollResult.pokemon] && (
-              <p className="text-lg mb-6" style={{ color: getTypeColor(POKEMON[rollResult.pokemon].primaryType), fontWeight: 'bold' }}>
-                {POKEMON[rollResult.pokemon].primaryType}
-              </p>
+              <div className="flex justify-center mb-6">
+                <TypeBadge type={POKEMON[rollResult.pokemon].primaryType} size={18} />
+              </div>
             )}
             {rollResult.isDuplicate && (
               <p className="text-orange-600 font-bold mb-4">Duplicate! 100 Primos refunded.</p>

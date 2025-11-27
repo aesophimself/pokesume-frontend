@@ -9,11 +9,11 @@ import React from 'react';
 import { useGame } from '../contexts/GameContext';
 import {
   generatePokemonSprite,
-  getTypeColor,
   getGradeColor,
   getPokemonGrade,
   StatIcon
 } from '../utils/gameUtils';
+import { TypeBadge, TYPE_COLORS } from '../components/TypeIcon';
 import { ICONS, MOVES } from '../shared/gameData';
 
 const HistoryScreen = () => {
@@ -49,9 +49,7 @@ const HistoryScreen = () => {
                     </span>
                   </div>
                   <div className="text-sm text-gray-600">
-                    <span style={{ color: getTypeColor(career.primaryType), fontWeight: 'bold' }}>
-                      {career.primaryType}
-                    </span>
+                    <TypeBadge type={career.primaryType} size={14} />
                   </div>
                   <div className="mt-2">
                     <div className={`inline-block px-3 py-1 rounded-lg font-bold ${
@@ -116,9 +114,9 @@ const HistoryScreen = () => {
                           key={moveIdx}
                           className="px-2 py-1 rounded text-xs font-semibold"
                           style={{
-                            backgroundColor: `${getTypeColor(move.type)}20`,
-                            color: getTypeColor(move.type),
-                            border: `1px solid ${getTypeColor(move.type)}`
+                            backgroundColor: `${TYPE_COLORS[move.type]}20`,
+                            color: TYPE_COLORS[move.type],
+                            border: `1px solid ${TYPE_COLORS[move.type]}`
                           }}
                         >
                           {moveName}

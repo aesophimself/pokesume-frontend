@@ -149,7 +149,7 @@ const GAME_CONFIG = {
   TRAINING: {
     ENERGY_COSTS: { HP: 25, Attack: 30, Defense: 20, Instinct: 25, Speed: -5 },
     FAILURE_CHANCE_AT_ZERO_ENERGY: 0.99,
-    BASE_STAT_GAINS: { HP: 11, Attack: 7, Defense: 7, Instinct: 5, Speed: 4 },
+    BASE_STAT_GAINS: { HP: 8, Attack: 5, Defense: 5, Instinct: 4, Speed: 3 },
     SKILL_POINTS_ON_SUCCESS: 3,
     STAT_LOSS_ON_FAILURE: 2,
     FRIENDSHIP_GAIN_PER_TRAINING: 7,
@@ -269,7 +269,71 @@ const MOVES = {
   DarkPulse: { type: 'Psychic', damage: 28, warmup: 2, cooldown: 3, stamina: 42, cost: 52, effect: { type: 'confuse', chance: 0.3, duration: 3 } },
   BlueFlare: { type: 'Fire', damage: 40, warmup: 6, cooldown: 7, stamina: 88, cost: 88, effect: { type: 'burn', chance: 0.5, duration: 5, damage: 6 } },
   DiamondStorm: { type: 'Fighting', damage: 33, warmup: 4, cooldown: 5, stamina: 55, cost: 68, effect: null },
-  PayDay: { type: 'Normal', damage: 15, warmup: 0, cooldown: 2, stamina: 25, cost: 35, effect: null }
+  PayDay: { type: 'Normal', damage: 15, warmup: 0, cooldown: 2, stamina: 25, cost: 35, effect: null },
+
+  // Additional moves from support card hints
+  AirSlash: { type: 'Normal', damage: 25, warmup: 2, cooldown: 3, stamina: 40, cost: 50, effect: { type: 'confuse', chance: 0.3, duration: 2 } },
+  AncientPower: { type: 'Normal', damage: 20, warmup: 2, cooldown: 3, stamina: 35, cost: 45, effect: { type: 'buff_all', chance: 0.1 } },
+  AquaRing: { type: 'Water', damage: 0, warmup: 2, cooldown: 4, stamina: 30, cost: 40, effect: { type: 'regen', duration: 5, healPercent: 0.06 } },
+  Attract: { type: 'Normal', damage: 0, warmup: 1, cooldown: 5, stamina: 25, cost: 35, effect: { type: 'infatuate', chance: 0.5, duration: 3 } },
+  BlastBurn: { type: 'Fire', damage: 42, warmup: 6, cooldown: 8, stamina: 68, cost: 85, effect: { type: 'exhaust', duration: 2 } },
+  BraveBird: { type: 'Normal', damage: 36, warmup: 4, cooldown: 5, stamina: 58, cost: 72, effect: { type: 'recoil', damagePercent: 0.25 } },
+  BulkUp: { type: 'Fighting', damage: 0, warmup: 2, cooldown: 4, stamina: 30, cost: 40, effect: { type: 'buff_attack_defense', duration: 4 } },
+  BulletPunch: { type: 'Fighting', damage: 16, warmup: 0, cooldown: 2, stamina: 28, cost: 38, effect: null },
+  CalmMind: { type: 'Psychic', damage: 0, warmup: 2, cooldown: 4, stamina: 30, cost: 40, effect: { type: 'buff_instinct', duration: 4 } },
+  Curse: { type: 'Psychic', damage: 0, warmup: 3, cooldown: 6, stamina: 40, cost: 50, effect: { type: 'curse', duration: 5, damage: 6 } },
+  DazzlingGleam: { type: 'Normal', damage: 28, warmup: 3, cooldown: 4, stamina: 45, cost: 55, effect: null },
+  DestinyBond: { type: 'Psychic', damage: 0, warmup: 3, cooldown: 8, stamina: 50, cost: 60, effect: { type: 'destiny_bond', duration: 2 } },
+  DracoMeteor: { type: 'Fire', damage: 40, warmup: 6, cooldown: 7, stamina: 65, cost: 82, effect: { type: 'debuff_instinct_self', duration: 2 } },
+  DragonDance: { type: 'Fighting', damage: 0, warmup: 2, cooldown: 4, stamina: 30, cost: 40, effect: { type: 'buff_attack_speed', duration: 4 } },
+  DragonPulse: { type: 'Fire', damage: 29, warmup: 3, cooldown: 4, stamina: 45, cost: 55, effect: null },
+  DragonRush: { type: 'Fighting', damage: 32, warmup: 4, cooldown: 5, stamina: 52, cost: 65, effect: { type: 'stun', chance: 0.2, duration: 1 } },
+  DragonTail: { type: 'Fighting', damage: 20, warmup: 2, cooldown: 4, stamina: 35, cost: 45, effect: { type: 'push_back' } },
+  DreamEater: { type: 'Psychic', damage: 32, warmup: 4, cooldown: 5, stamina: 48, cost: 60, effect: { type: 'drain_sleep', healPercent: 0.5 } },
+  EarthPower: { type: 'Fighting', damage: 30, warmup: 3, cooldown: 4, stamina: 48, cost: 58, effect: { type: 'debuff_defense', chance: 0.1, duration: 2 } },
+  Eruption: { type: 'Fire', damage: 42, warmup: 6, cooldown: 7, stamina: 70, cost: 85, effect: { type: 'hp_based_damage' } },
+  Explosion: { type: 'Normal', damage: 45, warmup: 5, cooldown: 10, stamina: 85, cost: 90, effect: { type: 'self_ko' } },
+  FeintAttack: { type: 'Psychic', damage: 20, warmup: 1, cooldown: 2, stamina: 30, cost: 40, effect: null },
+  FirePunch: { type: 'Fire', damage: 24, warmup: 2, cooldown: 3, stamina: 38, cost: 48, effect: { type: 'burn', chance: 0.2, duration: 4, damage: 3 } },
+  FlashCannon: { type: 'Normal', damage: 28, warmup: 3, cooldown: 4, stamina: 45, cost: 55, effect: { type: 'debuff_defense', chance: 0.1, duration: 2 } },
+  FocusBlast: { type: 'Fighting', damage: 36, warmup: 5, cooldown: 6, stamina: 58, cost: 72, effect: { type: 'debuff_defense', chance: 0.1, duration: 2 } },
+  FoulPlay: { type: 'Psychic', damage: 30, warmup: 3, cooldown: 4, stamina: 45, cost: 55, effect: { type: 'use_opponent_attack' } },
+  FusionFlare: { type: 'Fire', damage: 38, warmup: 6, cooldown: 6, stamina: 62, cost: 78, effect: { type: 'burn', chance: 0.3, duration: 5, damage: 5 } },
+  FutureSight: { type: 'Psychic', damage: 36, warmup: 5, cooldown: 7, stamina: 55, cost: 70, effect: { type: 'delayed_damage', turns: 3 } },
+  HeatWave: { type: 'Fire', damage: 31, warmup: 4, cooldown: 5, stamina: 50, cost: 62, effect: { type: 'burn', chance: 0.2, duration: 4, damage: 3 } },
+  Hex: { type: 'Psychic', damage: 22, warmup: 2, cooldown: 3, stamina: 35, cost: 45, effect: { type: 'double_if_status' } },
+  Hurricane: { type: 'Normal', damage: 36, warmup: 5, cooldown: 6, stamina: 60, cost: 75, effect: { type: 'confuse', chance: 0.3, duration: 3 } },
+  IcePunch: { type: 'Water', damage: 24, warmup: 2, cooldown: 3, stamina: 38, cost: 48, effect: { type: 'freeze', chance: 0.2, duration: 3 } },
+  IronDefense: { type: 'Normal', damage: 0, warmup: 2, cooldown: 4, stamina: 30, cost: 40, effect: { type: 'buff_defense', duration: 4 } },
+  MeteorMash: { type: 'Normal', damage: 30, warmup: 3, cooldown: 4, stamina: 48, cost: 58, effect: { type: 'buff_attack', chance: 0.2, duration: 3 } },
+  Metronome: { type: 'Normal', damage: 0, warmup: 2, cooldown: 5, stamina: 35, cost: 45, effect: { type: 'random_move' } },
+  MilkDrink: { type: 'Normal', damage: 0, warmup: 2, cooldown: 5, stamina: 35, cost: 45, effect: { type: 'heal_self', healPercent: 0.5 } },
+  Moonblast: { type: 'Normal', damage: 31, warmup: 3, cooldown: 4, stamina: 48, cost: 58, effect: { type: 'debuff_instinct', chance: 0.3, duration: 2 } },
+  Moonlight: { type: 'Normal', damage: 0, warmup: 2, cooldown: 5, stamina: 35, cost: 45, effect: { type: 'heal_self', healPercent: 0.5 } },
+  NastyPlot: { type: 'Psychic', damage: 0, warmup: 2, cooldown: 4, stamina: 30, cost: 40, effect: { type: 'buff_instinct', duration: 4 } },
+  Outrage: { type: 'Fighting', damage: 36, warmup: 4, cooldown: 6, stamina: 58, cost: 72, effect: { type: 'confuse_self_after', duration: 2 } },
+  PowerGem: { type: 'Normal', damage: 28, warmup: 3, cooldown: 4, stamina: 45, cost: 55, effect: null },
+  Present: { type: 'Normal', damage: 20, warmup: 1, cooldown: 3, stamina: 30, cost: 40, effect: { type: 'random_damage_or_heal' } },
+  RapidSpin: { type: 'Normal', damage: 15, warmup: 1, cooldown: 2, stamina: 25, cost: 35, effect: { type: 'remove_hazards' } },
+  Recover: { type: 'Normal', damage: 0, warmup: 2, cooldown: 5, stamina: 35, cost: 45, effect: { type: 'heal_self', healPercent: 0.5 } },
+  RockPolish: { type: 'Fighting', damage: 0, warmup: 2, cooldown: 4, stamina: 30, cost: 40, effect: { type: 'buff_speed', duration: 4 } },
+  Rollout: { type: 'Normal', damage: 12, warmup: 1, cooldown: 2, stamina: 25, cost: 35, effect: { type: 'consecutive_boost', maxHits: 5 } },
+  Roost: { type: 'Normal', damage: 0, warmup: 2, cooldown: 5, stamina: 35, cost: 45, effect: { type: 'heal_self', healPercent: 0.5 } },
+  Sandstorm: { type: 'Fighting', damage: 0, warmup: 2, cooldown: 6, stamina: 35, cost: 45, effect: { type: 'weather_sand', duration: 5 } },
+  Screech: { type: 'Normal', damage: 0, warmup: 1, cooldown: 4, stamina: 25, cost: 35, effect: { type: 'debuff_defense', duration: 3 } },
+  Slash: { type: 'Normal', damage: 24, warmup: 2, cooldown: 3, stamina: 38, cost: 48, effect: { type: 'high_crit' } },
+  SleepPowder: { type: 'Grass', damage: 0, warmup: 2, cooldown: 5, stamina: 30, cost: 40, effect: { type: 'sleep', chance: 0.75, duration: 3 } },
+  SludgeWave: { type: 'Poison', damage: 31, warmup: 3, cooldown: 4, stamina: 48, cost: 58, effect: { type: 'poison', chance: 0.3, duration: 4, damage: 4 } },
+  Spikes: { type: 'Normal', damage: 0, warmup: 2, cooldown: 6, stamina: 30, cost: 40, effect: { type: 'entry_hazard', layers: 3 } },
+  StealthRock: { type: 'Fighting', damage: 0, warmup: 2, cooldown: 6, stamina: 30, cost: 40, effect: { type: 'entry_hazard_rock' } },
+  SwordsDance: { type: 'Fighting', damage: 0, warmup: 2, cooldown: 4, stamina: 30, cost: 40, effect: { type: 'buff_attack', duration: 4 } },
+  Synthesis: { type: 'Grass', damage: 0, warmup: 2, cooldown: 5, stamina: 35, cost: 45, effect: { type: 'heal_self', healPercent: 0.5 } },
+  ThunderWave: { type: 'Electric', damage: 0, warmup: 1, cooldown: 4, stamina: 25, cost: 35, effect: { type: 'paralyze', chance: 0.9, duration: 5 } },
+  Toxic: { type: 'Poison', damage: 0, warmup: 2, cooldown: 5, stamina: 30, cost: 40, effect: { type: 'badly_poison', duration: 6 } },
+  Transform: { type: 'Normal', damage: 0, warmup: 3, cooldown: 10, stamina: 40, cost: 50, effect: { type: 'copy_opponent' } },
+  UTurn: { type: 'Normal', damage: 21, warmup: 1, cooldown: 3, stamina: 32, cost: 42, effect: { type: 'switch_out' } },
+  Waterfall: { type: 'Water', damage: 28, warmup: 2, cooldown: 3, stamina: 42, cost: 52, effect: { type: 'stun', chance: 0.2, duration: 1 } },
+  WillOWisp: { type: 'Fire', damage: 0, warmup: 2, cooldown: 5, stamina: 30, cost: 40, effect: { type: 'burn', chance: 0.85, duration: 5, damage: 4 } }
 };
 
 const calculateBaseStats = (rawStats, evolutionStages) => {
@@ -1872,6 +1936,198 @@ const LEGENDARY_POKEMON = {
 };
 
 // ============================================================================
+// GYM LEADER POKEMON (for career battles)
+// ============================================================================
+
+const GYM_LEADER_POKEMON = {
+  BlaineArcanine: {
+    name: 'Arcanine',
+    primaryType: 'Fire',
+    baseStats: { HP: 130, Attack: 110, Defense: 85, Instinct: 80, Speed: 95 },
+    typeAptitudes: { Red: 'S', Blue: 'D', Green: 'B', Purple: 'C', Yellow: 'C', Orange: 'C' },
+    strategy: 'Nuker',
+    strategyGrade: 'A',
+    defaultAbilities: ['Flamethrower', 'FireFang', 'FlareBlitz']
+  },
+  MistyStarmie: {
+    name: 'Starmie',
+    primaryType: 'Water',
+    baseStats: { HP: 115, Attack: 85, Defense: 90, Instinct: 115, Speed: 95 },
+    typeAptitudes: { Red: 'C', Blue: 'A', Green: 'D', Purple: 'A', Yellow: 'B', Orange: 'C' },
+    strategy: 'Balanced',
+    strategyGrade: 'A',
+    defaultAbilities: ['Surf', 'Psychic', 'IceBeam']
+  },
+  ErikaVileplume: {
+    name: 'Vileplume',
+    primaryType: 'Grass',
+    baseStats: { HP: 125, Attack: 90, Defense: 95, Instinct: 100, Speed: 65 },
+    typeAptitudes: { Red: 'D', Blue: 'B', Green: 'A', Purple: 'B', Yellow: 'C', Orange: 'C' },
+    strategy: 'Scaler',
+    strategyGrade: 'A',
+    defaultAbilities: ['GigaDrain', 'SludgeBomb', 'SolarBeam']
+  },
+  SurgeRaichu: {
+    name: 'Raichu',
+    primaryType: 'Electric',
+    baseStats: { HP: 110, Attack: 95, Defense: 70, Instinct: 95, Speed: 120 },
+    typeAptitudes: { Red: 'B', Blue: 'C', Green: 'B', Purple: 'C', Yellow: 'S', Orange: 'C' },
+    strategy: 'Nuker',
+    strategyGrade: 'A',
+    defaultAbilities: ['Thunderbolt', 'Thunder', 'VoltSwitch']
+  },
+  AgathaNidoking: {
+    name: 'Nidoking',
+    primaryType: 'Fighting',
+    baseStats: { HP: 125, Attack: 110, Defense: 85, Instinct: 85, Speed: 90 },
+    typeAptitudes: { Red: 'B', Blue: 'C', Green: 'B', Purple: 'A', Yellow: 'C', Orange: 'A' },
+    strategy: 'Balanced',
+    strategyGrade: 'A',
+    defaultAbilities: ['Earthquake', 'SludgeBomb', 'IceBeam']
+  },
+  GiovanniRapidash: {
+    name: 'Rapidash',
+    primaryType: 'Fire',
+    baseStats: { HP: 115, Attack: 105, Defense: 75, Instinct: 85, Speed: 115 },
+    typeAptitudes: { Red: 'A', Blue: 'D', Green: 'B', Purple: 'B', Yellow: 'C', Orange: 'C' },
+    strategy: 'Nuker',
+    strategyGrade: 'A',
+    defaultAbilities: ['FlareBlitz', 'Flamethrower', 'IronTail']
+  },
+  WallaceLapras: {
+    name: 'Lapras',
+    primaryType: 'Water',
+    baseStats: { HP: 150, Attack: 90, Defense: 95, Instinct: 100, Speed: 65 },
+    typeAptitudes: { Red: 'C', Blue: 'S', Green: 'D', Purple: 'B', Yellow: 'C', Orange: 'C' },
+    strategy: 'Scaler',
+    strategyGrade: 'A',
+    defaultAbilities: ['HydroPump', 'IceBeam', 'Blizzard']
+  },
+  WattsonElectabuzz: {
+    name: 'Electabuzz',
+    primaryType: 'Electric',
+    baseStats: { HP: 115, Attack: 93, Defense: 67, Instinct: 95, Speed: 115 },
+    typeAptitudes: { Red: 'B', Blue: 'C', Green: 'B', Purple: 'C', Yellow: 'A', Orange: 'C' },
+    strategy: 'Nuker',
+    strategyGrade: 'A',
+    defaultAbilities: ['Thunderbolt', 'ThunderShock', 'WildCharge']
+  },
+  WillWeezing: {
+    name: 'Weezing',
+    primaryType: 'Psychic',
+    baseStats: { HP: 115, Attack: 95, Defense: 135, Instinct: 85, Speed: 65 },
+    typeAptitudes: { Red: 'B', Blue: 'C', Green: 'C', Purple: 'A', Yellow: 'C', Orange: 'C' },
+    strategy: 'Scaler',
+    strategyGrade: 'A',
+    defaultAbilities: ['SludgeBomb', 'ShadowBall', 'DarkPulse']
+  },
+  FlanneryMagmar: {
+    name: 'Magmar',
+    primaryType: 'Fire',
+    baseStats: { HP: 115, Attack: 105, Defense: 67, Instinct: 105, Speed: 103 },
+    typeAptitudes: { Red: 'A', Blue: 'D', Green: 'B', Purple: 'C', Yellow: 'C', Orange: 'C' },
+    strategy: 'Nuker',
+    strategyGrade: 'A',
+    defaultAbilities: ['Flamethrower', 'LavaPlume', 'FireBlast']
+  },
+  SabrinaArbok: {
+    name: 'Arbok',
+    primaryType: 'Psychic',
+    baseStats: { HP: 110, Attack: 100, Defense: 79, Instinct: 79, Speed: 85 },
+    typeAptitudes: { Red: 'B', Blue: 'C', Green: 'C', Purple: 'A', Yellow: 'C', Orange: 'B' },
+    strategy: 'Balanced',
+    strategyGrade: 'A',
+    defaultAbilities: ['SludgeBomb', 'DarkPulse', 'Psychic']
+  },
+  JuanVaporeon: {
+    name: 'Vaporeon',
+    primaryType: 'Water',
+    baseStats: { HP: 150, Attack: 75, Defense: 70, Instinct: 115, Speed: 75 },
+    typeAptitudes: { Red: 'C', Blue: 'S', Green: 'D', Purple: 'B', Yellow: 'C', Orange: 'C' },
+    strategy: 'Scaler',
+    strategyGrade: 'A',
+    defaultAbilities: ['HydroPump', 'Surf', 'IceBeam']
+  },
+  WinonaExeggutor: {
+    name: 'Exeggutor',
+    primaryType: 'Grass',
+    baseStats: { HP: 135, Attack: 100, Defense: 90, Instinct: 135, Speed: 55 },
+    typeAptitudes: { Red: 'D', Blue: 'B', Green: 'A', Purple: 'A', Yellow: 'C', Orange: 'C' },
+    strategy: 'Scaler',
+    strategyGrade: 'A',
+    defaultAbilities: ['SolarBeam', 'Psychic', 'GigaDrain']
+  },
+  BrunoMachamp: {
+    name: 'Machamp',
+    primaryType: 'Fighting',
+    baseStats: { HP: 130, Attack: 130, Defense: 85, Instinct: 70, Speed: 60 },
+    typeAptitudes: { Red: 'C', Blue: 'C', Green: 'C', Purple: 'D', Yellow: 'C', Orange: 'S' },
+    strategy: 'Nuker',
+    strategyGrade: 'A',
+    defaultAbilities: ['CloseCombat', 'DynamicPunch', 'Earthquake']
+  }
+};
+
+// ============================================================================
+// ELITE FOUR (for end-game career battles)
+// ============================================================================
+
+const ELITE_FOUR = [
+  {
+    name: 'Lorelei',
+    type: 'Water',
+    pokemon: {
+      name: 'Cloyster',
+      primaryType: 'Water',
+      baseStats: { HP: 120, Attack: 100, Defense: 180, Instinct: 90, Speed: 70 },
+      typeAptitudes: { Red: 'C', Blue: 'A', Green: 'D', Purple: 'B', Yellow: 'C', Orange: 'C' },
+      strategy: 'Scaler',
+      strategyGrade: 'S',
+      defaultAbilities: ['HydroPump', 'Blizzard', 'IceBeam']
+    }
+  },
+  {
+    name: 'Bruno',
+    type: 'Fighting',
+    pokemon: {
+      name: 'Machamp',
+      primaryType: 'Fighting',
+      baseStats: { HP: 140, Attack: 145, Defense: 95, Instinct: 75, Speed: 65 },
+      typeAptitudes: { Red: 'C', Blue: 'C', Green: 'C', Purple: 'D', Yellow: 'C', Orange: 'S' },
+      strategy: 'Nuker',
+      strategyGrade: 'S',
+      defaultAbilities: ['CloseCombat', 'Earthquake', 'StoneEdge']
+    }
+  },
+  {
+    name: 'Agatha',
+    type: 'Psychic',
+    pokemon: {
+      name: 'Gengar',
+      primaryType: 'Psychic',
+      baseStats: { HP: 110, Attack: 140, Defense: 70, Instinct: 145, Speed: 130 },
+      typeAptitudes: { Red: 'B', Blue: 'B', Green: 'C', Purple: 'S', Yellow: 'D', Orange: 'B' },
+      strategy: 'Nuker',
+      strategyGrade: 'S',
+      defaultAbilities: ['ShadowBall', 'PsychicBlast', 'DarkPulse']
+    }
+  },
+  {
+    name: 'Lance',
+    type: 'Fighting',
+    pokemon: {
+      name: 'Dragonite',
+      primaryType: 'Fighting',
+      baseStats: { HP: 145, Attack: 145, Defense: 100, Instinct: 110, Speed: 90 },
+      typeAptitudes: { Red: 'A', Blue: 'A', Green: 'A', Purple: 'B', Yellow: 'A', Orange: 'S' },
+      strategy: 'Balanced',
+      strategyGrade: 'S',
+      defaultAbilities: ['DragonClaw', 'HyperBeam', 'Earthquake']
+    }
+  }
+];
+
+// ============================================================================
 // SUPPORT CARDS
 // ============================================================================
 
@@ -1887,7 +2143,7 @@ const SUPPORT_CARDS = {
       stats: { HP: 0, Attack: 50, Defense: 0, Instinct: 30, Speed: 0 },
       description: 'The Sinnoh Champion grants overwhelming power'
     },
-    moveHints: ['Earthquake', 'Dragon Claw', 'Outrage', 'Stone Edge']
+    moveHints: ['Earthquake', 'DragonClaw', 'Outrage', 'StoneEdge']
   },
   RedCharizard: {
     name: 'Red & Charizard',
@@ -1900,7 +2156,7 @@ const SUPPORT_CARDS = {
       stats: { HP: 0, Attack: 55, Defense: 0, Instinct: 35, Speed: 0 },
       description: 'The legendary trainer boosts overwhelming power'
     },
-    moveHints: ['Flare Blitz', 'Dragon Dance', 'Air Slash', 'Heat Wave', 'Blast Burn']
+    moveHints: ['FlareBlitz', 'DragonDance', 'AirSlash', 'HeatWave', 'BlastBurn']
   },
   StevenMetagross: {
     name: 'Steven & Metagross',
@@ -1913,7 +2169,7 @@ const SUPPORT_CARDS = {
       stats: { HP: 0, Attack: 0, Defense: 60, Instinct: 30, Speed: 0 },
       description: 'The Hoenn Champion fortifies iron defenses'
     },
-    moveHints: ['Meteor Mash', 'Zen Headbutt', 'Bullet Punch', 'Iron Defense']
+    moveHints: ['MeteorMash', 'ZenHeadbutt', 'BulletPunch', 'IronDefense']
   },
   LanceDragonite: {
     name: 'Lance & Dragonite',
@@ -1921,12 +2177,13 @@ const SUPPORT_CARDS = {
     pokemon: 'Dragonite',
     rarity: 'Rare',
     supportType: 'Instinct',
+    appearanceChance: 0.45,
     effect: {
       type: 'stat_boost',
       stats: { HP: 0, Attack: 25, Defense: 0, Instinct: 40, Speed: 0 },
       description: 'The Dragon Master enhances draconic power'
     },
-    moveHints: ['Dragon Dance', 'Outrage', 'Extreme Speed', 'Dragon Rush']
+    moveHints: ['DragonDance', 'Outrage', 'ExtremeSpeed', 'DragonRush']
   },
   MistyStarmie: {
     name: 'Misty & Starmie',
@@ -1934,13 +2191,14 @@ const SUPPORT_CARDS = {
     pokemon: 'Starmie',
     rarity: 'Uncommon',
     supportType: 'Instinct',
+    appearanceChance: 0.40,
     effect: {
       type: 'training_boost',
       trainingMultiplier: 1.15,
       energyCostReduction: 5,
       description: 'The Cerulean Gym Leader improves training efficiency'
     },
-    moveHints: ['Hydro Pump', 'Psychic', 'Rapid Spin', 'Ice Beam']
+    moveHints: ['HydroPump', 'Psychic', 'RapidSpin', 'IceBeam']
   },
   BrockOnix: {
     name: 'Brock & Onix',
@@ -1948,12 +2206,13 @@ const SUPPORT_CARDS = {
     pokemon: 'Onix',
     rarity: 'Uncommon',
     supportType: 'Defense',
+    appearanceChance: 0.42,
     effect: {
       type: 'stat_boost',
       stats: { HP: 20, Attack: 0, Defense: 40, Instinct: 0, Speed: 0 },
       description: 'The Pewter Gym Leader hardens defenses'
     },
-    moveHints: ['Rock Slide', 'Iron Tail', 'Stealth Rock', 'Sandstorm']
+    moveHints: ['RockSlide', 'IronTail', 'StealthRock', 'Sandstorm']
   },
   ErikaTangela: {
     name: 'Erika & Tangela',
@@ -1961,12 +2220,13 @@ const SUPPORT_CARDS = {
     pokemon: 'Tangela',
     rarity: 'Uncommon',
     supportType: 'HP',
+    appearanceChance: 0.42,
     effect: {
       type: 'stat_boost',
       stats: { HP: 40, Attack: 0, Defense: 20, Instinct: 0, Speed: 0 },
       description: 'The Celadon Gym Leader nurtures vitality'
     },
-    moveHints: ['Giga Drain', 'Sleep Powder', 'Synthesis', 'Power Whip']
+    moveHints: ['GigaDrain', 'SleepPowder', 'Synthesis', 'PowerWhip']
   },
   SabrinaAlakazam: {
     name: 'Sabrina & Alakazam',
@@ -1974,12 +2234,13 @@ const SUPPORT_CARDS = {
     pokemon: 'Alakazam',
     rarity: 'Rare',
     supportType: 'Instinct',
+    appearanceChance: 0.43,
     effect: {
       type: 'stat_boost',
       stats: { HP: 0, Attack: 0, Defense: 0, Instinct: 45, Speed: 20 },
       description: 'The Saffron Gym Leader sharpens the mind'
     },
-    moveHints: ['Psychic', 'Future Sight', 'Focus Blast', 'Calm Mind', 'Shadow Ball']
+    moveHints: ['Psychic', 'FutureSight', 'FocusBlast', 'CalmMind', 'ShadowBall']
   },
   BlaineMagmar: {
     name: 'Blaine & Magmar',
@@ -1987,12 +2248,13 @@ const SUPPORT_CARDS = {
     pokemon: 'Magmar',
     rarity: 'Uncommon',
     supportType: 'Attack',
+    appearanceChance: 0.45,
     effect: {
       type: 'stat_boost',
       stats: { HP: 0, Attack: 35, Defense: 0, Instinct: 20, Speed: 0 },
       description: 'The Cinnabar Gym Leader ignites fiery passion'
     },
-    moveHints: ['Fire Blast', 'Flamethrower', 'Fire Punch', 'Lava Plume']
+    moveHints: ['FireBlast', 'Flamethrower', 'FirePunch', 'LavaPlume']
   },
   KogaWeezing: {
     name: 'Koga & Weezing',
@@ -2000,12 +2262,13 @@ const SUPPORT_CARDS = {
     pokemon: 'Weezing',
     rarity: 'Uncommon',
     supportType: 'Instinct',
+    appearanceChance: 0.48,
     effect: {
       type: 'stat_boost',
       stats: { HP: 0, Attack: 0, Defense: 0, Instinct: 30, Speed: 15 },
       description: 'The Fuchsia Gym Leader masters poison tactics'
     },
-    moveHints: ['Sludge Bomb', 'Toxic', 'Will-O-Wisp', 'Explosion']
+    moveHints: ['SludgeBomb', 'Toxic', 'WillOWisp', 'Explosion']
   },
   WhitneyMiltank: {
     name: 'Whitney & Miltank',
@@ -2013,12 +2276,13 @@ const SUPPORT_CARDS = {
     pokemon: 'Miltank',
     rarity: 'Common',
     supportType: 'HP',
+    appearanceChance: 0.52,
     effect: {
       type: 'stat_boost',
       stats: { HP: 20, Attack: 0, Defense: 15, Instinct: 0, Speed: 0 },
       description: 'The Goldenrod Gym Leader boosts endurance'
     },
-    moveHints: ['Rollout', 'Body Slam', 'Milk Drink', 'Attract']
+    moveHints: ['Rollout', 'BodySlam', 'MilkDrink', 'Attract']
   },
   MortyGengar: {
     name: 'Morty & Gengar',
@@ -2026,12 +2290,13 @@ const SUPPORT_CARDS = {
     pokemon: 'Gengar',
     rarity: 'Rare',
     supportType: 'Instinct',
+    appearanceChance: 0.50,
     effect: {
       type: 'stat_boost',
       stats: { HP: 0, Attack: 0, Defense: 0, Instinct: 30, Speed: 20 },
       description: 'The Ecruteak Gym Leader channels ghostly power'
     },
-    moveHints: ['Shadow Ball', 'Sludge Bomb', 'Hypnosis', 'Dream Eater', 'Hex']
+    moveHints: ['ShadowBall', 'SludgeBomb', 'Hypnosis', 'DreamEater', 'Hex']
   },
   ChuckPoliwrath: {
     name: 'Chuck & Poliwrath',
@@ -2039,12 +2304,13 @@ const SUPPORT_CARDS = {
     pokemon: 'Poliwrath',
     rarity: 'Common',
     supportType: 'Attack',
+    appearanceChance: 0.52,
     effect: {
       type: 'stat_boost',
       stats: { HP: 15, Attack: 20, Defense: 0, Instinct: 0, Speed: 0 },
       description: 'The Cianwood Gym Leader builds strength'
     },
-    moveHints: ['Dynamic Punch', 'Waterfall', 'Submission', 'Bulk Up']
+    moveHints: ['DynamicPunch', 'Waterfall', 'Submission', 'BulkUp']
   },
   JasminSteelix: {
     name: 'Jasmine & Steelix',
@@ -2052,12 +2318,13 @@ const SUPPORT_CARDS = {
     pokemon: 'Steelix',
     rarity: 'Uncommon',
     supportType: 'Defense',
+    appearanceChance: 0.46,
     effect: {
       type: 'stat_boost',
       stats: { HP: 20, Attack: 0, Defense: 30, Instinct: 0, Speed: 0 },
       description: 'The Olivine Gym Leader provides iron defense'
     },
-    moveHints: ['Iron Tail', 'Earthquake', 'Screech', 'Iron Defense']
+    moveHints: ['IronTail', 'Earthquake', 'Screech', 'IronDefense']
   },
   PryceDelibird: {
     name: 'Pryce & Delibird',
@@ -2065,13 +2332,14 @@ const SUPPORT_CARDS = {
     pokemon: 'Delibird',
     rarity: 'Common',
     supportType: 'HP',
+    appearanceChance: 0.55,
     effect: {
       type: 'energy_boost',
       energyBonus: 15,
       restBonus: 10,
       description: 'The Mahogany Gym Leader aids recovery'
     },
-    moveHints: ['Present', 'Ice Beam', 'Ice Punch', 'Blizzard']
+    moveHints: ['Present', 'IceBeam', 'IcePunch', 'Blizzard']
   },
   WallaceMillotic: {
     name: 'Wallace & Milotic',
@@ -2079,12 +2347,13 @@ const SUPPORT_CARDS = {
     pokemon: 'Milotic',
     rarity: 'Rare',
     supportType: 'Defense',
+    appearanceChance: 0.47,
     effect: {
       type: 'stat_boost',
       stats: { HP: 25, Attack: 0, Defense: 30, Instinct: 0, Speed: 0 },
       description: 'The Hoenn Champion exudes elegance'
     },
-    moveHints: ['Surf', 'Ice Beam', 'Recover', 'Dragon Tail', 'Aqua Ring']
+    moveHints: ['Surf', 'IceBeam', 'Recover', 'DragonTail', 'AquaRing']
   },
   WinonaSkarmory: {
     name: 'Winona & Skarmory',
@@ -2092,12 +2361,13 @@ const SUPPORT_CARDS = {
     pokemon: 'Skarmory',
     rarity: 'Uncommon',
     supportType: 'Speed',
+    appearanceChance: 0.46,
     effect: {
       type: 'stat_boost',
       stats: { HP: 0, Attack: 0, Defense: 25, Instinct: 0, Speed: 25 },
       description: 'The Fortree Gym Leader soars with grace'
     },
-    moveHints: ['Steel Wing', 'Brave Bird', 'Spikes', 'Roost']
+    moveHints: ['SteelWing', 'BraveBird', 'Spikes', 'Roost']
   },
   WattsonMagneton: {
     name: 'Wattson & Magneton',
@@ -2105,12 +2375,13 @@ const SUPPORT_CARDS = {
     pokemon: 'Magneton',
     rarity: 'Common',
     supportType: 'Instinct',
+    appearanceChance: 0.54,
     effect: {
       type: 'stat_boost',
       stats: { HP: 0, Attack: 0, Defense: 0, Instinct: 20, Speed: 12 },
       description: 'The Mauville Gym Leader electrifies training'
     },
-    moveHints: ['Thunderbolt', 'Thunder Wave', 'Flash Cannon', 'Volt Switch']
+    moveHints: ['Thunderbolt', 'ThunderWave', 'FlashCannon', 'VoltSwitch']
   },
   FlanneryCamerupt: {
     name: 'Flannery & Camerupt',
@@ -2118,12 +2389,13 @@ const SUPPORT_CARDS = {
     pokemon: 'Camerupt',
     rarity: 'Common',
     supportType: 'Attack',
+    appearanceChance: 0.52,
     effect: {
       type: 'stat_boost',
       stats: { HP: 15, Attack: 20, Defense: 0, Instinct: 0, Speed: 0 },
       description: 'The Lavaridge Gym Leader unleashes volcanic fury'
     },
-    moveHints: ['Eruption', 'Earth Power', 'Lava Plume', 'Earthquake']
+    moveHints: ['Eruption', 'EarthPower', 'LavaPlume', 'Earthquake']
   },
   CynthiaLucario: {
     name: 'Cynthia & Lucario',
@@ -2131,13 +2403,14 @@ const SUPPORT_CARDS = {
     pokemon: 'Lucario',
     rarity: 'Rare',
     supportType: 'Attack',
+    appearanceChance: 0.42,
     effect: {
       type: 'training_boost',
       trainingMultiplier: 1.25,
       failureReduction: 0.15,
       description: 'The Champion refines battle technique'
     },
-    moveHints: ['Aura Sphere', 'Close Combat', 'Extreme Speed', 'Bullet Punch', 'Swords Dance']
+    moveHints: ['AuraSphere', 'CloseCombat', 'ExtremeSpeed', 'BulletPunch', 'SwordsDance']
   },
   NReshiram: {
     name: 'N & Reshiram',
@@ -2150,7 +2423,7 @@ const SUPPORT_CARDS = {
       stats: { HP: 0, Attack: 45, Defense: 0, Instinct: 35, Speed: 0 },
       description: 'The King of Team Plasma wields truth'
     },
-    moveHints: ['Blue Flare', 'Fusion Flare', 'Dragon Pulse', 'Draco Meteor']
+    moveHints: ['BlueFlare', 'FusionFlare', 'DragonPulse', 'DracoMeteor']
   },
   IrisHaxorus: {
     name: 'Iris & Haxorus',
@@ -2158,12 +2431,13 @@ const SUPPORT_CARDS = {
     pokemon: 'Haxorus',
     rarity: 'Rare',
     supportType: 'Attack',
+    appearanceChance: 0.44,
     effect: {
       type: 'stat_boost',
       stats: { HP: 0, Attack: 40, Defense: 0, Instinct: 0, Speed: 25 },
       description: 'The Unova Champion commands dragons'
     },
-    moveHints: ['Dragon Dance', 'Outrage', 'Earthquake', 'Dragon Claw', 'Swords Dance']
+    moveHints: ['DragonDance', 'Outrage', 'Earthquake', 'DragonClaw', 'SwordsDance']
   },
   ElitesFourKaren: {
     name: 'Karen & Umbreon',
@@ -2171,12 +2445,13 @@ const SUPPORT_CARDS = {
     pokemon: 'Umbreon',
     rarity: 'Uncommon',
     supportType: 'Defense',
+    appearanceChance: 0.44,
     effect: {
       type: 'stat_boost',
       stats: { HP: 0, Attack: 0, Defense: 30, Instinct: 25, Speed: 0 },
       description: 'The Elite Four member embraces darkness'
     },
-    moveHints: ['Foul Play', 'Moonlight', 'Toxic', 'Curse']
+    moveHints: ['FoulPlay', 'Moonlight', 'Toxic', 'Curse']
   },
   AgathaGengar: {
     name: 'Agatha & Gengar',
@@ -2184,12 +2459,13 @@ const SUPPORT_CARDS = {
     pokemon: 'Gengar',
     rarity: 'Uncommon',
     supportType: 'Instinct',
+    appearanceChance: 0.46,
     effect: {
       type: 'stat_boost',
       stats: { HP: 0, Attack: 0, Defense: 0, Instinct: 30, Speed: 20 },
       description: 'The Elite Four member masters ghosts'
     },
-    moveHints: ['Shadow Ball', 'Sludge Wave', 'Destiny Bond', 'Hypnosis']
+    moveHints: ['ShadowBall', 'SludgeWave', 'DestinyBond', 'Hypnosis']
   },
   BluePidgeot: {
     name: 'Blue & Pidgeot',
@@ -2197,12 +2473,13 @@ const SUPPORT_CARDS = {
     pokemon: 'Pidgeot',
     rarity: 'Rare',
     supportType: 'Speed',
+    appearanceChance: 0.48,
     effect: {
       type: 'stat_boost',
       stats: { HP: 0, Attack: 25, Defense: 0, Instinct: 0, Speed: 30 },
       description: 'The rival trainer pushes limits'
     },
-    moveHints: ['Hurricane', 'Brave Bird', 'Air Slash', 'Roost', 'U-turn']
+    moveHints: ['Hurricane', 'BraveBird', 'AirSlash', 'Roost', 'UTurn']
   },
   GiovanniPersian: {
     name: 'Giovanni & Persian',
@@ -2210,12 +2487,13 @@ const SUPPORT_CARDS = {
     pokemon: 'Persian',
     rarity: 'Rare',
     supportType: 'Attack',
+    appearanceChance: 0.46,
     effect: {
       type: 'stat_boost',
       stats: { HP: 0, Attack: 35, Defense: 0, Instinct: 25, Speed: 0 },
       description: 'The Rocket Boss commands ruthlessly'
     },
-    moveHints: ['Slash', 'Power Gem', 'Feint Attack', 'Nasty Plot']
+    moveHints: ['Slash', 'PowerGem', 'FeintAttack', 'NastyPlot']
   },
   ProfessorOakMew: {
     name: 'Professor Oak & Mew',
@@ -2229,7 +2507,7 @@ const SUPPORT_CARDS = {
       friendshipBonus: 20,
       description: 'The Professor grants knowledge and wisdom'
     },
-    moveHints: ['Psychic', 'Aura Sphere', 'Transform', 'Metronome', 'Ancient Power']
+    moveHints: ['Psychic', 'AuraSphere', 'Transform', 'Metronome', 'AncientPower']
   },
   DianthaDiancie: {
     name: 'Diantha & Diancie',
@@ -2242,7 +2520,7 @@ const SUPPORT_CARDS = {
       stats: { HP: 30, Attack: 0, Defense: 50, Instinct: 0, Speed: 0 },
       description: 'The Kalos Champion radiates brilliance'
     },
-    moveHints: ['Diamond Storm', 'Moonblast', 'Dazzling Gleam', 'Rock Polish']
+    moveHints: ['DiamondStorm', 'Moonblast', 'DazzlingGleam', 'RockPolish']
   },
   MaxieGroudon: {
     name: 'Maxie & Groudon',
@@ -2250,12 +2528,13 @@ const SUPPORT_CARDS = {
     pokemon: 'Groudon',
     rarity: 'Rare',
     supportType: 'Attack',
+    appearanceChance: 0.44,
     effect: {
       type: 'stat_boost',
       stats: { HP: 25, Attack: 35, Defense: 0, Instinct: 0, Speed: 0 },
       description: 'The Magma Leader harnesses earth power'
     },
-    moveHints: ['Earthquake', 'Precipice Blades', 'Fire Punch', 'Bulk Up', 'Lava Plume']
+    moveHints: ['Earthquake', 'PrecipiceBlades', 'FirePunch', 'BulkUp', 'LavaPlume']
   },
   ArchieKyogre: {
     name: 'Archie & Kyogre',
@@ -2263,14 +2542,16 @@ const SUPPORT_CARDS = {
     pokemon: 'Kyogre',
     rarity: 'Rare',
     supportType: 'HP',
+    appearanceChance: 0.45,
     effect: {
       type: 'stat_boost',
       stats: { HP: 35, Attack: 0, Defense: 25, Instinct: 0, Speed: 0 },
       description: 'The Aqua Leader commands the seas'
     },
-    moveHints: ['Origin Pulse', 'Hydro Pump', 'Ice Beam', 'Thunder', 'Aqua Ring']
+    moveHints: ['OriginPulse', 'HydroPump', 'IceBeam', 'Thunder', 'AquaRing']
   }
 };
+
 
 // ============================================================================
 // GACHA POOLS
@@ -2316,6 +2597,8 @@ const GACHA_RARITY = {
     Uncommon: {
         rate: 0.30, // 30%
         pokemon: [
+            'Growlithe', 'Vulpix', 'Ponyta', 'Houndour', 'Torchic',
+            'Chinchou', 'Mareep', 'Skorupi', 'Eevee',
             'Togepi', 'Snubbull', 'Teddiursa', 'Slugma', 'Skitty',
             'Pikachu', 'Gastly', 'Fletchling', 'Cyndaquil', 'Totodile',
             'Chikorita', 'Mudkip', 'Treecko', 'Piplup', 'Turtwig',
@@ -2327,25 +2610,29 @@ const GACHA_RARITY = {
         rate: 0.09, // 9%
         pokemon: [
             'Magmar', 'Electabuzz', 'Clefairy', 'Jigglypuff',
-            'Phanpy', 'Spheal', 'Spoink', 'Deerling', 'Tangela', 'Muk',
+            'Phanpy', 'Spheal', 'Spoink', 'Deerling', 'Tangela',
             'Lapras', 'Bunnelby', 'Yungoos', 'Wooloo', 'Skwovet',
             'Sneasel', 'Murkrow', 'Yanma', 'Buneary', 'Glameow',
             'Stunky', 'Croagunk', 'Sandile', 'Scraggy', 'Gothita',
             'Litleo', 'Skiddo', 'Pancham', 'Honedge', 'Inkay',
-            'Skrelp', 'Helioptile', 'Tyrunt', 'Amaura', 'Goomy', 'Noibat'
+            'Skrelp', 'Helioptile', 'Tyrunt', 'Amaura', 'Goomy', 'Noibat',
+            'Dratini'
         ]
     },
     Legendary: {
         rate: 0.01, // 1%
         pokemon: [
-            'Moltres', 'Articuno', 'Zapdos', 'Raikou', 'Entei', 
-            'Suicune', 'Celebi', 'Gengar'
+            'Moltres', 'Articuno', 'Zapdos', 'Raikou', 'Entei',
+            'Suicune', 'Celebi', 'Lugia'
         ]
     }
 };
 
 
-// ===== RANDOM EVENTS =====
+// ============================================================================
+// RANDOM EVENTS
+// ============================================================================
+
 const RANDOM_EVENTS = {
   // Stat increase events (10)
   wildEncounter: {
@@ -2963,11 +3250,8 @@ const RANDOM_EVENTS = {
     effect: { stats: { HP: -11, Attack: -6 }, energy: -15 }
   },
   weatherDelay: {
-
-// ============================================================================
-// HANGOUT EVENTS
-// ============================================================================
-
+    type: 'negative',
+    name: 'Sandstorm',
     description: 'A terrible sandstorm prevents proper training.',
     effect: { energy: -22 }
   },
@@ -2997,7 +3281,11 @@ const RANDOM_EVENTS = {
   }
 };
 
-// Hangout events - one per support pokemon, can only happen once
+
+// ============================================================================
+// HANGOUT EVENTS
+// ============================================================================
+
 const HANGOUT_EVENTS = {
   CynthiaGarchomp: {
     name: 'Champion\'s Masterclass',
@@ -3150,12 +3438,37 @@ const HANGOUT_EVENTS = {
     effect: { stats: { Attack: 11, Speed: 12 }, moveHint: 'AerialAce', skillPoints: 13 }
   },
   GiovanniPersian: {
-    name: 'Ruthless Training',
-    description: 'Giovanni teaches cold, calculating battle tactics.',
-    flavor: 'Persian purrs menacingly as Giovanni adjusts his suit. "Power is everything—sentiment is weakness," he states coldly.',
-    effect: { stats: { Attack: 13, Instinct: 11 }, moveHint: 'Slash', skillPoints: 14 }
+    name: 'Ruthless Tactics',
+    description: 'Giovanni demonstrates calculated dominance.',
+    flavor: 'Persian prowls with predatory grace. Giovanni states coldly, "Power respects only power. Show no mercy."',
+    effect: { stats: { Attack: 13, Instinct: 10 }, moveHint: 'PayDay', skillPoints: 14 }
+  },
+  ProfessorOakMew: {
+    name: 'Legendary Research',
+    description: 'Professor Oak shares knowledge with Mew\'s assistance.',
+    flavor: 'Mew playfully teleports around as Oak beams. "The bond between Pokemon and trainer transcends science!" he declares.',
+    effect: { stats: { Instinct: 14, Speed: 10 }, skillPoints: 18, energy: 20 }
+  },
+  DianthaDiancie: {
+    name: 'Dazzling Showcase',
+    description: 'Diantha performs with Diancie\'s brilliance.',
+    flavor: 'Diancie\'s diamonds sparkle radiantly. Diantha smiles, "A champion shines brightest under pressure\u2014be dazzling!"',
+    effect: { stats: { HP: 12, Defense: 15 }, moveHint: 'DiamondStorm', energy: 18 }
+  },
+  MaxieGroudon: {
+    name: 'Land Expansion',
+    description: 'Maxie demonstrates earth-shaking power.',
+    flavor: 'Groudon\'s presence makes the ground tremble. Maxie declares, "The land itself will bow to our strength!"',
+    effect: { stats: { HP: 11, Attack: 13 }, moveHint: 'Earthquake', energy: 16 }
+  },
+  ArchieKyogre: {
+    name: 'Ocean\'s Depth',
+    description: 'Archie channels the power of the seas.',
+    flavor: 'Kyogre summons massive waves. Archie roars, "The ocean\'s fury is unstoppable\u2014embrace its power!"',
+    effect: { stats: { HP: 13, Defense: 11 }, moveHint: 'HydroPump', energy: 17 }
   }
 };
+
 
 // ============================================================================
 // EXPORTS
@@ -3170,6 +3483,8 @@ module.exports = {
   calculateBaseStats,
   POKEMON,
   LEGENDARY_POKEMON,
+  GYM_LEADER_POKEMON,
+  ELITE_FOUR,
   SUPPORT_CARDS,
   SUPPORT_GACHA_RARITY,
   GACHA_RARITY,

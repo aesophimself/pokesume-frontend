@@ -10,12 +10,12 @@ import { useGame } from '../contexts/GameContext';
 import { useInventory } from '../contexts/InventoryContext';
 import {
   generatePokemonSprite,
-  getTypeColor,
   getGradeColor,
   getPokemonGrade,
   getPokemonRarity,
   StatIcon
 } from '../utils/gameUtils';
+import { TypeBadge } from '../components/TypeIcon';
 import { POKEMON } from '../shared/gameData';
 
 const PokemonSelectionScreen = () => {
@@ -159,11 +159,9 @@ const PokemonSelectionScreen = () => {
                         {getPokemonGrade(pokemon.baseStats)}
                       </span>
                     </div>
-                    <p className="text-xs text-gray-600">
-                      <span style={{ color: getTypeColor(pokemon.primaryType), fontWeight: 'bold' }}>
-                        {pokemon.primaryType}
-                      </span>
-                    </p>
+                    <div className="mt-1">
+                      <TypeBadge type={pokemon.primaryType} size={12} />
+                    </div>
                     <p className="text-xs text-gray-500">{pokemon.strategy} ({pokemon.strategyGrade})</p>
                   </div>
                 </div>
