@@ -120,7 +120,7 @@ const SupportGachaScreen = () => {
                         src={trainerImage}
                         alt={SUPPORT_CARDS[rollResult.support].trainer}
                         className="w-24 h-24 sm:w-32 sm:h-32 object-contain rounded-lg border-4 bg-white"
-                        style={{ borderColor: getRarityColor(rollResult.rarity), imageRendering: 'pixelated' }}
+                        style={{ borderColor: getRarityColor(rollResult.rarity) }}
                       />
                     </div>
                   );

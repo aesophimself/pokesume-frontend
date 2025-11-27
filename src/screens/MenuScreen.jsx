@@ -1,192 +1,255 @@
 /**
  * MenuScreen Component
  *
- * Main menu where users can navigate to different game modes:
- * - Start New Career
- * - View inventories (Pokemon, Supports, Trained)
- * - Enter Tournaments
- * - Roll Gacha
+ * Main menu redesigned with Pokemon TCG Pocket style UI.
+ * Features neumorphic/soft UI elements, bright colors,
+ * and Pokemon-style sprite icons from PokéSprite.
  */
 
 import React from 'react';
-import { Sparkles, Trophy } from 'lucide-react';
+import {
+  Sparkles,
+  LogOut,
+  AlertTriangle
+} from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useGame } from '../contexts/GameContext';
 import { useInventory } from '../contexts/InventoryContext';
 import { generatePokemonSprite, getTypeColor } from '../utils/gameUtils';
-import { POKEMON, ICONS } from '../shared/gameData';
+import { POKEMON } from '../shared/gameData';
+
+// PokéSprite base URL for items and misc sprites
+const POKESPRITE_BASE = 'https://raw.githubusercontent.com/msikma/pokesprite/master';
+
+// Pokemon-themed icon mappings using PokéSprite
+const MENU_ICONS = {
+  // New Career - VS Recorder (battle item)
+  career: `${POKESPRITE_BASE}/items/key-item/vs-recorder.png`,
+  // My Pokemon - PC Box item
+  pokemon: `${POKESPRITE_BASE}/items/key-item/town-map.png`,
+  // Supports - Old Sea Map (trainer card style)
+  supports: `${POKESPRITE_BASE}/items/key-item/vs-seeker.png`,
+  // Hall of Fame - Champion Ribbon
+  hallOfFame: `${POKESPRITE_BASE}/misc/ribbon/champion-ribbon.png`,
+  // Tournaments - Battle Champion Ribbon
+  tournaments: `${POKESPRITE_BASE}/misc/ribbon/world-champion-ribbon.png`,
+  // Pokemon Gacha - Master Ball
+  pokemonGacha: `${POKESPRITE_BASE}/items/ball/master-ball.png`,
+  // Support Gacha - Premier Ball (gift/special)
+  supportGacha: `${POKESPRITE_BASE}/items/ball/premier-ball.png`,
+};
+
+// Menu tile component with Pokemon sprite icon
+const MenuTile = ({ iconSrc, label, color, onClick, badge, disabled }) => (
+  <button
+    onClick={onClick}
+    disabled={disabled}
+    className={`
+      pocket-tile relative w-full flex-col py-4 px-2
+      ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
+    `}
+  >
+    {/* Icon container with Pokemon sprite */}
+    <div
+      className="w-12 h-12 rounded-lg flex items-center justify-center mb-1.5"
+      style={{ backgroundColor: `${color}15` }}
+    >
+      <img
+        src={iconSrc}
+        alt={label}
+        className="w-8 h-8 object-contain"
+      />
+    </div>
+
+    {/* Label */}
+    <span className="text-pocket-text font-medium text-xs text-center leading-tight">{label}</span>
+
+    {/* Badge */}
+    {badge !== undefined && badge > 0 && (
+      <div className="absolute top-1.5 right-1.5 min-w-4 h-4 px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+        {badge > 99 ? '99+' : badge}
+      </div>
+    )}
+  </button>
+);
 
 const MenuScreen = () => {
   const { user, logout } = useAuth();
   const { setGameState, setShowResetConfirm } = useGame();
-  const { pokemonInventory, supportInventory, trainedPokemon, primos, loadPokemonInventory, addPokemon } = useInventory();
+  const {
+    pokemonInventory,
+    supportInventory,
+    trainedPokemon,
+    primos,
+    loadPokemonInventory,
+    addPokemon
+  } = useInventory();
 
   // Starter selection (if user has no pokemon)
   if (pokemonInventory.length === 0) {
     return (
-      <div className="w-full h-screen bg-gradient-to-b from-blue-400 to-purple-500 flex items-center justify-center p-2 sm:p-4">
-        <div className="bg-white rounded-lg p-4 sm:p-8 max-w-2xl w-full shadow-2xl">
-          <h1 className="text-3xl sm:text-4xl font-bold text-center mb-4 text-purple-600">
+      <div className="min-h-screen bg-gradient-to-b from-pocket-bg to-pocket-bg-alt p-4 flex flex-col">
+        {/* Header */}
+        <div className="pocket-card mb-6">
+          <h1 className="text-2xl font-bold text-pocket-text text-center mb-2">
             Choose Your Starter!
           </h1>
-          <p className="text-center text-gray-600 mb-6">
-            Select your first Pokemon to begin your journey
+          <p className="text-pocket-text-light text-center text-sm">
+            Select your first Pokemon partner
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {['Charmander', 'Squirtle', 'Bulbasaur'].map(starter => {
-              const pokemon = POKEMON[starter];
-              return (
-                <div
-                  key={starter}
-                  onClick={async () => {
-                    // Add starter Pokemon to inventory
-                    const result = await addPokemon(starter, pokemon);
-                    if (result) {
-                      // Successfully added, reload inventory to show new Pokemon
-                      await loadPokemonInventory();
-                    } else {
-                      alert('Failed to add starter Pokemon. Please try again.');
-                    }
-                  }}
-                  className="bg-gradient-to-b from-gray-50 to-gray-100 rounded-lg p-4 cursor-pointer hover:shadow-xl transition transform hover:scale-105 border-2 border-purple-300"
-                >
-                  <div className="flex justify-center mb-3">
-                    {generatePokemonSprite(pokemon.primaryType, starter)}
-                  </div>
-                  <h3 className="text-xl font-bold text-center mb-2">{starter}</h3>
-                  <p
-                    className="text-center text-sm"
-                    style={{ color: getTypeColor(pokemon.primaryType), fontWeight: 'bold' }}
-                  >
-                    {pokemon.primaryType}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
         </div>
 
-        {/* Version number in bottom-right corner */}
-        <div className="fixed bottom-4 right-4 text-white text-xs font-semibold bg-black bg-opacity-30 px-3 py-1 rounded-lg">
-          v4.0.0 (Modular)
+        {/* Starter Grid */}
+        <div className="grid grid-cols-3 gap-3 flex-1">
+          {['Charmander', 'Squirtle', 'Bulbasaur'].map(starter => {
+            const pokemon = POKEMON[starter];
+            const typeColor = getTypeColor(pokemon.primaryType);
+            return (
+              <button
+                key={starter}
+                onClick={async () => {
+                  const result = await addPokemon(starter, pokemon);
+                  if (result) {
+                    await loadPokemonInventory();
+                  } else {
+                    alert('Failed to add starter Pokemon. Please try again.');
+                  }
+                }}
+                className="pocket-card flex flex-col items-center justify-center py-6 hover:scale-102 transition-transform"
+                style={{ borderLeft: `4px solid ${typeColor}` }}
+              >
+                <div className="transform hover:scale-110 transition-transform mb-3">
+                  {generatePokemonSprite(pokemon.primaryType, starter)}
+                </div>
+                <h3 className="text-pocket-text font-bold text-base mb-1">{starter}</h3>
+                <span
+                  className="text-xs font-semibold px-2 py-0.5 rounded-full"
+                  style={{ backgroundColor: `${typeColor}20`, color: typeColor }}
+                >
+                  {pokemon.primaryType}
+                </span>
+              </button>
+            );
+          })}
         </div>
+
+        {/* Version */}
+        <p className="text-center text-pocket-text-light text-xs mt-4">v4.0.0</p>
       </div>
     );
   }
 
   // Main menu
   return (
-    <div className="w-full h-screen bg-gradient-to-b from-blue-400 to-purple-500 flex items-center justify-center p-2 sm:p-4">
-      {/* Primos display in top-left corner */}
-      <div className="fixed top-4 left-4 bg-yellow-500 text-black px-4 py-2 rounded-lg font-bold shadow-lg flex items-center gap-2">
-        <Sparkles size={20} />
-        <span>{primos} Primos</span>
-      </div>
+    <div className="min-h-screen bg-gradient-to-b from-pocket-bg to-pocket-bg-alt">
+      {/* Header Bar */}
+      <div className="pocket-header sticky top-0 z-10">
+        {/* Currency */}
+        <div className="pocket-currency">
+          <Sparkles size={16} className="text-yellow-500" />
+          <span>{primos.toLocaleString()}</span>
+        </div>
 
-      {/* User display in top-right corner */}
-      <div className="fixed top-4 right-4">
-        <div className="bg-white px-4 py-2 rounded-lg shadow-lg">
-          <div className="flex items-center gap-3">
-            <div className="text-right">
-              <p className="font-bold text-sm">{user.username}</p>
-              <p className="text-xs text-gray-600">Rating: {user.rating || 1000}</p>
-            </div>
-            <button
-              onClick={logout}
-              className="bg-red-500 text-white px-3 py-1 rounded text-xs font-bold hover:bg-red-600 transition"
-            >
-              Logout
-            </button>
+        {/* User info */}
+        <div className="flex items-center gap-3">
+          <div className="text-right">
+            <p className="text-pocket-text font-semibold text-sm">{user.username}</p>
+            <p className="text-pocket-text-light text-xs">
+              Rating: {user.rating || 1000}
+            </p>
           </div>
+          <button
+            onClick={logout}
+            className="w-9 h-9 rounded-full bg-red-50 hover:bg-red-100 flex items-center justify-center transition-colors"
+            title="Logout"
+          >
+            <LogOut size={18} className="text-red-500" />
+          </button>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg p-4 sm:p-8 max-w-md w-full shadow-2xl">
-        <h1 className="text-3xl sm:text-4xl font-bold text-center mb-4 sm:mb-6 text-purple-600">
-          Pokesume Pretty Duel
-        </h1>
-        <p className="text-sm sm:text-base text-gray-600 text-center mb-6 sm:mb-8">
-          Defeat 5 gym leaders with your buddy to prove you're the best there ever was!
-        </p>
-
-        <div className="space-y-3">
-          <button
-            onClick={() => {
-              if (pokemonInventory.length > 0) {
-                setGameState('pokemonSelect');
-              }
-            }}
-            className="w-full bg-purple-600 text-white py-2 sm:py-3 rounded-lg font-bold text-lg sm:text-xl hover:bg-purple-700 transition disabled:bg-gray-400"
-            disabled={pokemonInventory.length === 0}
-          >
-            Start New Career
-          </button>
-
-          <button
-            onClick={() => setGameState('pokemonInventory')}
-            className="w-full bg-green-600 text-white py-2 sm:py-3 rounded-lg font-bold text-lg sm:text-xl hover:bg-green-700 transition"
-          >
-            My Pokemon ({pokemonInventory.length})
-          </button>
-
-          <button
-            onClick={() => setGameState('supportInventory')}
-            className="w-full bg-indigo-600 text-white py-2 sm:py-3 rounded-lg font-bold text-lg sm:text-xl hover:bg-indigo-700 transition"
-          >
-            My Supports ({supportInventory.length})
-          </button>
-
-          <button
-            onClick={() => setGameState('trainedPokemon')}
-            className="w-full bg-teal-600 text-white py-2 sm:py-3 rounded-lg font-bold text-lg sm:text-xl hover:bg-teal-700 transition"
-          >
-            Trained Pokemon ({trainedPokemon.length})
-          </button>
-
-          <button
-            onClick={() => setGameState('tournaments')}
-            className="w-full bg-red-600 text-white py-2 sm:py-3 rounded-lg font-bold text-lg sm:text-xl hover:bg-red-700 transition"
-          >
-            <Trophy className="inline-block mr-2" size={20} />
-            Tournaments
-          </button>
-
-          <button
-            onClick={() => setGameState('gacha')}
-            className="w-full bg-yellow-600 text-white py-2 sm:py-3 rounded-lg font-bold text-lg sm:text-xl hover:bg-yellow-700 transition"
-          >
-            Roll for Pokemon (100 Primos)
-          </button>
-
-          <button
-            onClick={() => setGameState('supportGacha')}
-            className="w-full bg-purple-600 text-white py-2 sm:py-3 rounded-lg font-bold text-lg sm:text-xl hover:bg-purple-700 transition"
-          >
-            Roll for Supports (100 Primos)
-          </button>
-        </div>
-
-        {/* Reset Data Button */}
-        <div className="mt-8 pt-4 border-t border-gray-200">
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setShowResetConfirm(true);
-            }}
-            className="w-full bg-red-600 text-white py-2 rounded-lg font-bold text-sm hover:bg-red-700 transition cursor-pointer"
-          >
-            {ICONS.WARNING} Reset All Data
-          </button>
-          <p className="text-center text-xs text-gray-500 mt-2">
-            This will delete all progress and cannot be undone
+      {/* Main Content */}
+      <div className="p-4 pb-8">
+        {/* Title Card */}
+        <div className="pocket-card text-center mb-4 py-3">
+          <h1 className="text-xl font-bold text-pocket-blue mb-1">
+            Pokesume Pretty Duel
+          </h1>
+          <p className="text-pocket-text-light text-xs leading-relaxed">
+            Pick a buddy and prove to the world you're the very best there ever was!
           </p>
         </div>
-      </div>
 
-      {/* Version number in bottom-right corner */}
-      <div className="fixed bottom-4 right-4 text-white text-xs font-semibold bg-black bg-opacity-30 px-3 py-1 rounded-lg">
-        v4.0.0 (Modular)
+        {/* Main Menu Grid - 2 columns */}
+        <div className="grid grid-cols-2 gap-2 mb-4">
+          <MenuTile
+            iconSrc={MENU_ICONS.career}
+            label="New Career"
+            color="#9B7ED9"
+            onClick={() => setGameState('pokemonSelect')}
+            disabled={pokemonInventory.length === 0}
+          />
+          <MenuTile
+            iconSrc={MENU_ICONS.pokemon}
+            label="My Pokemon"
+            color="#5DBE8A"
+            onClick={() => setGameState('pokemonInventory')}
+            badge={pokemonInventory.length}
+          />
+          <MenuTile
+            iconSrc={MENU_ICONS.supports}
+            label="Supports"
+            color="#4A9FD4"
+            onClick={() => setGameState('supportInventory')}
+            badge={supportInventory.length}
+          />
+          <MenuTile
+            iconSrc={MENU_ICONS.hallOfFame}
+            label="Hall of Fame"
+            color="#F5A623"
+            onClick={() => setGameState('trainedPokemon')}
+            badge={trainedPokemon.length}
+          />
+          <MenuTile
+            iconSrc={MENU_ICONS.tournaments}
+            label="Tournaments"
+            color="#E85D5D"
+            onClick={() => setGameState('tournaments')}
+          />
+          <MenuTile
+            iconSrc={MENU_ICONS.pokemonGacha}
+            label="Pokemon Gacha"
+            color="#9B7ED9"
+            onClick={() => setGameState('gacha')}
+          />
+          <MenuTile
+            iconSrc={MENU_ICONS.supportGacha}
+            label="Support Gacha"
+            color="#4A9FD4"
+            onClick={() => setGameState('supportGacha')}
+          />
+        </div>
+
+        {/* Gacha cost hint */}
+        <p className="text-center text-pocket-text-light text-xs mb-4">
+          Gacha costs 100 Primos per roll
+        </p>
+
+        {/* Danger Zone */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setShowResetConfirm(true);
+          }}
+          className="w-full flex items-center justify-center gap-1.5 py-2 text-red-400 hover:text-red-500 text-xs transition-colors"
+        >
+          <AlertTriangle size={14} />
+          <span>Reset All Data</span>
+        </button>
+
+        {/* Version */}
+        <p className="text-center text-pocket-text-light text-xs mt-2">v4.0.0</p>
       </div>
     </div>
   );

@@ -56,7 +56,6 @@ const BadgeModal = ({ isOpen, onClose, badge, gymLeaderName }) => {
               src={badge.image}
               alt={badge.name}
               className="w-32 h-32 mx-auto mb-3 object-contain"
-              style={{ imageRendering: 'pixelated' }}
             />
             <p className="text-2xl font-black text-gray-900">
               {badge.name}

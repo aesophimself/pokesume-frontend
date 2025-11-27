@@ -173,7 +173,7 @@ const SupportSelectionScreen = () => {
                         src={trainerImage}
                         alt={support.trainer}
                         className="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-lg border-2 bg-white flex-shrink-0"
-                        style={{ borderColor: getRarityColor(support.rarity), imageRendering: 'pixelated' }}
+                        style={{ borderColor: getRarityColor(support.rarity) }}
                       />
                     )}
                     <div className="flex-1 min-w-0">

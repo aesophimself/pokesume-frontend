@@ -695,6 +695,7 @@ export const apiProcessBattle = async (opponent, isGymLeader, authToken) => {
 
     const data = await response.json();
     console.log('[apiProcessBattle] Server response:', { status: response.status, data });
+    console.log('[apiProcessBattle] data has careerState:', 'careerState' in data, 'data keys:', Object.keys(data));
 
     if (!response.ok) {
       throw new Error(data.error || 'Failed to process battle');

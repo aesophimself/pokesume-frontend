@@ -225,7 +225,7 @@ const CareerScreen = () => {
   const [showHelp, setShowHelp] = useState(false);
   const [evolutionModal, setEvolutionModal] = useState(null);
   const [inspirationModal, setInspirationModal] = useState(null);
-  const [pokeclockModal] = useState(null);
+  const [pokeclockModal, setPokeclockModal] = useState(false);
   const [isProcessingEvent, setIsProcessingEvent] = useState(false);
   const [isProcessingAction, setIsProcessingAction] = useState(false);
   const lastProcessedTurnRef = useRef(null);
@@ -477,6 +477,8 @@ const CareerScreen = () => {
 
           const currentEnergy = prev.energy ?? GAME_CONFIG.CAREER.STARTING_ENERGY;
           const newEnergy = Math.min(GAME_CONFIG.CAREER.MAX_ENERGY, currentEnergy + energyGain);
+
+          console.log('[performRest] Current energy:', currentEnergy, 'Energy gain:', energyGain, 'New energy:', newEnergy);
 
           const updatedData = {
             ...prev,
@@ -1037,6 +1039,8 @@ const CareerScreen = () => {
   const nextGymTurn = (careerData.currentGymIndex + 1) * GAME_CONFIG.CAREER.GYM_LEADER_INTERVAL;
   const isGymTurn = careerData.turn === nextGymTurn && careerData.currentGymIndex < 4;
   const nextGymLeader = careerData.gymLeaders?.[careerData.currentGymIndex];
+
+  console.log('[CareerScreen] Render - Turn:', careerData.turn, 'GymIndex:', careerData.currentGymIndex, 'NextGymTurn:', nextGymTurn, 'IsGymTurn:', isGymTurn);
 
   // Elite 4 battles on turns 60, 61, 62, 63
   const eliteFourStartTurn = GAME_CONFIG.CAREER.ELITE_FOUR_START_TURN || 60;
@@ -1896,10 +1900,9 @@ const CareerScreen = () => {
                                         alt={supportName}
                                         className="w-full h-auto object-cover"
                                         style={{
-                                          imageRendering: 'pixelated',
                                           transform: 'scale(2.5)',
                                           transformOrigin: 'top center',
-                                          marginTop: '4px'
+                                          marginTop: '-2px'
                                         }}
                                       />
                                     </div>

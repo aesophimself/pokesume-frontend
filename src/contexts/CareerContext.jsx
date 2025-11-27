@@ -114,10 +114,14 @@ export const CareerProvider = ({ children }) => {
       console.log('[processBattle] Sending battle request:', { opponent, isGymLeader });
       const result = await apiProcessBattle(opponent, isGymLeader, authToken);
       console.log('[processBattle] Server response:', result);
+      console.log('[processBattle] result.success:', result?.success, 'result.careerState exists:', !!result?.careerState);
       if (result && result.success) {
         // Update career data with the new state from server
         if (result.careerState) {
+          console.log('[processBattle] Updating careerData. Turn:', result.careerState.turn, 'GymIndex:', result.careerState.currentGymIndex);
           setCareerData(result.careerState);
+        } else {
+          console.error('[processBattle] result.careerState is missing!', result);
         }
         return result.battleResult;
       }

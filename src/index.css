@@ -14,4 +14,187 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(180deg, #E8F4FC 0%, #D4E9F7 100%);
+  min-height: 100vh;
+}
+
+/* Pokemon TCG Pocket Style Components */
+@layer components {
+  /* Neumorphic card container */
+  .pocket-card {
+    @apply bg-white rounded-2xl p-4;
+    box-shadow: 0 4px 20px rgba(74, 159, 212, 0.1),
+                0 1px 6px rgba(0, 0, 0, 0.03);
+  }
+
+  /* Soft raised button - primary style */
+  .pocket-btn {
+    @apply relative px-6 py-3 rounded-2xl font-semibold text-white;
+    @apply transition-all duration-200 ease-out;
+    @apply active:scale-95;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15),
+                0 2px 4px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  .pocket-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18),
+                0 3px 6px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  .pocket-btn:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12),
+                0 1px 2px rgba(0, 0, 0, 0.06);
+  }
+
+  /* Primary blue button */
+  .pocket-btn-primary {
+    @apply pocket-btn;
+    background: linear-gradient(180deg, #5BB3E0 0%, #4A9FD4 100%);
+  }
+
+  .pocket-btn-primary:hover {
+    background: linear-gradient(180deg, #6BC3F0 0%, #5AAFE4 100%);
+  }
+
+  /* Yellow/gold button */
+  .pocket-btn-yellow {
+    @apply pocket-btn text-gray-800;
+    background: linear-gradient(180deg, #FFE566 0%, #FFD93D 100%);
+  }
+
+  /* Red button */
+  .pocket-btn-red {
+    @apply pocket-btn;
+    background: linear-gradient(180deg, #F07070 0%, #E85D5D 100%);
+  }
+
+  /* Green button */
+  .pocket-btn-green {
+    @apply pocket-btn;
+    background: linear-gradient(180deg, #6DD19A 0%, #5DBE8A 100%);
+  }
+
+  /* Purple button */
+  .pocket-btn-purple {
+    @apply pocket-btn;
+    background: linear-gradient(180deg, #AB8EE9 0%, #9B7ED9 100%);
+  }
+
+  /* Menu tile - compact touchable areas */
+  .pocket-tile {
+    @apply bg-white rounded-2xl p-3 flex items-center gap-2;
+    @apply transition-all duration-200 ease-out cursor-pointer;
+    box-shadow: 0 2px 12px rgba(74, 159, 212, 0.08),
+                0 1px 4px rgba(0, 0, 0, 0.03);
+  }
+
+  .pocket-tile:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(74, 159, 212, 0.12),
+                0 2px 6px rgba(0, 0, 0, 0.04);
+  }
+
+  .pocket-tile:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 1px 6px rgba(74, 159, 212, 0.06),
+                0 1px 2px rgba(0, 0, 0, 0.02);
+  }
+
+  /* Icon container with soft background */
+  .pocket-icon {
+    @apply w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Badge/notification dot */
+  .pocket-badge {
+    @apply absolute -top-1 -right-1 min-w-5 h-5 px-1.5;
+    @apply bg-red-500 text-white text-xs font-bold rounded-full;
+    @apply flex items-center justify-center;
+    box-shadow: 0 2px 6px rgba(232, 93, 93, 0.4);
+  }
+
+  /* Currency display pill */
+  .pocket-currency {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full;
+    @apply bg-gradient-to-r from-yellow-100 to-yellow-50;
+    @apply border border-yellow-200;
+    @apply text-yellow-700 font-semibold text-sm;
+    box-shadow: 0 2px 8px rgba(255, 217, 61, 0.2);
+  }
+
+  /* Header bar */
+  .pocket-header {
+    @apply flex items-center justify-between px-4 py-3;
+    @apply bg-white/80 backdrop-blur-sm;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Bottom navigation bar */
+  .pocket-navbar {
+    @apply fixed bottom-0 left-0 right-0;
+    @apply flex items-center justify-around;
+    @apply bg-white px-4 py-2 pb-safe;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .pocket-navbar-item {
+    @apply flex flex-col items-center gap-0.5 py-2 px-4;
+    @apply text-gray-400 transition-colors;
+  }
+
+  .pocket-navbar-item.active {
+    @apply text-pocket-blue;
+  }
+
+  .pocket-navbar-item:hover {
+    @apply text-pocket-blue-dark;
+  }
+
+  /* Divider */
+  .pocket-divider {
+    @apply h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent;
+  }
+
+  /* Scrollbar styling */
+  .pocket-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .pocket-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 3px;
+  }
+
+  .pocket-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(74, 159, 212, 0.3);
+    border-radius: 3px;
+  }
+
+  .pocket-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(74, 159, 212, 0.5);
+  }
+}
+
+/* Selection color */
+::selection {
+  background-color: rgba(74, 159, 212, 0.3);
+  color: inherit;
+}
+
+/* Focus styles for accessibility */
+:focus-visible {
+  outline: 2px solid #4A9FD4;
+  outline-offset: 2px;
+}
+
+/* Safe area padding for mobile */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }

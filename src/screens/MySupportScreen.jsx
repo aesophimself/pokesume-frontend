@@ -166,7 +166,7 @@ const MySupportScreen = () => {
                         src={trainerImage}
                         alt={support.trainer}
                         className="w-20 h-20 object-contain rounded-lg border-2 bg-white flex-shrink-0"
-                        style={{ borderColor: getRarityColor(support.rarity), imageRendering: 'pixelated' }}
+                        style={{ borderColor: getRarityColor(support.rarity) }}
                       />
                     )}
                     <div className="flex-1 min-w-0">

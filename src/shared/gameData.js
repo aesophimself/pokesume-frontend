@@ -2276,35 +2276,6 @@ const SUPPORT_CARDS = {
 // GACHA POOLS
 // ============================================================================
 
-      friendshipBonusTraining: 15,
-      appearanceChance: 0.45,
-      typeAppearancePriority: 1.5
-    }
-  };
-  
-  const defaults = rarityDefaults[card.rarity] || rarityDefaults['Common'];
-  
-  // Extract baseStatIncrease from effect.stats if available
-  let baseStatIncrease = { HP: 0, Attack: 0, Defense: 0, Instinct: 0, Speed: 0 };
-  if (card.effect && card.effect.type === 'stat_boost' && card.effect.stats) {
-    baseStatIncrease = card.effect.stats;
-  }
-  
-  // Return complete attributes
-  return {
-    ...card,
-    baseStatIncrease: card.baseStatIncrease || baseStatIncrease,
-    initialFriendship: card.initialFriendship || defaults.initialFriendship,
-    typeBonusTraining: card.typeBonusTraining || defaults.typeBonusTraining,
-    generalBonusTraining: card.generalBonusTraining || defaults.generalBonusTraining,
-    friendshipBonusTraining: card.friendshipBonusTraining || defaults.friendshipBonusTraining,
-    moveHints: card.moveHints || ['BodySlam', 'HyperBeam'],
-    appearanceChance: card.appearanceChance || defaults.appearanceChance,
-    typeAppearancePriority: card.typeAppearancePriority || defaults.typeAppearancePriority,
-    type: card.supportType || 'HP' // For compatibility
-  };
-};
-
 // Support Card Gacha Rarity
 const SUPPORT_GACHA_RARITY = {
   Common: {
@@ -2344,11 +2315,7 @@ const GACHA_RARITY = {
     },
     Uncommon: {
         rate: 0.30, // 30%
-
-// ============================================================================
-// RANDOM EVENTS
-// ============================================================================
-
+        pokemon: [
             'Togepi', 'Snubbull', 'Teddiursa', 'Slugma', 'Skitty',
             'Pikachu', 'Gastly', 'Fletchling', 'Cyndaquil', 'Totodile',
             'Chikorita', 'Mudkip', 'Treecko', 'Piplup', 'Turtwig',
@@ -3183,6 +3150,12 @@ const HANGOUT_EVENTS = {
     effect: { stats: { Attack: 11, Speed: 12 }, moveHint: 'AerialAce', skillPoints: 13 }
   },
   GiovanniPersian: {
+    name: 'Ruthless Training',
+    description: 'Giovanni teaches cold, calculating battle tactics.',
+    flavor: 'Persian purrs menacingly as Giovanni adjusts his suit. "Power is everything—sentiment is weakness," he states coldly.',
+    effect: { stats: { Attack: 13, Instinct: 11 }, moveHint: 'Slash', skillPoints: 14 }
+  }
+};
 
 // ============================================================================
 // EXPORTS

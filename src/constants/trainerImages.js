@@ -69,12 +69,49 @@ export const getSupportTrainerImage = (trainerName) => {
   return SUPPORT_TRAINER_IMAGES[trainerName] || GYM_LEADER_IMAGES[trainerName] || '/images/trainers/supports/default.png';
 };
 
-// Helper function to extract trainer name from support card name
-// Support card format: "Trainer & Pokemon" (e.g., "Cynthia & Garchomp")
+// Helper function to extract trainer name from support card name or key
+// Handles both formats:
+// - Display name: "Cynthia & Garchomp"
+// - Key format: "CynthiaGarchomp"
 export const getSupportImageFromCardName = (cardName) => {
   if (!cardName) return null;
 
-  // Extract trainer name (first part before &)
-  const trainerName = cardName.split('&')[0]?.trim();
-  return getSupportTrainerImage(trainerName);
+  // If it contains &, it's a display name format
+  if (cardName.includes('&')) {
+    const trainerName = cardName.split('&')[0]?.trim();
+    return getSupportTrainerImage(trainerName);
+  }
+
+  // Otherwise it's a key format like "CynthiaGarchomp" or "ProfessorOakMew"
+  // Extract trainer name by finding where the Pokemon name starts (capital letter after trainer)
+  // Handle special cases first
+  const specialCases = {
+    'ProfessorOakMew': 'Professor Oak',
+    'ElitesFourKaren': 'Karen',
+    'LtSurgeRaichu': 'Lt. Surge'
+  };
+
+  if (specialCases[cardName]) {
+    return getSupportTrainerImage(specialCases[cardName]);
+  }
+
+  // For standard names like "CynthiaGarchomp", split at the boundary
+  // where a Pokemon name likely starts (common Pokemon names)
+  const pokemonNames = [
+    'Garchomp', 'Charizard', 'Metagross', 'Dragonite', 'Starmie', 'Onix',
+    'Tangela', 'Alakazam', 'Magmar', 'Weezing', 'Miltank', 'Gengar',
+    'Poliwrath', 'Steelix', 'Delibird', 'Milotic', 'Skarmory', 'Magneton',
+    'Camerupt', 'Lucario', 'Reshiram', 'Haxorus', 'Umbreon', 'Pidgeot',
+    'Persian', 'Mew', 'Diancie', 'Groudon', 'Kyogre'
+  ];
+
+  for (const pokemon of pokemonNames) {
+    if (cardName.endsWith(pokemon)) {
+      const trainerName = cardName.slice(0, -pokemon.length);
+      return getSupportTrainerImage(trainerName);
+    }
+  }
+
+  // Fallback: just return the whole name as trainer (won't match, will use default)
+  return getSupportTrainerImage(cardName);
 };

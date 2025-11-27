@@ -8,6 +8,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Clock } from 'lucide-react';
 import { useGame } from '../contexts/GameContext';
+import { useCareer } from '../contexts/CareerContext';
 import {
   generatePokemonSprite,
   getTypeColor,
@@ -21,9 +22,11 @@ import BadgeModal from '../components/BadgeModal';
 
 const BattleScreen = () => {
   const { battleState, battleSpeed, setBattleSpeed, setGameState, setBattleState } = useGame();
+  const { careerData, setCareerData, completeCareer } = useCareer();
   const battleLogRef = useRef(null);
   const [showBadgeModal, setShowBadgeModal] = useState(false);
   const [earnedBadge, setEarnedBadge] = useState(null);
+  const [showPokeclockModal, setShowPokeclockModal] = useState(false);
 
   // Auto-scroll battle log to bottom when new messages appear
   useEffect(() => {
@@ -65,8 +68,43 @@ const BattleScreen = () => {
     return combatant.name;
   };
 
-  const handleContinue = () => {
-    // Clear battle state and return to career screen
+  const handleContinue = async () => {
+    const playerLost = battleState.winner === 'opponent';
+    const isGymLeader = battleState.isGymLeader;
+
+    // If player lost to a gym leader, check pokeclocks
+    if (playerLost && isGymLeader) {
+      const pokeclocks = careerData?.pokeclocks || 0;
+
+      if (pokeclocks > 0) {
+        // Use a pokeclock to retry the battle
+        setShowPokeclockModal(true);
+
+        // Decrement pokeclocks locally (server already updated via processBattle)
+        setCareerData(prev => ({
+          ...prev,
+          pokeclocks: prev.pokeclocks - 1
+        }));
+
+        // Hide modal after 2 seconds and return to career
+        setTimeout(() => {
+          setShowPokeclockModal(false);
+          setBattleState(null);
+          setGameState('career');
+        }, 2000);
+        return;
+      } else {
+        // No pokeclocks remaining - career ends
+        // Server handles saving the trained Pokemon when completeCareer is called
+        await completeCareer('defeated');
+
+        setBattleState(null);
+        setGameState('gameOver');
+        return;
+      }
+    }
+
+    // Normal case - player won or wasn't a gym battle
     setBattleState(null);
     setGameState('career');
   };
@@ -138,7 +176,6 @@ const BattleScreen = () => {
                       src={getGymLeaderImage(battleState.opponent.name)}
                       alt={`${battleState.opponent.name} - Gym Leader`}
                       className="w-24 h-24 sm:w-32 sm:h-32 object-contain rounded-lg border-4 border-yellow-400 bg-gray-800 shadow-xl"
-                      style={{ imageRendering: 'pixelated' }}
                     />
                     <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-gray-900 px-3 py-1 rounded-full text-xs font-bold shadow-lg whitespace-nowrap">
                       Gym Leader
@@ -259,7 +296,11 @@ const BattleScreen = () => {
               onClick={handleContinue}
               className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-4 px-6 rounded-lg shadow-lg transition text-lg"
             >
-              {battleState.winner === 'player' ? 'Continue ▶' : 'Return to Career'}
+              {battleState.winner === 'player' ? 'Continue ▶' : (
+                battleState.isGymLeader && (careerData?.pokeclocks || 0) > 0
+                  ? `Use Pokeclock ⏰ (${careerData?.pokeclocks} left)`
+                  : 'Continue'
+              )}
             </button>
           </div>
         )}
@@ -272,6 +313,20 @@ const BattleScreen = () => {
         badge={earnedBadge}
         gymLeaderName={earnedBadge?.gymLeaderName}
       />
+
+      {/* Pokeclock Modal for Gym Battle Retries */}
+      {showPokeclockModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
+          <div className="bg-gradient-to-b from-blue-500 to-purple-500 rounded-lg p-8 max-w-md w-full shadow-2xl text-center animate-pulse">
+            <div className="text-6xl mb-4">⏰</div>
+            <h2 className="text-3xl font-bold text-white mb-4">Pokeclock Used!</h2>
+            <p className="text-white text-lg mb-2">You get another chance!</p>
+            <p className="text-white text-sm opacity-80">
+              {(careerData?.pokeclocks || 0)} Pokeclock{(careerData?.pokeclocks || 0) !== 1 ? 's' : ''} remaining
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
