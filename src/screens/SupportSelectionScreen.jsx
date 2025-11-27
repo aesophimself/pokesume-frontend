@@ -6,6 +6,8 @@
  */
 
 import React from 'react';
+import { ArrowLeft, Users, Check } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useGame } from '../contexts/GameContext';
 import { useInventory } from '../contexts/InventoryContext';
 import { useCareer } from '../contexts/CareerContext';
@@ -14,8 +16,21 @@ import {
   getSupportCardAttributes
 } from '../utils/gameUtils';
 import { TYPE_COLORS } from '../components/TypeIcon';
-import { SUPPORT_CARDS, ICONS, POKEMON } from '../shared/gameData';
+import { SUPPORT_CARDS, POKEMON } from '../shared/gameData';
 import { getSupportImageFromCardName } from '../constants/trainerImages';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.05 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0 }
+};
 
 const SupportSelectionScreen = () => {
   const {
@@ -65,29 +80,20 @@ const SupportSelectionScreen = () => {
       return;
     }
 
-    // Get full Pokemon data from POKEMON database
     const pokemonData = POKEMON[selectedPokemon];
     if (!pokemonData) {
       alert('Invalid Pokemon selected');
       return;
     }
 
-    // Prepare Pokemon object for backend
     const pokemon = {
       name: selectedPokemon,
       ...pokemonData
     };
 
-    // Start career via backend API
-    console.log('[SupportSelection] Starting career with:', {
-      pokemon,
-      selectedSupports
-    });
-
     const careerState = await startCareer(pokemon, selectedSupports);
 
     if (careerState) {
-      console.log('[SupportSelection] Career started successfully:', careerState);
       setGameState('career');
     } else {
       alert('Failed to start career. Please try again.');
@@ -95,204 +101,226 @@ const SupportSelectionScreen = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-b from-blue-400 to-purple-500 p-2 sm:p-4">
-      <div className="max-w-5xl mx-auto">
-        <div className="bg-white rounded-lg p-4 mb-4 shadow-2xl">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-purple-600">Select Up to 5 Supports</h2>
-              <p className="text-gray-600">Selected: {selectedSupports.length}/5</p>
-            </div>
-            <button
-              onClick={() => {
-                setSelectedSupports([]);
-                setGameState('inspirationSelect');
-              }}
-              className="px-6 py-2 bg-gray-600 text-white rounded-lg font-bold hover:bg-gray-700 transition"
-            >
-              Back
-            </button>
+    <div className="min-h-screen bg-pocket-bg p-4">
+      {/* Header */}
+      <motion.header
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="sticky top-0 z-10 bg-white shadow-card rounded-2xl mb-4 max-w-4xl mx-auto"
+      >
+        <div className="flex items-center justify-between px-4 py-3">
+          <button
+            onClick={() => {
+              setSelectedSupports([]);
+              setGameState('inspirationSelect');
+            }}
+            className="p-2 text-pocket-text-light hover:text-pocket-text hover:bg-pocket-bg rounded-lg transition-colors"
+          >
+            <ArrowLeft size={20} />
+          </button>
+          <div className="flex items-center gap-2">
+            <Users size={20} className="text-pocket-blue" />
+            <span className="font-bold text-pocket-text">Select Supports</span>
           </div>
-
-          {/* Sort Options */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm font-semibold text-gray-700">Sort by:</span>
-            <button
-              onClick={() => setSupportSortBy('rarity')}
-              className={`px-3 py-1 rounded-lg text-sm font-bold transition ${
-                supportSortBy === 'rarity' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              Rarity
-            </button>
-            <button
-              onClick={() => setSupportSortBy('type')}
-              className={`px-3 py-1 rounded-lg text-sm font-bold transition ${
-                supportSortBy === 'type' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              Type
-            </button>
-          </div>
+          <span className="text-pocket-text-light text-sm font-semibold">
+            {selectedSupports.length}/5
+          </span>
         </div>
+      </motion.header>
+
+      <div className="max-w-4xl mx-auto">
+        {/* Filters Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-2xl shadow-card p-4 mb-4"
+        >
+          <div className="flex items-center justify-center gap-2">
+            <span className="text-sm font-semibold text-pocket-text-light">Sort:</span>
+            {['rarity', 'type'].map(sort => (
+              <button
+                key={sort}
+                onClick={() => setSupportSortBy(sort)}
+                className={`px-4 py-2 rounded-xl font-bold text-xs transition ${
+                  supportSortBy === sort
+                    ? 'bg-pocket-blue text-white'
+                    : 'bg-pocket-bg text-pocket-text-light hover:bg-gray-200'
+                }`}
+              >
+                {sort.charAt(0).toUpperCase() + sort.slice(1)}
+              </button>
+            ))}
+          </div>
+        </motion.div>
 
         {/* Support Cards Grid */}
-        <div className="mb-6">
-          <h3 className="text-xl font-bold text-white mb-3">Your Support Cards</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-            {sortedSupportInventory.map((supportKey, idx) => {
-              const support = getSupportCardAttributes(supportKey, SUPPORT_CARDS);
-              if (!support) return null;
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4"
+        >
+          {sortedSupportInventory.map((supportKey, idx) => {
+            const support = getSupportCardAttributes(supportKey, SUPPORT_CARDS);
+            if (!support) return null;
 
-              const isSelected = selectedSupports.includes(supportKey);
-              const trainerImage = getSupportImageFromCardName(support.name);
+            const isSelected = selectedSupports.includes(supportKey);
+            const trainerImage = getSupportImageFromCardName(support.name);
 
-              const statBonuses = Object.entries(support.baseStatIncrease)
-                .filter(([stat, value]) => value > 0)
-                .map(([stat, value]) => `${stat}: +${value}`)
-                .join(', ');
+            const statBonuses = Object.entries(support.baseStatIncrease)
+              .filter(([stat, value]) => value > 0)
+              .map(([stat, value]) => `${stat}: +${value}`)
+              .join(', ');
 
-              return (
-                <div
-                  key={idx}
-                  onClick={() => {
-                    if (isSelected) {
-                      setSelectedSupports(selectedSupports.filter(s => s !== supportKey));
-                    } else if (selectedSupports.length < 5) {
-                      setSelectedSupports([...selectedSupports, supportKey]);
-                    }
-                  }}
-                  className={`bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-3 cursor-pointer transition border-2 ${
-                    isSelected ? 'ring-4 ring-green-500' : 'hover:shadow-lg'
-                  }`}
-                  style={{ borderColor: getRarityColor(support.rarity) }}
-                >
-                  <div className="flex gap-3 mb-2">
-                    {trainerImage && (
-                      <img
-                        src={trainerImage}
-                        alt={support.trainer}
-                        className="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-lg border-2 bg-white flex-shrink-0"
-                        style={{ borderColor: getRarityColor(support.rarity) }}
-                      />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-start mb-1">
-                        <div>
-                          <span
-                            className="px-2 py-0.5 rounded text-xs font-bold text-white"
-                            style={{ backgroundColor: getRarityColor(support.rarity) }}
-                          >
-                            {support.rarity}
-                          </span>
-                          <h3 className="text-base font-bold text-gray-800 mt-1">{support.name}</h3>
+            return (
+              <motion.div
+                key={idx}
+                variants={itemVariants}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => {
+                  if (isSelected) {
+                    setSelectedSupports(selectedSupports.filter(s => s !== supportKey));
+                  } else if (selectedSupports.length < 5) {
+                    setSelectedSupports([...selectedSupports, supportKey]);
+                  }
+                }}
+                className={`bg-white rounded-2xl shadow-card p-4 cursor-pointer transition ${
+                  isSelected ? 'ring-4 ring-pocket-green' : 'hover:shadow-card-hover'
+                }`}
+                style={{ borderLeft: `4px solid ${getRarityColor(support.rarity)}` }}
+              >
+                <div className="flex gap-3 mb-3">
+                  {trainerImage && (
+                    <img
+                      src={trainerImage}
+                      alt={support.trainer}
+                      className="w-16 h-16 object-contain rounded-xl border-2 bg-pocket-bg flex-shrink-0"
+                      style={{ borderColor: getRarityColor(support.rarity) }}
+                    />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-start mb-1">
+                      <div>
+                        <span
+                          className="px-2 py-0.5 rounded-full text-[10px] font-bold text-white"
+                          style={{ backgroundColor: getRarityColor(support.rarity) }}
+                        >
+                          {support.rarity}
+                        </span>
+                        <h3 className="text-sm font-bold text-pocket-text mt-1">{support.name}</h3>
+                      </div>
+                      {isSelected && (
+                        <div className="w-6 h-6 rounded-full bg-pocket-green flex items-center justify-center flex-shrink-0">
+                          <Check size={14} className="text-white" />
                         </div>
-                        {isSelected && <span className="text-xl">{ICONS.CHECKMARK}</span>}
-                      </div>
-
-                      <p className="text-xs text-gray-600">
-                        <span className="font-semibold">{support.trainer}</span> &{' '}
-                        <span className="font-semibold">{support.pokemon}</span>
-                      </p>
+                      )}
                     </div>
-                  </div>
 
-                  {support.supportType && (
-                    <p
-                      className="text-xs font-bold mb-2"
-                      style={{
-                        color: TYPE_COLORS[
-                          support.supportType === 'Attack'
-                            ? 'Fire'
-                            : support.supportType === 'Defense'
-                            ? 'Water'
-                            : support.supportType === 'HP'
-                            ? 'Grass'
-                            : support.supportType === 'Instinct'
-                            ? 'Psychic'
-                            : 'Electric'
-                        ]
-                      }}
-                    >
-                      Focus: {support.supportType}
+                    <p className="text-xs text-pocket-text-light">
+                      <span className="font-semibold">{support.trainer}</span> &{' '}
+                      <span className="font-semibold">{support.pokemon}</span>
                     </p>
-                  )}
-
-                  <p className="text-xs text-gray-700 italic mb-2">{support.effect.description}</p>
-
-                  <div className="bg-white rounded p-2 mb-2 text-xs space-y-1">
-                    {statBonuses && <div className="font-bold text-green-600 mb-1">{statBonuses}</div>}
-                    <div className="text-gray-600">
-                      Type Bonus: +{support.typeBonusTraining} (Max: +{support.friendshipBonusTraining})
-                    </div>
-                    <div className="text-gray-600">Other Stats: +{support.generalBonusTraining}</div>
-
-                    {support.effect.type === 'training_boost' && (
-                      <div className="border-t pt-1 mt-1 text-purple-600 font-semibold">
-                        {support.effect.trainingMultiplier && (
-                          <div>Gain Mult: {support.effect.trainingMultiplier}x</div>
-                        )}
-                        {support.effect.energyCostReduction && (
-                          <div>Energy Cost: -{support.effect.energyCostReduction}</div>
-                        )}
-                        {support.effect.failureReduction && (
-                          <div>Fail Rate: -{(support.effect.failureReduction * 100).toFixed(0)}%</div>
-                        )}
-                      </div>
-                    )}
-                    {support.effect.type === 'energy_boost' && (
-                      <div className="border-t pt-1 mt-1 text-purple-600 font-semibold">
-                        {support.effect.energyBonus && <div>Max Energy: +{support.effect.energyBonus}</div>}
-                        {support.effect.restBonus && <div>Rest Bonus: +{support.effect.restBonus}</div>}
-                      </div>
-                    )}
-                    {support.effect.type === 'experience_boost' && (
-                      <div className="border-t pt-1 mt-1 text-purple-600 font-semibold">
-                        {support.effect.skillPointMultiplier && (
-                          <div>SP Mult: {support.effect.skillPointMultiplier}x</div>
-                        )}
-                        {support.effect.friendshipBonus && (
-                          <div>Friendship: +{support.effect.friendshipBonus}</div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-                  {support.moveHints && support.moveHints.length > 0 && (
-                    <div className="bg-blue-50 border border-blue-200 rounded p-2 mb-2 text-xs">
-                      <div className="font-bold text-blue-700 mb-1">Move Hints:</div>
-                      <div className="text-blue-600 flex flex-wrap gap-1">
-                        {support.moveHints.map((move, idx) => (
-                          <span key={idx} className="bg-blue-100 px-1.5 py-0.5 rounded">
-                            {move}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="flex justify-between text-xs text-gray-500">
-                    <span>Appears: {Math.round(support.appearanceChance * 100)}%</span>
-                    <span>Start Friend: {support.initialFriendship}</span>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        </div>
+
+                {support.supportType && (
+                  <p
+                    className="text-xs font-bold mb-2"
+                    style={{
+                      color: TYPE_COLORS[
+                        support.supportType === 'Attack'
+                          ? 'Fire'
+                          : support.supportType === 'Defense'
+                          ? 'Water'
+                          : support.supportType === 'HP'
+                          ? 'Grass'
+                          : support.supportType === 'Instinct'
+                          ? 'Psychic'
+                          : 'Electric'
+                      ]
+                    }}
+                  >
+                    Focus: {support.supportType}
+                  </p>
+                )}
+
+                <p className="text-xs text-pocket-text-light italic mb-3">{support.effect.description}</p>
+
+                <div className="bg-pocket-bg rounded-xl p-2 mb-2 text-xs space-y-1">
+                  {statBonuses && <div className="font-bold text-pocket-green">{statBonuses}</div>}
+                  <div className="text-pocket-text-light">
+                    Type Bonus: +{support.typeBonusTraining} (Max: +{support.friendshipBonusTraining})
+                  </div>
+                  <div className="text-pocket-text-light">Other Stats: +{support.generalBonusTraining}</div>
+
+                  {support.effect.type === 'training_boost' && (
+                    <div className="border-t border-gray-200 pt-1 mt-1 text-type-psychic font-semibold">
+                      {support.effect.trainingMultiplier && (
+                        <div>Gain Mult: {support.effect.trainingMultiplier}x</div>
+                      )}
+                      {support.effect.energyCostReduction && (
+                        <div>Energy Cost: -{support.effect.energyCostReduction}</div>
+                      )}
+                      {support.effect.failureReduction && (
+                        <div>Fail Rate: -{(support.effect.failureReduction * 100).toFixed(0)}%</div>
+                      )}
+                    </div>
+                  )}
+                  {support.effect.type === 'energy_boost' && (
+                    <div className="border-t border-gray-200 pt-1 mt-1 text-type-psychic font-semibold">
+                      {support.effect.energyBonus && <div>Max Energy: +{support.effect.energyBonus}</div>}
+                      {support.effect.restBonus && <div>Rest Bonus: +{support.effect.restBonus}</div>}
+                    </div>
+                  )}
+                  {support.effect.type === 'experience_boost' && (
+                    <div className="border-t border-gray-200 pt-1 mt-1 text-type-psychic font-semibold">
+                      {support.effect.skillPointMultiplier && (
+                        <div>SP Mult: {support.effect.skillPointMultiplier}x</div>
+                      )}
+                      {support.effect.friendshipBonus && (
+                        <div>Friendship: +{support.effect.friendshipBonus}</div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {support.moveHints && support.moveHints.length > 0 && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 mb-2 text-xs">
+                    <div className="font-bold text-blue-700 mb-1">Move Hints:</div>
+                    <div className="flex flex-wrap gap-1">
+                      {support.moveHints.map((move, idx) => (
+                        <span key={idx} className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-semibold">
+                          {move}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex justify-between text-[10px] text-pocket-text-light">
+                  <span>Appears: {Math.round(support.appearanceChance * 100)}%</span>
+                  <span>Start Friend: {support.initialFriendship}</span>
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
 
         {/* Begin Career Button */}
-        <button
-          onClick={handleBeginCareer}
-          disabled={careerLoading || selectedSupports.length === 0}
-          className={`w-full py-2 sm:py-3 sm:py-4 rounded-lg font-bold text-lg sm:text-xl transition ${
-            careerLoading || selectedSupports.length === 0
-              ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
-              : 'bg-green-600 text-white hover:bg-green-700'
-          }`}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
         >
-          {careerLoading ? 'Starting Career...' : 'Begin Career'}
-        </button>
+          <button
+            onClick={handleBeginCareer}
+            disabled={careerLoading || selectedSupports.length === 0}
+            className="w-full pocket-btn-primary py-4 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {careerLoading ? 'Starting Career...' : 'Begin Career'}
+          </button>
+        </motion.div>
       </div>
     </div>
   );

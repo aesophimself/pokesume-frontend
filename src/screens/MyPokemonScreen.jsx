@@ -6,6 +6,8 @@
  */
 
 import React from 'react';
+import { ArrowLeft, Box } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useGame } from '../contexts/GameContext';
 import { useInventory } from '../contexts/InventoryContext';
 import {
@@ -18,6 +20,19 @@ import {
 } from '../utils/gameUtils';
 import { TypeBadge, TYPE_COLORS } from '../components/TypeIcon';
 import { POKEMON } from '../shared/gameData';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.05 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0 }
+};
 
 const MyPokemonScreen = () => {
   const {
@@ -64,59 +79,64 @@ const MyPokemonScreen = () => {
   const sortedInventory = sortPokemon(filteredInventory);
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-b from-blue-400 to-purple-500 p-2 sm:p-4">
-      <div className="max-w-5xl mx-auto">
-        <div className="bg-white rounded-lg p-6 mb-4 shadow-2xl">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-3xl font-bold text-purple-600">My Pokemon</h2>
-            <button
-              onClick={() => setGameState('menu')}
-              className="px-6 py-2 bg-gray-600 text-white rounded-lg font-bold hover:bg-gray-700 transition"
-            >
-              Back
-            </button>
+    <div className="min-h-screen bg-pocket-bg p-4">
+      {/* Header */}
+      <motion.header
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="sticky top-0 z-10 bg-white shadow-card rounded-2xl mb-4 max-w-4xl mx-auto"
+      >
+        <div className="flex items-center justify-between px-4 py-3">
+          <button
+            onClick={() => setGameState('menu')}
+            className="p-2 text-pocket-text-light hover:text-pocket-text hover:bg-pocket-bg rounded-lg transition-colors"
+          >
+            <ArrowLeft size={20} />
+          </button>
+          <div className="flex items-center gap-2">
+            <Box size={20} className="text-pocket-green" />
+            <span className="font-bold text-pocket-text">My Pokemon</span>
           </div>
+          <span className="text-pocket-text-light text-sm font-semibold">
+            {pokemonInventory.length} owned
+          </span>
+        </div>
+      </motion.header>
+
+      <div className="max-w-4xl mx-auto">
+        {/* Filters Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-2xl shadow-card p-4 mb-4"
+        >
+          {/* Sort Options */}
           <div className="flex items-center gap-2 flex-wrap mb-3">
-            <span className="text-sm font-semibold text-gray-700">Sort by:</span>
-            <button
-              onClick={() => setPokemonSortBy('default')}
-              className={`px-3 py-1 rounded-lg text-sm font-bold transition ${
-                pokemonSortBy === 'default' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              Default
-            </button>
-            <button
-              onClick={() => setPokemonSortBy('name')}
-              className={`px-3 py-1 rounded-lg text-sm font-bold transition ${
-                pokemonSortBy === 'name' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              Name
-            </button>
-            <button
-              onClick={() => setPokemonSortBy('type')}
-              className={`px-3 py-1 rounded-lg text-sm font-bold transition ${
-                pokemonSortBy === 'type' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              Type
-            </button>
-            <button
-              onClick={() => setPokemonSortBy('rarity')}
-              className={`px-3 py-1 rounded-lg text-sm font-bold transition ${
-                pokemonSortBy === 'rarity' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              Rarity
-            </button>
+            <span className="text-sm font-semibold text-pocket-text-light">Sort:</span>
+            {['default', 'name', 'type', 'rarity'].map(sort => (
+              <button
+                key={sort}
+                onClick={() => setPokemonSortBy(sort)}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+                  pokemonSortBy === sort
+                    ? 'bg-pocket-red text-white'
+                    : 'bg-pocket-bg text-pocket-text-light hover:bg-gray-200'
+                }`}
+              >
+                {sort.charAt(0).toUpperCase() + sort.slice(1)}
+              </button>
+            ))}
           </div>
+
+          {/* Type Filters */}
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm font-semibold text-gray-700">Filter:</span>
+            <span className="text-sm font-semibold text-pocket-text-light">Filter:</span>
             <button
               onClick={() => setPokemonFilterType('all')}
-              className={`px-3 py-1 rounded-lg text-sm font-bold transition ${
-                pokemonFilterType === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+                pokemonFilterType === 'all'
+                  ? 'bg-pocket-blue text-white'
+                  : 'bg-pocket-bg text-pocket-text-light hover:bg-gray-200'
               }`}
             >
               All
@@ -125,8 +145,8 @@ const MyPokemonScreen = () => {
               <button
                 key={type}
                 onClick={() => setPokemonFilterType(type)}
-                className={`px-3 py-1 rounded-lg text-sm font-bold transition ${
-                  pokemonFilterType === type ? 'text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+                  pokemonFilterType === type ? 'text-white' : 'bg-pocket-bg text-pocket-text-light hover:bg-gray-200'
                 }`}
                 style={pokemonFilterType === type ? { backgroundColor: TYPE_COLORS[type] } : {}}
               >
@@ -134,48 +154,61 @@ const MyPokemonScreen = () => {
               </button>
             ))}
           </div>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        </motion.div>
+
+        {/* Pokemon Grid */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"
+        >
           {sortedInventory.map((pokemonName, idx) => {
             const pokemon = POKEMON[pokemonName];
             if (!pokemon) {
-              // Handle Pokemon not in POKEMON object
               return (
-                <div key={idx} className="bg-white rounded-lg p-4 shadow-lg">
-                  <div className="flex justify-center mb-2">
+                <motion.div
+                  key={idx}
+                  variants={itemVariants}
+                  className="pokemon-card"
+                >
+                  <div className="mb-2">
                     {generatePokemonSprite('Normal', pokemonName)}
                   </div>
-                  <h3 className="text-center font-bold text-lg">{pokemonName}</h3>
-                  <p className="text-center text-sm text-gray-500">
-                    Coming Soon
-                  </p>
-                </div>
+                  <h3 className="font-bold text-pocket-text">{pokemonName}</h3>
+                  <p className="text-xs text-pocket-text-light">Coming Soon</p>
+                </motion.div>
               );
             }
             return (
-              <div key={idx} className="bg-white rounded-lg p-4 shadow-lg">
-                <div className="flex justify-center mb-2">
+              <motion.div
+                key={idx}
+                variants={itemVariants}
+                whileHover={{ y: -2 }}
+                className="pokemon-card"
+              >
+                <div className="mb-2">
                   {generatePokemonSprite(pokemon.primaryType, pokemonName)}
                 </div>
-                <h3 className="text-center font-bold text-lg">{pokemonName}</h3>
-                <div className="flex justify-center mt-1">
+                <h3 className="font-bold text-pocket-text text-sm">{pokemonName}</h3>
+                <div className="my-2">
                   <TypeBadge type={pokemon.primaryType} size={14} />
                 </div>
-                <div className="text-center mt-2 mb-2 flex items-center justify-center gap-2">
+                <div className="flex items-center justify-center gap-1.5 mb-2">
                   <span
-                    className="px-2 py-1 rounded text-xs font-bold text-white"
+                    className="px-2 py-0.5 rounded-full text-[10px] font-bold text-white"
                     style={{ backgroundColor: getGradeColor(getPokemonGrade(pokemon.baseStats)) }}
                   >
                     {getPokemonGrade(pokemon.baseStats)}
                   </span>
                   <span
-                    className="px-2 py-1 rounded text-xs font-bold text-white"
+                    className="px-2 py-0.5 rounded-full text-[10px] font-bold text-white"
                     style={{ backgroundColor: getRarityColor(getPokemonRarity(pokemonName)) }}
                   >
                     {getPokemonRarity(pokemonName)}
                   </span>
                 </div>
-                <div className="grid grid-cols-2 gap-1 text-xs mt-2">
+                <div className="grid grid-cols-2 gap-1 text-[10px] text-pocket-text-light">
                   <div className="flex items-center gap-1">
                     <StatIcon stat="HP" size={10} />
                     <span>{pokemon.baseStats.HP}</span>
@@ -192,19 +225,28 @@ const MyPokemonScreen = () => {
                     <StatIcon stat="Instinct" size={10} />
                     <span>{pokemon.baseStats.Instinct}</span>
                   </div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 col-span-2 justify-center">
                     <StatIcon stat="Speed" size={10} />
                     <span>{pokemon.baseStats.Speed}</span>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
+
+        {/* Empty State */}
         {pokemonInventory.length === 0 && (
-          <div className="bg-white rounded-lg p-12 shadow-lg text-center">
-            <p className="text-gray-500 text-lg">No Pokemon yet! Roll for some Pokemon to get started.</p>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-2xl shadow-card p-8 text-center"
+          >
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-pocket-bg flex items-center justify-center">
+              <Box size={32} className="text-pocket-text-light" />
+            </div>
+            <p className="text-pocket-text-light">No Pokemon yet! Roll for some Pokemon to get started.</p>
+          </motion.div>
         )}
       </div>
     </div>

@@ -9,9 +9,23 @@
  */
 
 import React from 'react';
-import { Trophy, Clock } from 'lucide-react';
+import { ArrowLeft, Trophy, Clock, Users } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useGame } from '../contexts/GameContext';
 import { useAuth } from '../contexts/AuthContext';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: { opacity: 1, y: 0 }
+};
 
 const TournamentsScreen = () => {
   const { setGameState, tournaments, tournamentsLoading, setSelectedTournament } = useGame();
@@ -37,91 +51,135 @@ const TournamentsScreen = () => {
     switch (status) {
       case 'registration':
       case 'upcoming':
-        return 'bg-blue-500';
+        return '#6890F0'; // Blue
       case 'in_progress':
-        return 'bg-green-500';
+        return '#78C850'; // Green
       case 'completed':
-        return 'bg-gray-500';
+        return '#A8A878'; // Gray
       default:
-        return 'bg-gray-400';
+        return '#A8A878';
     }
   };
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-b from-blue-400 to-purple-500 p-2 sm:p-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="bg-white rounded-lg p-6 mb-4 shadow-2xl">
-          <div className="flex items-center justify-between flex-col sm:flex-row gap-3">
-            <div className="flex items-center gap-3">
-              <Trophy size={32} className="text-red-600" />
-              <h2 className="text-2xl sm:text-3xl font-bold text-purple-600">Tournaments</h2>
-            </div>
-            <button
-              onClick={() => setGameState('menu')}
-              className="px-6 py-2 bg-gray-600 text-white rounded-lg font-bold hover:bg-gray-700 transition"
-            >
-              Back to Menu
-            </button>
+    <div className="min-h-screen bg-pocket-bg p-4">
+      {/* Header */}
+      <motion.header
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="sticky top-0 z-10 bg-white shadow-card rounded-2xl mb-4 max-w-4xl mx-auto"
+      >
+        <div className="flex items-center justify-between px-4 py-3">
+          <button
+            onClick={() => setGameState('menu')}
+            className="p-2 text-pocket-text-light hover:text-pocket-text hover:bg-pocket-bg rounded-lg transition-colors"
+          >
+            <ArrowLeft size={20} />
+          </button>
+          <div className="flex items-center gap-2">
+            <Trophy size={20} className="text-type-psychic" />
+            <span className="font-bold text-pocket-text">Tournaments</span>
           </div>
+          <div className="w-10" />
         </div>
+      </motion.header>
 
+      <div className="max-w-4xl mx-auto">
+        {/* Login Warning */}
         {!user && (
-          <div className="bg-yellow-100 border-2 border-yellow-400 rounded-lg p-4 mb-4">
-            <p className="text-center text-yellow-800 font-bold">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 mb-4"
+          >
+            <p className="text-center text-amber-700 font-bold text-sm">
               Login required to enter tournaments
             </p>
-          </div>
+          </motion.div>
         )}
 
         {tournamentsLoading ? (
-          <div className="bg-white rounded-lg p-12 text-center shadow-lg">
-            <p className="text-gray-600">Loading tournaments...</p>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-2xl shadow-card p-8 text-center"
+          >
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-pocket-bg flex items-center justify-center">
+              <Trophy size={32} className="text-pocket-text-light animate-pulse" />
+            </div>
+            <p className="text-pocket-text-light">Loading tournaments...</p>
+          </motion.div>
         ) : tournaments.length === 0 ? (
-          <div className="bg-white rounded-lg p-12 text-center shadow-lg">
-            <Trophy size={64} className="mx-auto mb-4 text-gray-300" />
-            <p className="text-gray-600 text-lg">No tournaments available</p>
-            <p className="text-gray-500 text-sm mt-2">Check back later!</p>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-2xl shadow-card p-8 text-center"
+          >
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-pocket-bg flex items-center justify-center">
+              <Trophy size={32} className="text-pocket-text-light" />
+            </div>
+            <p className="text-pocket-text mb-2">No tournaments available</p>
+            <p className="text-sm text-pocket-text-light mb-4">Check back later!</p>
+            <button
+              onClick={() => setGameState('menu')}
+              className="pocket-btn-primary px-6 py-2"
+            >
+              Back to Menu
+            </button>
+          </motion.div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-1 md:grid-cols-2 gap-4"
+          >
             {tournaments.map((tournament) => (
-              <div
+              <motion.div
                 key={tournament.id}
-                className="bg-white rounded-lg p-6 shadow-lg hover:shadow-xl transition cursor-pointer"
+                variants={itemVariants}
+                whileHover={{ y: -2 }}
                 onClick={() => {
                   setSelectedTournament(tournament);
                   setGameState('tournamentDetails');
                 }}
+                className="bg-white rounded-2xl shadow-card p-5 cursor-pointer transition-shadow hover:shadow-card-hover"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
-                    <h3 className="text-xl font-bold text-gray-800 mb-2">{tournament.name}</h3>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className={`px-3 py-1 rounded-full text-white text-sm font-bold ${getStatusColor(tournament.status)}`}>
+                    <h3 className="text-lg font-bold text-pocket-text mb-2">{tournament.name}</h3>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span
+                        className="px-3 py-1 rounded-full text-white text-xs font-bold"
+                        style={{ backgroundColor: getStatusColor(tournament.status) }}
+                      >
                         {tournament.status.replace('_', ' ').toUpperCase()}
                       </span>
                       {tournament.status === 'in_progress' && (
-                        <span className="px-3 py-1 rounded-full bg-purple-500 text-white text-sm font-bold">
+                        <span className="px-3 py-1 rounded-full bg-type-psychic text-white text-xs font-bold">
                           Round {tournament.current_round}/{tournament.total_rounds}
                         </span>
                       )}
                     </div>
                   </div>
-                  <Trophy size={32} className="text-red-600" />
+                  <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center flex-shrink-0">
+                    <Trophy size={24} className="text-amber-500" />
+                  </div>
                 </div>
 
-                <div className="space-y-2 text-sm">
+                <div className="bg-pocket-bg rounded-xl p-3 space-y-2 text-sm mb-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Players:</span>
-                    <span className="font-bold">{tournament.entries_count}/{tournament.max_players}</span>
+                    <span className="text-pocket-text-light flex items-center gap-1">
+                      <Users size={14} /> Players
+                    </span>
+                    <span className="font-bold text-pocket-text">{tournament.entries_count}/{tournament.max_players}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600">
-                      {tournament.status === 'upcoming' || tournament.status === 'registration' ? 'Starts in:' : 'Started:'}
-                    </span>
-                    <span className="font-bold flex items-center gap-1">
+                    <span className="text-pocket-text-light flex items-center gap-1">
                       <Clock size={14} />
+                      {tournament.status === 'upcoming' || tournament.status === 'registration' ? 'Starts in' : 'Started'}
+                    </span>
+                    <span className="font-bold text-pocket-text">
                       {tournament.status === 'upcoming' || tournament.status === 'registration'
                         ? getTimeUntilStart(tournament.start_time)
                         : new Date(tournament.start_time).toLocaleDateString()}
@@ -129,21 +187,19 @@ const TournamentsScreen = () => {
                   </div>
                 </div>
 
-                <div className="mt-4 pt-4 border-t border-gray-200">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedTournament(tournament);
-                      setGameState('tournamentDetails');
-                    }}
-                    className="w-full bg-red-600 text-white py-2 rounded-lg font-bold hover:bg-red-700 transition"
-                  >
-                    View Details
-                  </button>
-                </div>
-              </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedTournament(tournament);
+                    setGameState('tournamentDetails');
+                  }}
+                  className="w-full pocket-btn-primary py-2"
+                >
+                  View Details
+                </button>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
     </div>

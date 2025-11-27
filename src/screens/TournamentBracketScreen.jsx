@@ -9,9 +9,23 @@
  */
 
 import React from 'react';
-import { Trophy, Users } from 'lucide-react';
+import { ArrowLeft, Trophy, Users, Play } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useGame } from '../contexts/GameContext';
 import { useAuth } from '../contexts/AuthContext';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.05 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0 }
+};
 
 const TournamentBracketScreen = () => {
   const {
@@ -62,16 +76,16 @@ const TournamentBracketScreen = () => {
     return 'upcoming';
   };
 
-  const getMatchStatusColor = (status) => {
+  const getMatchStatusStyles = (status) => {
     switch (status) {
       case 'completed':
-        return 'bg-green-100 border-green-400';
+        return 'bg-pocket-green/10 border-pocket-green';
       case 'active':
-        return 'bg-yellow-100 border-yellow-400';
+        return 'bg-amber-50 border-amber-400';
       case 'upcoming':
-        return 'bg-gray-100 border-gray-300';
+        return 'bg-pocket-bg border-gray-200';
       default:
-        return 'bg-gray-100 border-gray-300';
+        return 'bg-pocket-bg border-gray-200';
     }
   };
 
@@ -80,151 +94,206 @@ const TournamentBracketScreen = () => {
     return match.player1_user_id === user.id || match.player2_user_id === user.id;
   };
 
+  const getRoundName = (roundNum) => {
+    if (roundNum === totalRounds) return 'Finals';
+    if (roundNum === totalRounds - 1) return 'Semifinals';
+    if (roundNum === totalRounds - 2) return 'Quarterfinals';
+    return `Round ${roundNum}`;
+  };
+
   return (
-    <div className="w-full min-h-screen bg-gradient-to-b from-blue-400 to-purple-500 p-2 sm:p-4">
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-lg p-6 mb-4 shadow-2xl">
-          <div className="flex items-center justify-between flex-col sm:flex-row gap-3">
-            <div className="flex items-center gap-3">
-              <Trophy size={32} className="text-red-600" />
-              <div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-purple-600">{selectedTournament?.name}</h2>
-                <p className="text-sm text-gray-600">Round {selectedTournament?.current_round}/{totalRounds}</p>
-              </div>
+    <div className="min-h-screen bg-pocket-bg p-4">
+      {/* Header */}
+      <motion.header
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="sticky top-0 z-10 bg-white shadow-card rounded-2xl mb-4 max-w-7xl mx-auto"
+      >
+        <div className="flex items-center justify-between px-4 py-3">
+          <button
+            onClick={() => setGameState('tournamentDetails')}
+            className="p-2 text-pocket-text-light hover:text-pocket-text hover:bg-pocket-bg rounded-lg transition-colors"
+          >
+            <ArrowLeft size={20} />
+          </button>
+          <div className="flex-1 text-center">
+            <div className="flex items-center justify-center gap-2">
+              <Trophy size={20} className="text-type-psychic" />
+              <span className="font-bold text-pocket-text">{selectedTournament?.name}</span>
             </div>
+            <p className="text-xs text-pocket-text-light">Round {selectedTournament?.current_round}/{totalRounds}</p>
+          </div>
+          <div className="w-10" />
+        </div>
+      </motion.header>
+
+      <div className="max-w-7xl mx-auto">
+        {!tournamentBracket || tournamentBracket.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-2xl shadow-card p-8 text-center"
+          >
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-pocket-bg flex items-center justify-center">
+              <Trophy size={32} className="text-pocket-text-light" />
+            </div>
+            <p className="text-pocket-text mb-2">No bracket data available yet</p>
+            <p className="text-sm text-pocket-text-light mb-4">Bracket will be generated when tournament starts</p>
             <button
               onClick={() => setGameState('tournamentDetails')}
-              className="px-6 py-2 bg-gray-600 text-white rounded-lg font-bold hover:bg-gray-700 transition"
+              className="pocket-btn-primary px-6 py-2"
             >
               Back to Details
             </button>
-          </div>
-        </div>
-
-        {!tournamentBracket || tournamentBracket.length === 0 ? (
-          <div className="bg-white rounded-lg p-12 text-center shadow-lg">
-            <p className="text-gray-600">No bracket data available yet</p>
-            <p className="text-gray-500 text-sm mt-2">Bracket will be generated when tournament starts</p>
-          </div>
+          </motion.div>
         ) : (
-          <div className="bg-white rounded-lg p-6 shadow-lg overflow-x-auto">
-            <div className="flex gap-6 min-w-max">
-              {[...Array(totalRounds)].map((_, roundIndex) => {
-                const roundNum = roundIndex + 1;
-                const roundMatches = rounds[roundNum] || [];
+          <>
+            {/* Bracket Display */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-2xl shadow-card p-4 overflow-x-auto"
+            >
+              <div className="flex gap-4 min-w-max pb-4">
+                {[...Array(totalRounds)].map((_, roundIndex) => {
+                  const roundNum = roundIndex + 1;
+                  const roundMatches = rounds[roundNum] || [];
 
-                return (
-                  <div key={roundNum} className="flex-shrink-0" style={{ minWidth: '300px' }}>
-                    <div className="text-center mb-4">
-                      <h3 className="text-lg font-bold text-purple-600">
-                        {roundNum === totalRounds ? 'Finals' :
-                         roundNum === totalRounds - 1 ? 'Semifinals' :
-                         roundNum === totalRounds - 2 ? 'Quarterfinals' :
-                         `Round ${roundNum}`}
-                      </h3>
-                      <p className="text-xs text-gray-500">
-                        {roundMatches.length} {roundMatches.length === 1 ? 'Match' : 'Matches'}
-                      </p>
-                    </div>
+                  return (
+                    <motion.div
+                      key={roundNum}
+                      variants={containerVariants}
+                      initial="hidden"
+                      animate="visible"
+                      className="flex-shrink-0"
+                      style={{ minWidth: '280px' }}
+                    >
+                      <div className="text-center mb-4">
+                        <h3 className="text-lg font-bold text-pocket-text">
+                          {getRoundName(roundNum)}
+                        </h3>
+                        <p className="text-xs text-pocket-text-light">
+                          {roundMatches.length} {roundMatches.length === 1 ? 'Match' : 'Matches'}
+                        </p>
+                      </div>
 
-                    <div className="space-y-4">
-                      {roundMatches.map((match) => {
-                        const status = getMatchStatus(match);
-                        const isUser = isUserMatch(match);
+                      <div className="space-y-3">
+                        {roundMatches.map((match) => {
+                          const status = getMatchStatus(match);
+                          const isUser = isUserMatch(match);
 
-                        return (
-                          <div
-                            key={match.id}
-                            className={`border-2 rounded-lg p-4 ${getMatchStatusColor(status)} ${
-                              isUser ? 'ring-2 ring-purple-500' : ''
-                            }`}
-                          >
-                            {/* Player 1 */}
-                            <div className={`flex items-center justify-between p-2 rounded mb-2 ${
-                              match.winner_user_id === match.player1_user_id ? 'bg-green-200 font-bold' : 'bg-white'
-                            }`}>
-                              <div className="flex items-center gap-2">
-                                <Users size={16} />
-                                <span className="text-sm">{match.player1_username || 'TBD'}</span>
-                              </div>
-                              {match.battle_results && (
-                                <span className="text-sm font-bold">
-                                  {parseBattleResults(match.battle_results)?.score?.split('-')[0] || '0'}
-                                </span>
-                              )}
-                            </div>
-
-                            {/* VS */}
-                            <div className="text-center text-xs text-gray-500 mb-2">
-                              {status === 'completed' ? 'FINAL' : status === 'active' ? 'LIVE' : 'VS'}
-                            </div>
-
-                            {/* Player 2 */}
-                            <div className={`flex items-center justify-between p-2 rounded ${
-                              match.winner_user_id === match.player2_user_id ? 'bg-green-200 font-bold' : 'bg-white'
-                            }`}>
-                              <div className="flex items-center gap-2">
-                                <Users size={16} />
-                                <span className="text-sm">{match.player2_username || 'TBD'}</span>
-                              </div>
-                              {match.battle_results && (
-                                <span className="text-sm font-bold">
-                                  {parseBattleResults(match.battle_results)?.score?.split('-')[1] || '0'}
-                                </span>
-                              )}
-                            </div>
-
-                            {/* Match Details */}
-                            {match.completed_at && (
-                              <div className="mt-2 pt-2 border-t border-gray-300">
-                                <p className="text-xs text-gray-600 text-center mb-2">
-                                  Completed: {new Date(match.completed_at).toLocaleString()}
-                                </p>
+                          return (
+                            <motion.div
+                              key={match.id}
+                              variants={itemVariants}
+                              className={`border-2 rounded-xl p-3 ${getMatchStatusStyles(status)} ${
+                                isUser ? 'ring-2 ring-type-psychic' : ''
+                              }`}
+                            >
+                              {/* Player 1 */}
+                              <div className={`flex items-center justify-between p-2 rounded-lg mb-2 ${
+                                match.winner_user_id === match.player1_user_id
+                                  ? 'bg-pocket-green/20'
+                                  : 'bg-white'
+                              }`}>
+                                <div className="flex items-center gap-2">
+                                  <Users size={14} className="text-pocket-text-light" />
+                                  <span className={`text-sm ${
+                                    match.winner_user_id === match.player1_user_id ? 'font-bold text-pocket-green' : 'text-pocket-text'
+                                  }`}>
+                                    {match.player1_username || 'TBD'}
+                                  </span>
+                                </div>
                                 {match.battle_results && (
-                                  <button
-                                    onClick={() => {
-                                      setSelectedReplay(match);
-                                      setGameState('tournamentReplay');
-                                    }}
-                                    className="w-full bg-purple-600 text-white py-1.5 px-3 rounded text-xs font-bold hover:bg-purple-700 transition"
-                                  >
-                                    ▶️ Watch Battle
-                                  </button>
+                                  <span className="text-sm font-bold text-pocket-text">
+                                    {parseBattleResults(match.battle_results)?.score?.split('-')[0] || '0'}
+                                  </span>
                                 )}
                               </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+
+                              {/* VS */}
+                              <div className="text-center text-[10px] font-bold text-pocket-text-light mb-2">
+                                {status === 'completed' ? 'FINAL' : status === 'active' ? 'LIVE' : 'VS'}
+                              </div>
+
+                              {/* Player 2 */}
+                              <div className={`flex items-center justify-between p-2 rounded-lg ${
+                                match.winner_user_id === match.player2_user_id
+                                  ? 'bg-pocket-green/20'
+                                  : 'bg-white'
+                              }`}>
+                                <div className="flex items-center gap-2">
+                                  <Users size={14} className="text-pocket-text-light" />
+                                  <span className={`text-sm ${
+                                    match.winner_user_id === match.player2_user_id ? 'font-bold text-pocket-green' : 'text-pocket-text'
+                                  }`}>
+                                    {match.player2_username || 'TBD'}
+                                  </span>
+                                </div>
+                                {match.battle_results && (
+                                  <span className="text-sm font-bold text-pocket-text">
+                                    {parseBattleResults(match.battle_results)?.score?.split('-')[1] || '0'}
+                                  </span>
+                                )}
+                              </div>
+
+                              {/* Match Details */}
+                              {match.completed_at && (
+                                <div className="mt-3 pt-3 border-t border-gray-200">
+                                  <p className="text-[10px] text-pocket-text-light text-center mb-2">
+                                    {new Date(match.completed_at).toLocaleString()}
+                                  </p>
+                                  {match.battle_results && (
+                                    <button
+                                      onClick={() => {
+                                        setSelectedReplay(match);
+                                        setGameState('tournamentReplay');
+                                      }}
+                                      className="w-full pocket-btn-purple py-1.5 text-xs flex items-center justify-center gap-1"
+                                    >
+                                      <Play size={12} /> Watch Battle
+                                    </button>
+                                  )}
+                                </div>
+                              )}
+                            </motion.div>
+                          );
+                        })}
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </motion.div>
 
             {/* Legend */}
-            <div className="mt-6 pt-6 border-t border-gray-300">
-              <h4 className="font-bold mb-3 text-sm">Legend:</h4>
-              <div className="flex flex-wrap gap-4 text-sm">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-white rounded-2xl shadow-card p-4 mt-4"
+            >
+              <h4 className="font-bold text-pocket-text text-sm mb-3">Legend</h4>
+              <div className="flex flex-wrap gap-4 text-xs">
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-green-100 border-2 border-green-400 rounded"></div>
-                  <span>Completed</span>
+                  <div className="w-4 h-4 bg-pocket-green/10 border-2 border-pocket-green rounded"></div>
+                  <span className="text-pocket-text-light">Completed</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-yellow-100 border-2 border-yellow-400 rounded"></div>
-                  <span>Active Round</span>
+                  <div className="w-4 h-4 bg-amber-50 border-2 border-amber-400 rounded"></div>
+                  <span className="text-pocket-text-light">Active Round</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-gray-100 border-2 border-gray-300 rounded"></div>
-                  <span>Upcoming</span>
+                  <div className="w-4 h-4 bg-pocket-bg border-2 border-gray-200 rounded"></div>
+                  <span className="text-pocket-text-light">Upcoming</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-white border-2 border-purple-500 rounded"></div>
-                  <span>Your Match</span>
+                  <div className="w-4 h-4 bg-white border-2 border-type-psychic rounded ring-2 ring-type-psychic"></div>
+                  <span className="text-pocket-text-light">Your Match</span>
                 </div>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </>
         )}
       </div>
     </div>

@@ -417,6 +417,31 @@ const CareerScreen = () => {
       // Now handle client-side presentation (modals, animations)
       const nextTurn = result.careerState.turn;
 
+      // If training result contains a moveHint (from support card), add to learnableAbilities
+      const moveHint = result.moveHint || result.hint?.move;
+      if (moveHint) {
+        setCareerData(prev => {
+          const isAlreadyLearnable = prev.pokemon.learnableAbilities?.includes(moveHint);
+          const isAlreadyKnown = prev.knownAbilities?.includes(moveHint);
+
+          if (isAlreadyLearnable || isAlreadyKnown) {
+            return prev; // No update needed
+          }
+
+          return {
+            ...prev,
+            pokemon: {
+              ...prev.pokemon,
+              learnableAbilities: [...(prev.pokemon.learnableAbilities || []), moveHint]
+            },
+            moveHints: {
+              ...prev.moveHints,
+              [moveHint]: (prev.moveHints?.[moveHint] || 0) + 1
+            }
+          };
+        });
+      }
+
       // Check for inspiration event
       const inspirationResult = checkAndApplyInspiration(
         nextTurn,
@@ -1565,13 +1590,39 @@ const CareerScreen = () => {
                     if (isProcessingEvent) return;
                     setIsProcessingEvent(true);
                     try {
+                      // Capture moveHint before clearing eventResult
+                      const moveHintToAdd = careerData.eventResult?.moveHint;
+
                       // Generate training first, then clear eventResult
                       // This prevents the useEffect from racing and potentially triggering another event
                       await generateTraining();
-                      setCareerData(prev => ({
-                        ...prev,
-                        eventResult: null
-                      }));
+
+                      setCareerData(prev => {
+                        // Start with clearing eventResult
+                        const updates = {
+                          ...prev,
+                          eventResult: null
+                        };
+
+                        // If there was a moveHint, ensure it's added to learnableAbilities
+                        if (moveHintToAdd) {
+                          const isAlreadyLearnable = prev.pokemon.learnableAbilities?.includes(moveHintToAdd);
+                          const isAlreadyKnown = prev.knownAbilities?.includes(moveHintToAdd);
+
+                          if (!isAlreadyLearnable && !isAlreadyKnown) {
+                            updates.pokemon = {
+                              ...prev.pokemon,
+                              learnableAbilities: [...(prev.pokemon.learnableAbilities || []), moveHintToAdd]
+                            };
+                            updates.moveHints = {
+                              ...prev.moveHints,
+                              [moveHintToAdd]: (prev.moveHints?.[moveHintToAdd] || 0) + 1
+                            };
+                          }
+                        }
+
+                        return updates;
+                      });
                     } finally {
                       setIsProcessingEvent(false);
                     }

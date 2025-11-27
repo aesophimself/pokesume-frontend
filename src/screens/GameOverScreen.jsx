@@ -6,6 +6,8 @@
  */
 
 import React from 'react';
+import { ArrowLeft, Star, XCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useGame } from '../contexts/GameContext';
 import { useInventory } from '../contexts/InventoryContext';
 import {
@@ -66,6 +68,19 @@ const generateInspirations = (stats, aptitudes) => {
   };
 };
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: { opacity: 1, y: 0 }
+};
+
 const GameOverScreen = () => {
   const { setGameState, setSelectedPokemon, setSelectedSupports, completedCareerData, setCompletedCareerData } = useGame();
   const { loadTrainedPokemon } = useInventory();
@@ -79,24 +94,53 @@ const GameOverScreen = () => {
       ? generateInspirations(completedCareerData.currentStats, completedCareerData.pokemon.typeAptitudes)
       : null);
 
+  const handleReturn = () => {
+    setGameState('menu');
+    setSelectedPokemon(null);
+    setSelectedSupports([]);
+    setCompletedCareerData(null);
+    loadTrainedPokemon();
+  };
+
   // If no career data, show loading or error state
   if (!completedCareerData) {
     return (
-      <div className="w-full h-screen bg-gradient-to-b from-gray-700 to-gray-900 flex items-center justify-center p-2 sm:p-4">
-        <div className="bg-white rounded-lg p-6 sm:p-8 max-w-2xl w-full shadow-2xl text-center">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-red-600">Career Complete</h1>
-          <p className="text-gray-600 mb-6">Loading career results...</p>
-          <button
-            onClick={() => {
-              setGameState('menu');
-              setSelectedPokemon(null);
-              setSelectedSupports([]);
-              loadTrainedPokemon();
-            }}
-            className="bg-purple-600 text-white py-3 px-6 rounded-lg font-bold hover:bg-purple-700 transition"
+      <div className="min-h-screen bg-pocket-bg p-4">
+        <motion.header
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="sticky top-0 z-10 bg-white shadow-card rounded-2xl mb-4 max-w-lg mx-auto"
+        >
+          <div className="flex items-center justify-between px-4 py-3">
+            <button
+              onClick={handleReturn}
+              className="p-2 text-pocket-text-light hover:text-pocket-text hover:bg-pocket-bg rounded-lg transition-colors"
+            >
+              <ArrowLeft size={20} />
+            </button>
+            <div className="flex items-center gap-2">
+              <XCircle size={20} className="text-pocket-red" />
+              <span className="font-bold text-pocket-text">Career Complete</span>
+            </div>
+            <div className="w-10" />
+          </div>
+        </motion.header>
+
+        <div className="max-w-lg mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-2xl shadow-card p-8 text-center"
           >
-            Return to Menu
-          </button>
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-50 flex items-center justify-center">
+              <XCircle size={32} className="text-pocket-red" />
+            </div>
+            <h1 className="text-2xl font-bold text-pocket-text mb-2">Career Complete</h1>
+            <p className="text-pocket-text-light mb-6">Loading career results...</p>
+            <button onClick={handleReturn} className="pocket-btn-purple px-6 py-3">
+              Return to Menu
+            </button>
+          </motion.div>
         </div>
       </div>
     );
@@ -111,37 +155,85 @@ const GameOverScreen = () => {
   const gymsDefeated = completedCareerData.currentGymIndex || 0;
 
   return (
-    <div className="w-full h-screen bg-gradient-to-b from-gray-700 to-gray-900 flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
-      <div className="bg-white rounded-lg p-6 sm:p-8 max-w-2xl w-full shadow-2xl my-4">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-2 text-red-600 text-center">Career Complete</h1>
-        <p className="text-gray-600 mb-1 text-center">Defeated by gym leader</p>
-        <p className="text-gray-500 text-sm mb-4 text-center">
-          Turn {finalTurn} | Gyms Defeated: {gymsDefeated}/5
-        </p>
+    <div className="min-h-screen bg-pocket-bg p-4">
+      {/* Header */}
+      <motion.header
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="sticky top-0 z-10 bg-white shadow-card rounded-2xl mb-4 max-w-lg mx-auto"
+      >
+        <div className="flex items-center justify-between px-4 py-3">
+          <button
+            onClick={handleReturn}
+            className="p-2 text-pocket-text-light hover:text-pocket-text hover:bg-pocket-bg rounded-lg transition-colors"
+          >
+            <ArrowLeft size={20} />
+          </button>
+          <div className="flex items-center gap-2">
+            <XCircle size={20} className="text-pocket-red" />
+            <span className="font-bold text-pocket-text">Career Complete</span>
+          </div>
+          <div className="w-10" />
+        </div>
+      </motion.header>
 
-        {/* Pokemon Display */}
-        <div className="bg-gradient-to-br from-gray-50 to-red-50 rounded-lg p-4 mb-4">
-          <div className="flex justify-center mb-2">
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+        className="max-w-lg mx-auto"
+      >
+        {/* Defeat Banner */}
+        <motion.div
+          variants={itemVariants}
+          className="bg-gradient-to-r from-gray-600 to-gray-700 rounded-2xl shadow-card-lg p-6 mb-4 text-center"
+        >
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
+            className="w-20 h-20 mx-auto mb-3 rounded-full bg-white/20 flex items-center justify-center"
+          >
+            <XCircle size={40} className="text-white" />
+          </motion.div>
+          <h1 className="text-3xl font-bold text-white mb-1">Career Complete</h1>
+          <p className="text-white/90 text-sm">
+            Defeated by gym leader
+          </p>
+          <p className="text-white/70 text-xs mt-1">
+            Turn {finalTurn} | Gyms Defeated: {gymsDefeated}/5
+          </p>
+        </motion.div>
+
+        {/* Pokemon Card */}
+        <motion.div
+          variants={itemVariants}
+          className="bg-white rounded-2xl shadow-card p-5 mb-4"
+        >
+          <div className="flex justify-center mb-3">
             {generatePokemonSprite(pokemonType, pokemonName)}
           </div>
-          <h2 className="text-2xl font-bold text-center mb-1">{pokemonName}</h2>
-          <div className="flex justify-center mb-2">
+          <h2 className="text-xl font-bold text-pocket-text text-center mb-2">{pokemonName}</h2>
+          <div className="flex justify-center mb-3">
             <TypeBadge type={pokemonType} size={16} />
           </div>
-          <div className="text-center mb-3">
-            <span className="px-3 py-1 rounded text-sm font-bold text-white" style={{ backgroundColor: getGradeColor(grade) }}>
+          <div className="flex justify-center mb-4">
+            <span
+              className="px-4 py-1.5 rounded-full text-sm font-bold text-white"
+              style={{ backgroundColor: getGradeColor(grade) }}
+            >
               Grade: {grade}
             </span>
           </div>
 
           {/* Final Stats */}
-          <div className="mb-4">
-            <h3 className="font-bold mb-2 text-center">Final Stats</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-sm">
+          <div className="bg-pocket-bg rounded-xl p-4 mb-4">
+            <h3 className="font-bold text-pocket-text text-sm mb-3 text-center">Final Stats</h3>
+            <div className="grid grid-cols-5 gap-2 text-xs">
               {Object.entries(finalStats).map(([stat, value]) => (
-                <div key={stat} className="flex items-center gap-1 justify-center">
+                <div key={stat} className="flex flex-col items-center gap-1">
                   <StatIcon stat={stat} size={14} />
-                  <span className="font-semibold">{value}</span>
+                  <span className="font-bold text-pocket-text">{value}</span>
                 </div>
               ))}
             </div>
@@ -149,13 +241,18 @@ const GameOverScreen = () => {
 
           {/* Aptitudes */}
           {Object.keys(aptitudes).length > 0 && (
-            <div className="mb-4">
-              <h3 className="font-bold mb-2 text-center text-sm">Attack Aptitudes</h3>
+            <div className="bg-pocket-bg rounded-xl p-4">
+              <h3 className="font-bold text-pocket-text text-sm mb-3 text-center">Attack Aptitudes</h3>
               <div className="grid grid-cols-3 gap-2 text-xs">
                 {Object.entries(aptitudes).map(([aptitude, aptGrade]) => (
                   <div key={aptitude} className="text-center">
-                    <div className="font-semibold">{typeMap[aptitude] || aptitude}</div>
-                    <span className="px-2 py-1 rounded text-xs font-bold text-white" style={{ backgroundColor: getGradeColor(aptGrade) }}>
+                    <div className="text-pocket-text-light font-semibold mb-1">
+                      {typeMap[aptitude] || aptitude}
+                    </div>
+                    <span
+                      className="px-2 py-0.5 rounded-full text-[10px] font-bold text-white"
+                      style={{ backgroundColor: getGradeColor(aptGrade) }}
+                    >
                       {aptGrade}
                     </span>
                   </div>
@@ -163,58 +260,56 @@ const GameOverScreen = () => {
               </div>
             </div>
           )}
-        </div>
+        </motion.div>
 
         {/* Inspirations */}
         {inspirations && (
-          <div className="bg-purple-50 rounded-lg p-4 mb-4">
-            <h3 className="font-bold mb-3 text-center text-purple-800">Inspirations Earned</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <motion.div
+            variants={itemVariants}
+            className="bg-white rounded-2xl shadow-card p-5 mb-4"
+          >
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Star size={18} className="text-type-psychic" />
+              <h3 className="font-bold text-pocket-text">Inspirations Earned</h3>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
               {/* Stat Inspiration */}
-              <div className="bg-white rounded-lg p-3 border-2 border-purple-200">
-                <div className="text-xs font-semibold text-purple-600 mb-1">STAT INSPIRATION</div>
-                <div className="font-bold text-lg mb-1">{inspirations.stat.name}</div>
-                <div className="text-sm text-gray-600 mb-2">Value: {inspirations.stat.value}</div>
-                <div className="flex gap-1">
+              <div className="bg-purple-50 rounded-xl p-3 border-2 border-purple-200">
+                <div className="text-[10px] font-bold text-type-psychic mb-1">STAT INSPIRATION</div>
+                <div className="font-bold text-pocket-text mb-1">{inspirations.stat.name}</div>
+                <div className="text-xs text-pocket-text-light mb-2">Value: {inspirations.stat.value}</div>
+                <div className="flex gap-0.5">
                   {[...Array(inspirations.stat.stars)].map((_, i) => (
-                    <span key={i} className="text-xl text-yellow-400">
-                      ⭐
-                    </span>
+                    <Star key={i} size={14} className="text-amber-400 fill-amber-400" />
                   ))}
                 </div>
               </div>
 
               {/* Aptitude Inspiration */}
-              <div className="bg-white rounded-lg p-3 border-2 border-purple-200">
-                <div className="text-xs font-semibold text-purple-600 mb-1">APTITUDE INSPIRATION</div>
-                <div className="font-bold text-lg mb-1">{inspirations.aptitude.name}</div>
-                <div className="text-sm text-gray-600 mb-2">Grade: {inspirations.aptitude.grade}</div>
-                <div className="flex gap-1">
+              <div className="bg-purple-50 rounded-xl p-3 border-2 border-purple-200">
+                <div className="text-[10px] font-bold text-type-psychic mb-1">APTITUDE INSPIRATION</div>
+                <div className="font-bold text-pocket-text mb-1">{inspirations.aptitude.name}</div>
+                <div className="text-xs text-pocket-text-light mb-2">Grade: {inspirations.aptitude.grade}</div>
+                <div className="flex gap-0.5">
                   {[...Array(inspirations.aptitude.stars)].map((_, i) => (
-                    <span key={i} className="text-xl text-yellow-400">
-                      ⭐
-                    </span>
+                    <Star key={i} size={14} className="text-amber-400 fill-amber-400" />
                   ))}
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
 
-        <button
-          onClick={() => {
-            setGameState('menu');
-            setSelectedPokemon(null);
-            setSelectedSupports([]);
-            setCompletedCareerData(null);
-            // Refresh trained Pokemon to show the newly completed one
-            loadTrainedPokemon();
-          }}
-          className="w-full bg-purple-600 text-white py-3 rounded-lg font-bold hover:bg-purple-700 transition"
-        >
-          Return to Menu
-        </button>
-      </div>
+        {/* Return Button */}
+        <motion.div variants={itemVariants}>
+          <button
+            onClick={handleReturn}
+            className="w-full pocket-btn-purple py-4 text-lg"
+          >
+            Return to Menu
+          </button>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };

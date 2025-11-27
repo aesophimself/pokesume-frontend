@@ -6,6 +6,8 @@
  */
 
 import React from 'react';
+import { ArrowLeft, Trophy, Star } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useGame } from '../contexts/GameContext';
 import { useInventory } from '../contexts/InventoryContext';
 import {
@@ -14,6 +16,19 @@ import {
   StatIcon
 } from '../utils/gameUtils';
 import { TypeBadge } from '../components/TypeIcon';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.05 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0 }
+};
 
 const TrainedPokemonScreen = () => {
   const {
@@ -25,15 +40,6 @@ const TrainedPokemonScreen = () => {
   } = useGame();
 
   const { trainedPokemon } = useInventory();
-
-  // Debug: Log first trained pokemon to see if inspirations exist
-  if (trainedPokemon.length > 0) {
-    console.log('[Trained Pokemon Screen] First pokemon:', trainedPokemon[0]);
-    console.log('[Trained Pokemon Screen] Has inspirations?', !!trainedPokemon[0].inspirations);
-    if (trainedPokemon[0].inspirations) {
-      console.log('[Trained Pokemon Screen] Inspirations:', trainedPokemon[0].inspirations);
-    }
-  }
 
   // Sort trained pokemon
   const sortTrainedPokemon = (inventory) => {
@@ -79,51 +85,64 @@ const TrainedPokemonScreen = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-b from-blue-400 to-purple-500 p-2 sm:p-4">
-      <div className="max-w-5xl mx-auto">
-        <div className="bg-white rounded-lg p-6 mb-4 shadow-2xl">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-3xl font-bold text-purple-600">Trained Pokemon</h2>
-            <button
-              onClick={() => setGameState('menu')}
-              className="px-6 py-2 bg-gray-600 text-white rounded-lg font-bold hover:bg-gray-700 transition"
-            >
-              Back
-            </button>
+    <div className="min-h-screen bg-pocket-bg p-4">
+      {/* Header */}
+      <motion.header
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="sticky top-0 z-10 bg-white shadow-card rounded-2xl mb-4 max-w-4xl mx-auto"
+      >
+        <div className="flex items-center justify-between px-4 py-3">
+          <button
+            onClick={() => setGameState('menu')}
+            className="p-2 text-pocket-text-light hover:text-pocket-text hover:bg-pocket-bg rounded-lg transition-colors"
+          >
+            <ArrowLeft size={20} />
+          </button>
+          <div className="flex items-center gap-2">
+            <Trophy size={20} className="text-amber-500" />
+            <span className="font-bold text-pocket-text">Hall of Fame</span>
           </div>
+          <span className="text-pocket-text-light text-sm font-semibold">
+            {trainedPokemon.length} trained
+          </span>
+        </div>
+      </motion.header>
+
+      <div className="max-w-4xl mx-auto">
+        {/* Filters Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-2xl shadow-card p-4 mb-4"
+        >
+          {/* Sort Options */}
           <div className="flex items-center gap-2 flex-wrap mb-3">
-            <span className="text-sm font-semibold text-gray-700">Sort by:</span>
-            <button
-              onClick={() => setTrainedSortBy('date')}
-              className={`px-3 py-1 rounded-lg text-sm font-bold transition ${
-                trainedSortBy === 'date' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              Date
-            </button>
-            <button
-              onClick={() => setTrainedSortBy('grade')}
-              className={`px-3 py-1 rounded-lg text-sm font-bold transition ${
-                trainedSortBy === 'grade' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              Grade
-            </button>
-            <button
-              onClick={() => setTrainedSortBy('type')}
-              className={`px-3 py-1 rounded-lg text-sm font-bold transition ${
-                trainedSortBy === 'type' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              Type
-            </button>
+            <span className="text-sm font-semibold text-pocket-text-light">Sort:</span>
+            {['date', 'grade', 'type'].map(sort => (
+              <button
+                key={sort}
+                onClick={() => setTrainedSortBy(sort)}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+                  trainedSortBy === sort
+                    ? 'bg-amber-500 text-white'
+                    : 'bg-pocket-bg text-pocket-text-light hover:bg-gray-200'
+                }`}
+              >
+                {sort.charAt(0).toUpperCase() + sort.slice(1)}
+              </button>
+            ))}
           </div>
+
+          {/* Grade Filters */}
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm font-semibold text-gray-700">Filter by Grade:</span>
+            <span className="text-sm font-semibold text-pocket-text-light">Filter:</span>
             <button
               onClick={() => setTrainedFilterGrade('all')}
-              className={`px-3 py-1 rounded-lg text-sm font-bold transition ${
-                trainedFilterGrade === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+                trainedFilterGrade === 'all'
+                  ? 'bg-amber-500 text-white'
+                  : 'bg-pocket-bg text-pocket-text-light hover:bg-gray-200'
               }`}
             >
               All
@@ -132,102 +151,125 @@ const TrainedPokemonScreen = () => {
               <button
                 key={grade}
                 onClick={() => setTrainedFilterGrade(grade)}
-                className={`px-3 py-1 rounded-lg text-sm font-bold transition text-white`}
-                style={{
-                  backgroundColor: trainedFilterGrade === grade ? getGradeColor(grade) : '#e5e7eb',
-                  color: trainedFilterGrade === grade ? 'white' : '#374151'
-                }}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+                  trainedFilterGrade === grade ? 'text-white' : 'bg-pocket-bg text-pocket-text-light hover:bg-gray-200'
+                }`}
+                style={trainedFilterGrade === grade ? { backgroundColor: getGradeColor(grade) } : {}}
               >
                 {grade}
               </button>
             ))}
           </div>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-          {sortedTrainedPokemon.map((trained, idx) => {
-            return (
-              <div key={idx} className="bg-white rounded-lg p-4 shadow-lg">
-                <div className="flex justify-center mb-2">
-                  {generatePokemonSprite(trained.type, trained.name)}
-                </div>
-                <h3 className="text-center font-bold text-lg">{trained.name}</h3>
-                <div className="flex justify-center mt-1">
-                  <TypeBadge type={trained.type} size={14} />
-                </div>
-                <div className="text-center mt-2 mb-2">
-                  <span
-                    className="px-2 py-1 rounded text-xs font-bold text-white"
-                    style={{ backgroundColor: getGradeColor(trained.grade) }}
-                  >
-                    {trained.grade || '?'}
-                  </span>
-                </div>
-                <div className="text-xs text-gray-500 text-center mb-2">
-                  {new Date(trained.completedAt).toLocaleDateString()}
-                </div>
+        </motion.div>
 
-                {/* Inspirations Display */}
-                {trained.inspirations && trained.inspirations.stat && trained.inspirations.aptitude ? (
-                  <div className="space-y-1">
-                      <div className="flex justify-between items-center text-xs">
-                        <span className="font-semibold">{trained.inspirations.stat.name}</span>
-                        <div className="flex gap-0.5">
-                          {[...Array(trained.inspirations.stat.stars)].map((_, i) => (
-                            <span key={i} className="text-xs text-yellow-500">
-                              ⭐
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="flex justify-between items-center text-xs">
-                        <span className="font-semibold">
-                          {colorToType[trained.inspirations.aptitude.name] || trained.inspirations.aptitude.name}
-                        </span>
-                        <div className="flex gap-0.5">
-                          {[...Array(trained.inspirations.aptitude.stars)].map((_, i) => (
-                            <span key={i} className="text-xs text-yellow-500">
-                              ⭐
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                  </div>
-                ) : (
-                  <div className="text-xs font-bold text-red-700 text-center">No Inspirations</div>
-                )}
-
-                {trained.stats && (
-                  <div className="grid grid-cols-2 gap-1 text-xs mt-2">
-                    <div className="flex items-center gap-1">
-                      <StatIcon stat="HP" size={10} />
-                      <span>{trained.stats.HP}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <StatIcon stat="Attack" size={10} />
-                      <span>{trained.stats.Attack}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <StatIcon stat="Defense" size={10} />
-                      <span>{trained.stats.Defense}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <StatIcon stat="Instinct" size={10} />
-                      <span>{trained.stats.Instinct}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <StatIcon stat="Speed" size={10} />
-                      <span>{trained.stats.Speed}</span>
-                    </div>
-                  </div>
-                )}
+        {/* Pokemon Grid */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"
+        >
+          {sortedTrainedPokemon.map((trained, idx) => (
+            <motion.div
+              key={idx}
+              variants={itemVariants}
+              whileHover={{ y: -2 }}
+              className="pokemon-card"
+            >
+              <div className="mb-2">
+                {generatePokemonSprite(trained.type, trained.name)}
               </div>
-            );
-          })}
-        </div>
+              <h3 className="font-bold text-pocket-text text-sm text-center">{trained.name}</h3>
+              <div className="flex justify-center my-2">
+                <TypeBadge type={trained.type} size={14} />
+              </div>
+              <div className="flex justify-center mb-2">
+                <span
+                  className="px-2 py-0.5 rounded-full text-[10px] font-bold text-white"
+                  style={{ backgroundColor: getGradeColor(trained.grade) }}
+                >
+                  {trained.grade || '?'}
+                </span>
+              </div>
+              <div className="text-[10px] text-pocket-text-light text-center mb-2">
+                {new Date(trained.completedAt).toLocaleDateString()}
+              </div>
+
+              {/* Inspirations Display */}
+              {trained.inspirations && trained.inspirations.stat && trained.inspirations.aptitude ? (
+                <div className="bg-pocket-bg rounded-lg p-2 space-y-1">
+                  <div className="flex justify-between items-center text-[10px]">
+                    <span className="font-semibold text-pocket-text">{trained.inspirations.stat.name}</span>
+                    <div className="flex gap-0.5">
+                      {[...Array(trained.inspirations.stat.stars)].map((_, i) => (
+                        <Star key={i} size={10} className="text-amber-400 fill-amber-400" />
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center text-[10px]">
+                    <span className="font-semibold text-pocket-text">
+                      {colorToType[trained.inspirations.aptitude.name] || trained.inspirations.aptitude.name}
+                    </span>
+                    <div className="flex gap-0.5">
+                      {[...Array(trained.inspirations.aptitude.stars)].map((_, i) => (
+                        <Star key={i} size={10} className="text-amber-400 fill-amber-400" />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-[10px] font-bold text-pocket-red text-center">No Inspirations</div>
+              )}
+
+              {trained.stats && (
+                <div className="grid grid-cols-2 gap-1 text-[10px] mt-2">
+                  <div className="flex items-center gap-1">
+                    <StatIcon stat="HP" size={10} />
+                    <span className="text-pocket-text-light">{trained.stats.HP}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <StatIcon stat="Attack" size={10} />
+                    <span className="text-pocket-text-light">{trained.stats.Attack}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <StatIcon stat="Defense" size={10} />
+                    <span className="text-pocket-text-light">{trained.stats.Defense}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <StatIcon stat="Instinct" size={10} />
+                    <span className="text-pocket-text-light">{trained.stats.Instinct}</span>
+                  </div>
+                  <div className="flex items-center gap-1 col-span-2 justify-center">
+                    <StatIcon stat="Speed" size={10} />
+                    <span className="text-pocket-text-light">{trained.stats.Speed}</span>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Empty State */}
         {trainedPokemon.length === 0 && (
-          <div className="bg-white rounded-lg p-12 shadow-lg text-center">
-            <p className="text-gray-500 text-lg">No trained Pokemon yet! Complete a career to add your first trained Pokemon.</p>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-2xl shadow-card p-8 text-center"
+          >
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-50 flex items-center justify-center">
+              <Trophy size={32} className="text-amber-500" />
+            </div>
+            <p className="text-pocket-text mb-2">No trained Pokemon yet!</p>
+            <p className="text-sm text-pocket-text-light mb-4">
+              Complete a career to add your first trained Pokemon.
+            </p>
+            <button
+              onClick={() => setGameState('menu')}
+              className="pocket-btn-primary px-6 py-2"
+            >
+              Back to Menu
+            </button>
+          </motion.div>
         )}
       </div>
     </div>
