@@ -184,6 +184,28 @@ export const CareerProvider = ({ children }) => {
     }
   };
 
+  // Use pokeclock to retry gym battle
+  const usePokeclock = async () => {
+    if (!authToken) return null;
+
+    setCareerLoading(true);
+    setCareerError(null);
+    try {
+      const result = await apiUsePokeclock(authToken);
+      if (result && result.success) {
+        setCareerData(result.careerState);
+        return result;
+      }
+      return null;
+    } catch (error) {
+      console.error('Failed to use pokeclock:', error);
+      setCareerError(error.message);
+      return null;
+    } finally {
+      setCareerLoading(false);
+    }
+  };
+
   // Server-authoritative training
   const trainStat = async (stat) => {
     if (!authToken) return null;
@@ -342,6 +364,7 @@ export const CareerProvider = ({ children }) => {
     processBattle,
     completeCareer,
     abandonCareer,
+    usePokeclock,
 
     // Server-authoritative operations
     trainStat,

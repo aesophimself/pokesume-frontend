@@ -22,7 +22,7 @@ import BadgeModal from '../components/BadgeModal';
 
 const BattleScreen = () => {
   const { battleState, battleSpeed, setBattleSpeed, setGameState, setBattleState } = useGame();
-  const { careerData, setCareerData, completeCareer } = useCareer();
+  const { careerData, completeCareer, usePokeclock } = useCareer();
   const battleLogRef = useRef(null);
   const [showBadgeModal, setShowBadgeModal] = useState(false);
   const [earnedBadge, setEarnedBadge] = useState(null);
@@ -77,23 +77,22 @@ const BattleScreen = () => {
       const pokeclocks = careerData?.pokeclocks || 0;
 
       if (pokeclocks > 0) {
-        // Use a pokeclock to retry the battle
+        // Use a pokeclock to retry the battle (server-authoritative)
         setShowPokeclockModal(true);
 
-        // Decrement pokeclocks and revert turn so player can retry the gym battle
-        // The turn was incremented during battle processing, so we need to go back
-        setCareerData(prev => ({
-          ...prev,
-          pokeclocks: prev.pokeclocks - 1,
-          turn: prev.turn - 1  // Revert turn to retry gym battle
-        }));
+        // Call server to use pokeclock - this decrements pokeclocks and reverts turn
+        const result = await usePokeclock();
 
-        // Hide modal after 2 seconds and return to career
+        // Hide modal after 2 seconds and return to career for gym retry
         setTimeout(() => {
           setShowPokeclockModal(false);
           setBattleState(null);
           setGameState('career');
         }, 2000);
+
+        if (!result) {
+          console.error('Failed to use pokeclock on server');
+        }
         return;
       } else {
         // No pokeclocks remaining - career ends
