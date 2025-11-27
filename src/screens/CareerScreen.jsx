@@ -17,7 +17,8 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, Book, Trophy, Zap, Clock } from 'lucide-react';
+import { Sparkles, Book, Trophy, Zap, Clock, Star, HelpCircle, ArrowLeft } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useGame } from '../contexts/GameContext';
 import { useCareer } from '../contexts/CareerContext';
 import {
@@ -546,14 +547,21 @@ const CareerScreen = () => {
       // If outcome contains a moveHint, ensure it's added to learnableAbilities
       // (Server should handle this, but we ensure it client-side as well)
       if (outcome.moveHint) {
+        console.log('[handleEventChoice] Adding moveHint to learnableAbilities:', outcome.moveHint);
         setCareerData(prev => {
           // Check if move is already in learnableAbilities or known
           const isAlreadyLearnable = prev.pokemon.learnableAbilities?.includes(outcome.moveHint);
           const isAlreadyKnown = prev.knownAbilities?.includes(outcome.moveHint);
 
           if (isAlreadyLearnable || isAlreadyKnown) {
+            console.log('[handleEventChoice] Move already known/learnable, skipping:', outcome.moveHint);
             return prev; // No update needed
           }
+
+          console.log('[handleEventChoice] Adding to learnableAbilities:', {
+            move: outcome.moveHint,
+            currentLearnables: prev.pokemon.learnableAbilities
+          });
 
           // Add moveHint to learnableAbilities
           return {
@@ -769,33 +777,37 @@ const CareerScreen = () => {
     if (!evolutionModal) return null;
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
-        <div className="bg-gradient-to-b from-purple-500 to-blue-500 rounded-lg p-8 max-w-md w-full shadow-2xl text-center">
-          <h2 className="text-3xl font-bold text-white mb-6">Evolution!</h2>
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="bg-white rounded-2xl p-6 max-w-md w-full shadow-card-lg text-center"
+        >
+          <h2 className="text-2xl font-bold text-pocket-red mb-4">Evolution!</h2>
 
-          <div className="flex items-center justify-center gap-4 mb-6">
+          <div className="flex items-center justify-center gap-4 mb-4">
             <div className="text-center">
               <div className="mb-2">
                 {generatePokemonSprite(POKEMON[evolutionModal.fromName]?.primaryType || 'Normal', evolutionModal.fromName)}
               </div>
-              <p className="text-white font-bold text-lg">{evolutionModal.fromName}</p>
+              <p className="font-bold text-pocket-text">{evolutionModal.fromName}</p>
               <span
-                className="px-2 py-1 rounded text-xs font-bold text-white"
+                className="px-2 py-0.5 rounded-full text-xs font-bold text-white"
                 style={{ backgroundColor: getGradeColor(getPokemonGrade(evolutionModal.oldStats)) }}
               >
                 {getPokemonGrade(evolutionModal.oldStats)}
               </span>
             </div>
 
-            <div className="text-4xl text-yellow-300 animate-pulse">💡</div>
+            <div className="text-3xl text-amber-400 animate-pulse">→</div>
 
             <div className="text-center">
               <div className="mb-2">
                 {generatePokemonSprite(POKEMON[evolutionModal.toName]?.primaryType || 'Normal', evolutionModal.toName)}
               </div>
-              <p className="text-white font-bold text-lg">{evolutionModal.toName}</p>
+              <p className="font-bold text-pocket-text">{evolutionModal.toName}</p>
               <span
-                className="px-2 py-1 rounded text-xs font-bold text-white"
+                className="px-2 py-0.5 rounded-full text-xs font-bold text-white"
                 style={{ backgroundColor: getGradeColor(getPokemonGrade(evolutionModal.newStats)) }}
               >
                 {getPokemonGrade(evolutionModal.newStats)}
@@ -803,16 +815,16 @@ const CareerScreen = () => {
             </div>
           </div>
 
-          <div className="bg-white bg-opacity-20 rounded p-4 mb-6 text-white text-sm">
-            <p className="font-bold mb-2">Stats increased by 10%!</p>
+          <div className="bg-pocket-bg rounded-xl p-4 mb-4">
+            <p className="font-bold text-pocket-text mb-2 text-sm">Stats increased by 10%!</p>
             <div className="grid grid-cols-2 gap-2 text-xs">
               {Object.keys(evolutionModal.newStats).map(stat => {
                 const oldVal = evolutionModal.oldStats[stat];
                 const newVal = evolutionModal.newStats[stat];
                 return (
-                  <div key={stat} className="flex justify-between">
+                  <div key={stat} className="flex justify-between text-pocket-text-light">
                     <span>{stat}:</span>
-                    <span>{oldVal} → {newVal}</span>
+                    <span className="text-pocket-green font-bold">{oldVal} → {newVal}</span>
                   </div>
                 );
               })}
@@ -821,11 +833,11 @@ const CareerScreen = () => {
 
           <button
             onClick={() => applyEvolution(evolutionModal.fromName, evolutionModal.toName, evolutionModal.toStage)}
-            className="w-full bg-yellow-400 text-purple-900 py-3 rounded-lg font-bold text-xl hover:bg-yellow-300 transition"
+            className="pocket-btn-primary w-full py-3 text-lg"
           >
             Evolve!
           </button>
-        </div>
+        </motion.div>
       </div>
     );
   };
@@ -835,25 +847,29 @@ const CareerScreen = () => {
     if (!inspirationModal) return null;
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
-        <div className="bg-gradient-to-b from-purple-500 to-pink-500 rounded-lg p-8 max-w-2xl w-full shadow-2xl">
-          <h2 className="text-3xl font-bold text-white mb-4 text-center">✨ Inspiration! ✨</h2>
-          <p className="text-white text-center mb-6">Your trained Pokemon inspire you at Turn {inspirationModal.turn}!</p>
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="bg-white rounded-2xl p-6 max-w-2xl w-full shadow-card-lg"
+        >
+          <h2 className="text-2xl font-bold text-amber-500 mb-2 text-center">Inspiration!</h2>
+          <p className="text-pocket-text-light text-center mb-4 text-sm">Your trained Pokemon inspire you at Turn {inspirationModal.turn}!</p>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {inspirationModal.results.map((result, idx) => (
-              <div key={idx} className="bg-white bg-opacity-20 rounded-lg p-4">
-                <h3 className="text-xl font-bold text-yellow-300 mb-3">{result.pokemonName}</h3>
+              <div key={idx} className="bg-pocket-bg rounded-xl p-4">
+                <h3 className="text-lg font-bold text-pocket-text mb-2">{result.pokemonName}</h3>
 
                 {result.statBonus && (
-                  <div className="bg-green-500 bg-opacity-30 rounded p-3 mb-2">
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-white font-bold">
+                      <span className="text-pocket-green font-bold">
                         {result.statBonus.stat} +{result.statBonus.amount}
                       </span>
-                      <div className="flex gap-1">
+                      <div className="flex gap-0.5">
                         {[...Array(result.statBonus.stars)].map((_, i) => (
-                          <span key={i} className="text-yellow-300">⭐</span>
+                          <Star key={i} size={14} className="text-amber-400 fill-amber-400" />
                         ))}
                       </div>
                     </div>
@@ -861,17 +877,17 @@ const CareerScreen = () => {
                 )}
 
                 {result.aptitudeUpgrade && (
-                  <div className="bg-purple-500 bg-opacity-30 rounded p-3">
-                    <div className="text-white font-bold mb-1">
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                    <div className="text-purple-700 font-bold mb-1 text-sm">
                       {result.aptitudeUpgrade.type} Aptitude: {result.aptitudeUpgrade.from} → {result.aptitudeUpgrade.to}
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-xs text-white opacity-80">
+                      <span className="text-xs text-pocket-text-light">
                         {(result.aptitudeUpgrade.chance * 100).toFixed(0)}% chance
                       </span>
-                      <div className="flex gap-1">
+                      <div className="flex gap-0.5">
                         {[...Array(result.aptitudeUpgrade.stars)].map((_, i) => (
-                          <span key={i} className="text-yellow-300">⭐</span>
+                          <Star key={i} size={14} className="text-amber-400 fill-amber-400" />
                         ))}
                       </div>
                     </div>
@@ -879,7 +895,7 @@ const CareerScreen = () => {
                 )}
 
                 {!result.statBonus && !result.aptitudeUpgrade && (
-                  <div className="text-white opacity-70 text-sm italic">
+                  <div className="text-pocket-text-light text-sm italic">
                     No bonuses this time
                   </div>
                 )}
@@ -895,11 +911,11 @@ const CareerScreen = () => {
                 await requestNewTrainingOptions();
               }
             }}
-            className="w-full mt-6 bg-yellow-400 text-purple-900 py-3 rounded-lg font-bold text-xl hover:bg-yellow-300 transition"
+            className="pocket-btn-primary w-full mt-4 py-3 text-lg"
           >
             Continue
           </button>
-        </div>
+        </motion.div>
       </div>
     );
   };
@@ -908,12 +924,18 @@ const CareerScreen = () => {
     if (!pokeclockModal) return null;
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
-        <div className="bg-gradient-to-b from-blue-500 to-purple-500 rounded-lg p-8 max-w-md w-full shadow-2xl text-center animate-pulse">
-          <div className="text-6xl mb-4">⏰</div>
-          <h2 className="text-3xl font-bold text-white mb-4">Pokeclock Used!</h2>
-          <p className="text-white text-lg">You get another chance!</p>
-        </div>
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="bg-white rounded-2xl p-8 max-w-md w-full shadow-card-lg text-center"
+        >
+          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-pocket-blue/10 flex items-center justify-center">
+            <Clock size={40} className="text-pocket-blue animate-pulse" />
+          </div>
+          <h2 className="text-2xl font-bold text-pocket-blue mb-2">Pokeclock Used!</h2>
+          <p className="text-pocket-text-light">You get another chance!</p>
+        </motion.div>
       </div>
     );
   };
@@ -927,8 +949,10 @@ const CareerScreen = () => {
         onClick={() => setShowHelp(false)}
         style={{ overflow: 'hidden' }}
       >
-        <div
-          className="bg-white rounded-lg w-full sm:w-[500px] shadow-2xl"
+        <motion.div
+          initial={{ x: 100, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          className="bg-white rounded-2xl w-full sm:w-[500px] shadow-card-lg"
           style={{
             height: 'calc(100vh - 2rem)',
             display: 'flex',
@@ -937,13 +961,16 @@ const CareerScreen = () => {
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="bg-white border-b p-4 flex justify-between items-center rounded-t-lg" style={{ flexShrink: 0 }}>
-            <h2 className="text-xl font-bold text-purple-600">Game Guide</h2>
-            <button onClick={() => setShowHelp(false)} className="text-2xl font-bold text-gray-600 hover:text-gray-800 px-2">{ICONS.CLOSE}</button>
+          <div className="bg-white border-b border-pocket-bg p-4 flex justify-between items-center rounded-t-2xl" style={{ flexShrink: 0 }}>
+            <div className="flex items-center gap-2">
+              <HelpCircle size={20} className="text-pocket-blue" />
+              <h2 className="text-lg font-bold text-pocket-text">Game Guide</h2>
+            </div>
+            <button onClick={() => setShowHelp(false)} className="p-2 text-pocket-text-light hover:text-pocket-text hover:bg-pocket-bg rounded-lg transition-colors">{ICONS.CLOSE}</button>
           </div>
 
           <div
-            className="p-6 space-y-6"
+            className="p-4 space-y-4"
             style={{
               flex: 1,
               overflowY: 'scroll',
@@ -951,7 +978,7 @@ const CareerScreen = () => {
             }}
           >
             <section>
-              <h3 className="text-lg sm:text-xl font-bold text-purple-600 mb-3 border-b pb-2">Pokemon</h3>
+              <h3 className="text-base font-bold text-pocket-red mb-2 border-b border-pocket-bg pb-2">Pokemon</h3>
               <div className="space-y-3">
                 <div>
                   <h4 className="font-bold text-gray-800 mb-1">Stats</h4>
@@ -1001,7 +1028,7 @@ const CareerScreen = () => {
             </section>
 
             <section>
-              <h3 className="text-lg sm:text-xl font-bold text-purple-600 mb-3 border-b pb-2">Battles</h3>
+              <h3 className="text-base font-bold text-pocket-red mb-2 border-b border-pocket-bg pb-2">Battles</h3>
               <div className="space-y-3">
                 <div>
                   <h4 className="font-bold text-gray-800 mb-1">Combat</h4>
@@ -1043,7 +1070,7 @@ const CareerScreen = () => {
             </section>
 
             <section>
-              <h3 className="text-lg sm:text-xl font-bold text-purple-600 mb-3 border-b pb-2">Career</h3>
+              <h3 className="text-base font-bold text-pocket-red mb-2 border-b border-pocket-bg pb-2">Career</h3>
               <div className="space-y-3">
                 <div>
                   <h4 className="font-bold text-gray-800 mb-1">Goal</h4>
@@ -1085,7 +1112,7 @@ const CareerScreen = () => {
             </section>
 
             <section>
-              <h3 className="text-lg sm:text-xl font-bold text-purple-600 mb-3 border-b pb-2">Gacha</h3>
+              <h3 className="text-base font-bold text-pocket-red mb-2 border-b border-pocket-bg pb-2">Gacha</h3>
               <div className="space-y-3">
                 <div>
                   <h4 className="font-bold text-gray-800 mb-1">Pokemon Gachapon</h4>
@@ -1102,7 +1129,7 @@ const CareerScreen = () => {
               </div>
             </section>
           </div>
-        </div>
+        </motion.div>
       </div>
     );
   };
@@ -1129,9 +1156,13 @@ const CareerScreen = () => {
 
   return (
     <>
-      <div className="w-full min-h-screen bg-gradient-to-b from-purple-400 to-pink-500 p-2 sm:p-3">
-        <div className="max-w-7xl mx-auto space-y-2 sm:space-y-3">
-          <div className="bg-white rounded-lg p-2 sm:p-3 shadow-lg">
+      <div className="w-full min-h-screen bg-pocket-bg p-2 sm:p-4">
+        <div className="max-w-7xl mx-auto space-y-3">
+          <motion.div
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="bg-white rounded-2xl p-3 sm:p-4 shadow-card"
+          >
             {/* Mobile: Stack everything vertically, Desktop: Side by side */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               {/* Pokemon Info */}
@@ -1255,10 +1286,14 @@ const CareerScreen = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {isGymTurn && nextGymLeader && (
-            <div className="bg-red-600 text-white rounded-lg p-3 shadow-lg">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-pocket-red text-white rounded-2xl p-4 shadow-card"
+            >
               <div className="flex items-center justify-between flex-col sm:flex-row gap-3">
                 <div className="flex items-center gap-2 sm:gap-3">
                   <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg border-2 border-yellow-400 overflow-hidden bg-gray-800 flex-shrink-0">
@@ -1280,11 +1315,15 @@ const CareerScreen = () => {
                   Challenge
                 </button>
               </div>
-            </div>
+            </motion.div>
           )}
 
           {isEliteFourTurn && currentEliteFour && (
-            <div className="bg-gradient-to-r from-purple-700 to-indigo-800 text-white rounded-lg p-4 shadow-lg">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-2xl p-4 shadow-card"
+            >
               <div className="flex items-center justify-between flex-col sm:flex-row gap-4">
                 <div className="flex items-center gap-3 sm:gap-4">
                   <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg border-2 border-yellow-400 overflow-hidden bg-gray-800 flex-shrink-0">
@@ -1324,17 +1363,20 @@ const CareerScreen = () => {
                   </button>
                 </div>
               </div>
-            </div>
+            </motion.div>
           )}
 
           {/* PENDING EVENT SCREEN */}
           {!isBattleTurn && careerData.pendingEvent && (
-            <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg p-2 sm:p-4 shadow-lg mb-3 sm:mb-4">
-              <div className="bg-white rounded-lg p-2 sm:p-4">
-                <h3 className="text-xl sm:text-2xl font-bold mb-2 text-purple-600">{careerData.pendingEvent.name}</h3>
-                <p className="text-gray-700 mb-3 sm:mb-4">{careerData.pendingEvent.description}</p>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white rounded-2xl p-4 shadow-card border-l-4 border-amber-500"
+            >
+              <h3 className="text-lg font-bold mb-2 text-pocket-text">{careerData.pendingEvent.name}</h3>
+              <p className="text-pocket-text-light mb-4 text-sm">{careerData.pendingEvent.description}</p>
 
-                {careerData.pendingEvent.type === 'stat_increase' && (
+              {careerData.pendingEvent.type === 'stat_increase' && (
                   <div className="space-y-3">
                     <div className="bg-green-50 p-3 rounded border-2 border-green-500">
                       <div className="font-bold text-green-700 mb-2 text-center">Stat Gains:</div>
@@ -1500,15 +1542,17 @@ const CareerScreen = () => {
                     </button>
                   </div>
                 )}
-              </div>
-            </div>
+            </motion.div>
           )}
 
           {/* EVENT RESULT SCREEN */}
           {careerData.eventResult && (
-            <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-lg p-2 sm:p-4 shadow-lg mb-3 sm:mb-4">
-              <div className="bg-white rounded-lg p-2 sm:p-4">
-                <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-green-600">Event Result</h3>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white rounded-2xl p-4 shadow-card border-l-4 border-pocket-green"
+            >
+              <h3 className="text-lg font-bold mb-3 text-pocket-green">Event Result</h3>
 
                 {/* Flavor Text */}
                 {careerData.eventResult.flavor && (
@@ -1636,16 +1680,19 @@ const CareerScreen = () => {
                 >
                   {isProcessingEvent ? 'Processing...' : 'Continue'}
                 </button>
-              </div>
-            </div>
+            </motion.div>
           )}
 
           {/* VIEW MODES */}
           {viewMode === 'abilities' && (
-            <div className="bg-white rounded-lg p-2 sm:p-3 shadow-lg">
-              <div className="flex items-center justify-between mb-2 sm:mb-3">
-                <h3 className="font-bold text-sm sm:text-base">Known Abilities</h3>
-                <button onClick={() => setViewMode('training')} className="text-xs sm:text-sm text-purple-600 hover:underline">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-2xl p-3 shadow-card"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-bold text-pocket-text">Known Abilities</h3>
+                <button onClick={() => setViewMode('training')} className="text-sm text-pocket-blue hover:underline">
                   Back
                 </button>
               </div>
@@ -1701,14 +1748,18 @@ const CareerScreen = () => {
                   );
                 })}
               </div>
-            </div>
+            </motion.div>
           )}
 
           {viewMode === 'gym' && (
-            <div className="bg-white rounded-lg p-3 shadow-lg">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-2xl p-3 shadow-card"
+            >
               <div className="flex items-center justify-between mb-3">
-                <h3 className="font-bold">Next Gym Leader</h3>
-                <button onClick={() => setViewMode('training')} className="text-sm text-purple-600 hover:underline">
+                <h3 className="font-bold text-pocket-text">Next Gym Leader</h3>
+                <button onClick={() => setViewMode('training')} className="text-sm text-pocket-blue hover:underline">
                   Back to Training
                 </button>
               </div>
@@ -1780,19 +1831,42 @@ const CareerScreen = () => {
                   </div>
                 </div>
               )}
-            </div>
+            </motion.div>
           )}
 
           {viewMode === 'learn' && (
-            <div className="bg-white rounded-lg p-2 sm:p-3 shadow-lg">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2 sm:mb-3">
-                <h3 className="font-bold text-sm sm:text-base">Learn Abilities ({careerData.skillPoints ?? 0} SP)</h3>
-                <button onClick={() => setViewMode('training')} className="text-xs sm:text-sm text-purple-600 hover:underline self-start sm:self-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-2xl p-3 shadow-card"
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+                <h3 className="font-bold text-pocket-text">Learn Abilities ({careerData.skillPoints ?? 0} SP)</h3>
+                <button onClick={() => setViewMode('training')} className="text-sm text-pocket-blue hover:underline self-start sm:self-auto">
                   Back
                 </button>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 sm:gap-2">
-                {careerData.pokemon.learnableAbilities
+                {(() => {
+                  // Combine learnableAbilities with any hinted moves that aren't already included
+                  const baseLearnables = careerData.pokemon.learnableAbilities || [];
+                  const hintedMoves = Object.keys(careerData.moveHints || {});
+                  const knownMoves = careerData.knownAbilities || [];
+
+                  // Add hinted moves that aren't in base list and aren't already known
+                  const additionalFromHints = hintedMoves.filter(
+                    move => !baseLearnables.includes(move) && !knownMoves.includes(move) && MOVES[move]
+                  );
+
+                  const allLearnables = [...baseLearnables, ...additionalFromHints];
+
+                  // Debug logging
+                  if (additionalFromHints.length > 0) {
+                    console.log('[Learn Screen] Adding hinted moves not in base list:', additionalFromHints);
+                  }
+
+                  return allLearnables;
+                })()
                   .filter(moveName => {
                     if (!MOVES[moveName]) {
                       console.error(`[Learn Screen] Move not found: ${moveName}`);
@@ -1823,7 +1897,7 @@ const CareerScreen = () => {
                       }
 
                       const isKnown = careerData.knownAbilities.includes(moveName);
-                      const hintsReceived = careerData.moveHints[moveName] || 0;
+                      const hintsReceived = (careerData.moveHints || {})[moveName] || 0;
                       const discount = Math.min(hintsReceived * GAME_CONFIG.MOVES.HINT_DISCOUNT, GAME_CONFIG.MOVES.MAX_HINT_DISCOUNT);
                       const finalCost = Math.ceil(move.cost * (1 - discount));
                       const canAfford = (careerData.skillPoints ?? 0) >= finalCost;
@@ -1876,15 +1950,19 @@ const CareerScreen = () => {
                     }
                 })}
               </div>
-            </div>
+            </motion.div>
           )}
 
           {/* TRAINING VIEW */}
           {viewMode === 'training' && careerData.currentTrainingOptions && !careerData.pendingEvent && !careerData.eventResult && !isBattleTurn && !inspirationModal && (
             <>
-              <div className="bg-white rounded-lg p-2 sm:p-3 shadow-lg">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
-                  <h3 className="font-bold text-sm sm:text-base">Training</h3>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white rounded-2xl p-3 shadow-card"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+                  <h3 className="font-bold text-pocket-text">Training</h3>
                   <div className="flex gap-1 sm:gap-2 flex-wrap">
                     <button
                       onClick={performRest}
@@ -2064,11 +2142,15 @@ const CareerScreen = () => {
                     );
                   })}
                 </div>
-              </div>
+              </motion.div>
 
               {careerData.turnLog.length > 0 && (
-                <div className="bg-white rounded-lg p-3 shadow-lg">
-                  <h3 className="font-bold text-sm mb-2">Last Turn Result</h3>
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-white rounded-2xl p-3 shadow-card"
+                >
+                  <h3 className="font-bold text-pocket-text text-sm mb-2">Last Turn Result</h3>
                   {(() => {
                     const entry = careerData.turnLog[0];
                     return (
@@ -2087,17 +2169,21 @@ const CareerScreen = () => {
                       </div>
                     );
                   })()}
-                </div>
+                </motion.div>
               )}
             </>
           )}
 
           {/* BATTLE VIEW */}
           {viewMode === 'battle' && (
-            <div className="bg-white rounded-lg p-3 shadow-lg">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-2xl p-3 shadow-card"
+            >
               <div className="flex items-center justify-between mb-3">
-                <h3 className="font-bold">Wild Battles</h3>
-                <button onClick={() => setViewMode('training')} className="text-sm text-purple-600 hover:underline">
+                <h3 className="font-bold text-pocket-text">Wild Battles</h3>
+                <button onClick={() => setViewMode('training')} className="text-sm text-pocket-blue hover:underline">
                   Back to Training
                 </button>
               </div>
@@ -2164,40 +2250,44 @@ const CareerScreen = () => {
                   </div>
                 ))}
               </div>
-            </div>
+            </motion.div>
           )}
 
           {/* LOG VIEW */}
           {viewMode === 'log' && (
-            <div className="bg-white rounded-lg p-3 shadow-lg">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-2xl p-3 shadow-card"
+            >
               <div className="flex items-center justify-between mb-3">
-                <h3 className="font-bold">Turn Log</h3>
-                <button onClick={() => setViewMode('training')} className="text-sm text-purple-600 hover:underline">
+                <h3 className="font-bold text-pocket-text">Turn Log</h3>
+                <button onClick={() => setViewMode('training')} className="text-sm text-pocket-blue hover:underline">
                   Back to Training
                 </button>
               </div>
               <div className="space-y-2 max-h-64 sm:max-h-96 overflow-y-auto">
                 {careerData.turnLog.length === 0 ? (
-                  <p className="text-gray-500 text-sm text-center py-4">No actions yet. Start training!</p>
+                  <p className="text-pocket-text-light text-sm text-center py-4">No actions yet. Start training!</p>
                 ) : (
                   careerData.turnLog.map((entry, idx) => (
                     <div
                       key={idx}
-                      className={`p-2 rounded text-sm ${
+                      className={`p-2 rounded-lg text-sm ${
                         entry.type === 'training_success' ? 'bg-green-50 border-l-4 border-green-500' :
                         entry.type === 'training_fail' ? 'bg-red-50 border-l-4 border-red-500' :
                         entry.type === 'battle_victory' || entry.type === 'gym_victory' ? 'bg-blue-50 border-l-4 border-blue-500' :
                         entry.type === 'battle_loss' ? 'bg-orange-50 border-l-4 border-orange-500' :
-                        'bg-gray-50 border-l-4 border-gray-500'
+                        'bg-pocket-bg border-l-4 border-gray-400'
                       }`}
                     >
-                      <div className="font-bold text-xs text-gray-500 mb-1">Turn {entry.turn}</div>
-                      <div className="text-gray-800">{entry.message}</div>
+                      <div className="font-bold text-xs text-pocket-text-light mb-1">Turn {entry.turn}</div>
+                      <div className="text-pocket-text">{entry.message}</div>
                     </div>
                   ))
                 )}
               </div>
-            </div>
+            </motion.div>
           )}
         </div>
       </div>

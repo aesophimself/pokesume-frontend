@@ -42,6 +42,73 @@ export const CareerProvider = ({ children }) => {
   const [careerLoading, setCareerLoading] = useState(false);
   const [careerError, setCareerError] = useState(null);
 
+  /**
+   * Merge server career state with client-side moveHint additions.
+   * The server doesn't track moveHints added client-side, so we need to preserve them.
+   */
+  const mergeCareerState = (serverState, currentState) => {
+    if (!serverState) return serverState;
+    if (!currentState) return serverState;
+
+    // Get client-side moveHints that aren't in the server state
+    const clientMoveHints = currentState.moveHints || {};
+    const serverMoveHints = serverState.moveHints || {};
+    const mergedMoveHints = { ...serverMoveHints };
+
+    // Merge moveHints - keep the higher count for each move
+    for (const [move, count] of Object.entries(clientMoveHints)) {
+      mergedMoveHints[move] = Math.max(count, serverMoveHints[move] || 0);
+    }
+
+    // Get client-side learnableAbilities that aren't in server state
+    const clientLearnables = currentState.pokemon?.learnableAbilities || [];
+    const serverLearnables = serverState.pokemon?.learnableAbilities || [];
+    const serverKnownAbilities = serverState.knownAbilities || [];
+
+    // Find moves that were added client-side but not on server yet
+    const clientOnlyMoves = clientLearnables.filter(move =>
+      !serverLearnables.includes(move) && !serverKnownAbilities.includes(move)
+    );
+
+    // Also check moveHints keys - any hinted move should be preserved
+    const hintedMoves = Object.keys(clientMoveHints);
+    const hintedNotInServer = hintedMoves.filter(move =>
+      !serverLearnables.includes(move) && !serverKnownAbilities.includes(move)
+    );
+
+    // Merge learnableAbilities - add client-only moves AND hinted moves not on server
+    const allClientAdditions = [...new Set([...clientOnlyMoves, ...hintedNotInServer])];
+    const mergedLearnables = [...serverLearnables, ...allClientAdditions];
+
+    // Always log merge activity for debugging
+    console.log('[mergeCareerState] Merge called:', {
+      clientMoveHints,
+      serverMoveHints,
+      mergedMoveHints,
+      clientLearnables: clientLearnables.length,
+      serverLearnables: serverLearnables.length,
+      clientOnlyMoves,
+      hintedNotInServer,
+      mergedLearnables: mergedLearnables.length
+    });
+
+    return {
+      ...serverState,
+      moveHints: mergedMoveHints,
+      pokemon: {
+        ...serverState.pokemon,
+        learnableAbilities: mergedLearnables
+      }
+    };
+  };
+
+  /**
+   * Update career data from server, preserving client-side moveHint additions
+   */
+  const updateCareerFromServer = (serverState) => {
+    setCareerData(prev => mergeCareerState(serverState, prev));
+  };
+
   // Load active career from server
   const loadActiveCareer = async () => {
     if (!authToken) return;
@@ -71,7 +138,7 @@ export const CareerProvider = ({ children }) => {
     try {
       const result = await apiStartCareer(pokemon, selectedSupports, authToken);
       if (result && result.success) {
-        setCareerData(result.careerState);
+        updateCareerFromServer(result.careerState);
         setHasActiveCareer(true);
         return result.careerState;
       }
@@ -121,7 +188,7 @@ export const CareerProvider = ({ children }) => {
         // Update career data with the new state from server
         if (result.careerState) {
           console.log('[processBattle] Updating careerData. Turn:', result.careerState.turn, 'GymIndex:', result.careerState.currentGymIndex);
-          setCareerData(result.careerState);
+          updateCareerFromServer(result.careerState);
         } else {
           console.error('[processBattle] result.careerState is missing!', result);
         }
@@ -209,7 +276,7 @@ export const CareerProvider = ({ children }) => {
     try {
       const result = await apiUsePokeclock(authToken);
       if (result && result.success) {
-        setCareerData(result.careerState);
+        updateCareerFromServer(result.careerState);
         return result;
       }
       return null;
@@ -231,7 +298,7 @@ export const CareerProvider = ({ children }) => {
     try {
       const result = await apiTrainStat(stat, authToken);
       if (result && result.success) {
-        setCareerData(result.careerState);
+        updateCareerFromServer(result.careerState);
         return result;
       }
       return null;
@@ -253,7 +320,7 @@ export const CareerProvider = ({ children }) => {
     try {
       const result = await apiRest(authToken);
       if (result && result.success) {
-        setCareerData(result.careerState);
+        updateCareerFromServer(result.careerState);
         return result;
       }
       return null;
@@ -275,7 +342,7 @@ export const CareerProvider = ({ children }) => {
     try {
       const result = await apiGenerateTraining(authToken);
       if (result && result.success) {
-        setCareerData(result.careerState);
+        updateCareerFromServer(result.careerState);
         return result.trainingOptions;
       }
       return null;
@@ -297,7 +364,7 @@ export const CareerProvider = ({ children }) => {
     try {
       const result = await apiTriggerEvent(authToken);
       if (result && result.success) {
-        setCareerData(result.careerState);
+        updateCareerFromServer(result.careerState);
         return result.event;
       }
       return null;
@@ -319,7 +386,7 @@ export const CareerProvider = ({ children }) => {
     try {
       const result = await apiResolveEvent(choiceIndex, authToken);
       if (result && result.success) {
-        setCareerData(result.careerState);
+        updateCareerFromServer(result.careerState);
         return result.outcome;
       }
       return null;
@@ -341,7 +408,7 @@ export const CareerProvider = ({ children }) => {
     try {
       const result = await apiLearnAbility(moveName, authToken);
       if (result && result.success) {
-        setCareerData(result.careerState);
+        updateCareerFromServer(result.careerState);
         return true;
       }
       return false;

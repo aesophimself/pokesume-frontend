@@ -6,6 +6,8 @@
  */
 
 import React from 'react';
+import { motion } from 'framer-motion';
+import { User, X } from 'lucide-react';
 
 const AuthModal = ({
   showAuth,
@@ -24,45 +26,54 @@ const AuthModal = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg p-8 max-w-md w-full shadow-2xl">
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="bg-white rounded-2xl p-6 max-w-md w-full shadow-card-lg"
+      >
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-purple-600">
-            {authMode === 'login' ? 'Login' : 'Create Account'}
-          </h2>
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 rounded-full bg-pocket-red/10 flex items-center justify-center">
+              <User size={20} className="text-pocket-red" />
+            </div>
+            <h2 className="text-xl font-bold text-pocket-text">
+              {authMode === 'login' ? 'Login' : 'Create Account'}
+            </h2>
+          </div>
           {!isMandatory && onClose && (
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-gray-700"
+              className="p-2 text-pocket-text-light hover:text-pocket-text hover:bg-pocket-bg rounded-lg transition-colors"
             >
-              <span className="text-2xl">{ICONS.CLOSE || '✕'}</span>
+              <X size={20} />
             </button>
           )}
         </div>
 
         {isMandatory && (
-          <div className="bg-blue-100 border-2 border-blue-400 rounded-lg p-3 mb-4">
-            <p className="text-blue-700 text-sm font-bold">
+          <div className="bg-pocket-blue/10 border border-pocket-blue/30 rounded-xl p-3 mb-4">
+            <p className="text-pocket-blue text-sm font-semibold">
               Please log in or create an account to continue
             </p>
           </div>
         )}
 
         {authError && (
-          <div className="bg-red-100 border-2 border-red-400 rounded-lg p-3 mb-4">
-            <p className="text-red-700 text-sm font-bold">{authError}</p>
+          <div className="bg-red-50 border border-red-200 rounded-xl p-3 mb-4">
+            <p className="text-red-600 text-sm font-semibold">{authError}</p>
           </div>
         )}
 
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">
+            <label className="block text-sm font-bold text-pocket-text mb-2">
               Username
             </label>
             <input
               type="text"
               value={authForm.username}
               onChange={(e) => onFormChange('username', e.target.value)}
-              className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none"
+              className="w-full px-4 py-3 bg-pocket-bg border-2 border-transparent rounded-xl focus:border-pocket-red focus:bg-white focus:outline-none transition-colors"
               placeholder="Enter username"
               autoComplete="username"
               required
@@ -73,14 +84,14 @@ const AuthModal = ({
 
           {authMode === 'register' && (
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">
+              <label className="block text-sm font-bold text-pocket-text mb-2">
                 Email (Optional)
               </label>
               <input
                 type="email"
                 value={authForm.email}
                 onChange={(e) => onFormChange('email', e.target.value)}
-                className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none"
+                className="w-full px-4 py-3 bg-pocket-bg border-2 border-transparent rounded-xl focus:border-pocket-red focus:bg-white focus:outline-none transition-colors"
                 placeholder="Enter email (optional)"
                 autoComplete="email"
               />
@@ -88,14 +99,14 @@ const AuthModal = ({
           )}
 
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">
+            <label className="block text-sm font-bold text-pocket-text mb-2">
               Password
             </label>
             <input
               type="password"
               value={authForm.password}
               onChange={(e) => onFormChange('password', e.target.value)}
-              className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none"
+              className="w-full px-4 py-3 bg-pocket-bg border-2 border-transparent rounded-xl focus:border-pocket-red focus:bg-white focus:outline-none transition-colors"
               placeholder="Enter password"
               autoComplete={authMode === 'register' ? 'new-password' : 'current-password'}
               required
@@ -106,7 +117,7 @@ const AuthModal = ({
           <button
             type="submit"
             disabled={authLoading}
-            className="w-full bg-purple-600 text-white py-3 rounded-lg font-bold text-lg hover:bg-purple-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="pocket-btn-primary w-full py-3 text-lg"
           >
             {authLoading ? 'Please wait...' : authMode === 'login' ? 'Login' : 'Create Account'}
           </button>
@@ -115,14 +126,14 @@ const AuthModal = ({
         <div className="mt-6 text-center">
           <button
             onClick={onModeChange}
-            className="text-purple-600 hover:text-purple-700 font-bold text-sm"
+            className="text-pocket-blue hover:text-pocket-blue/80 font-semibold text-sm transition-colors"
           >
             {authMode === 'login'
               ? "Don't have an account? Register"
               : 'Already have an account? Login'}
           </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
