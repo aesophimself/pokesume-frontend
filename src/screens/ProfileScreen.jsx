@@ -130,15 +130,18 @@ const BadgeDisplay = ({ badge, badgeData, onClick }) => {
 };
 
 // Top Pokemon card component
-const TopPokemonCard = ({ pokemon, rank }) => {
+const TopPokemonCard = ({ pokemon }) => {
   if (!pokemon) return null;
 
+  // Handle both string and object pokemon_data
+  const pokemonData = typeof pokemon === 'string' ? JSON.parse(pokemon) : pokemon;
+
   const stats = {
-    HP: pokemon.HP,
-    Attack: pokemon.Attack,
-    Defense: pokemon.Defense,
-    Instinct: pokemon.Instinct,
-    Speed: pokemon.Speed
+    HP: parseInt(pokemonData.HP) || 0,
+    Attack: parseInt(pokemonData.Attack) || 0,
+    Defense: parseInt(pokemonData.Defense) || 0,
+    Instinct: parseInt(pokemonData.Instinct) || 0,
+    Speed: parseInt(pokemonData.Speed) || 0
   };
   const grade = getPokemonGrade(stats);
   const totalStats = Object.values(stats).reduce((sum, val) => sum + val, 0);
@@ -148,23 +151,14 @@ const TopPokemonCard = ({ pokemon, rank }) => {
       variants={itemVariants}
       className="bg-white rounded-xl p-3 shadow-card flex items-center gap-3"
     >
-      {/* Rank */}
-      <div
-        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-white ${
-          rank === 1 ? 'bg-amber-400' : rank === 2 ? 'bg-gray-400' : 'bg-amber-700'
-        }`}
-      >
-        {rank}
-      </div>
-
       {/* Pokemon sprite */}
       <div className="w-12 h-12 flex-shrink-0">
-        <PokemonSprite pokemonName={pokemon.name} size={48} />
+        <PokemonSprite pokemonName={pokemonData.name} size={48} />
       </div>
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <p className="font-bold text-pocket-text text-sm truncate">{pokemon.name}</p>
+        <p className="font-bold text-pocket-text text-sm truncate">{pokemonData.name}</p>
         <p className="text-pocket-text-light text-xs">{totalStats} Total Stats</p>
       </div>
 
@@ -233,6 +227,20 @@ const ProfileScreen = () => {
     return (
       <div className="min-h-screen bg-pocket-bg flex items-center justify-center">
         <div className="text-pocket-text-light">Loading profile...</div>
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="min-h-screen bg-pocket-bg flex flex-col items-center justify-center gap-4">
+        <div className="text-pocket-text-light">Failed to load profile</div>
+        <button
+          onClick={() => setGameState('menu')}
+          className="px-4 py-2 bg-pocket-blue text-white rounded-lg"
+        >
+          Back to Menu
+        </button>
       </div>
     );
   }
@@ -380,15 +388,11 @@ const ProfileScreen = () => {
         >
           <div className="flex items-center gap-2 mb-3">
             <Crown size={18} className="text-amber-500" />
-            <h3 className="font-bold text-pocket-text">Top Pokemon</h3>
+            <h3 className="font-bold text-pocket-text">Best Pokemon</h3>
           </div>
 
           {profile?.topPokemon && profile.topPokemon.length > 0 ? (
-            <div className="space-y-2">
-              {profile.topPokemon.map((pokemon, idx) => (
-                <TopPokemonCard key={idx} pokemon={pokemon} rank={idx + 1} />
-              ))}
-            </div>
+            <TopPokemonCard pokemon={profile.topPokemon[0]} />
           ) : (
             <div className="text-center py-6 text-pocket-text-light">
               <Star size={32} className="mx-auto mb-2 opacity-30" />
