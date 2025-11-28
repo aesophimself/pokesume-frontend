@@ -145,6 +145,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     authToken,
+    token: authToken, // Alias for backward compatibility
     authError,
     authLoading,
     login,

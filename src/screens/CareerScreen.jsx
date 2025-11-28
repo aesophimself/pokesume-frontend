@@ -350,6 +350,7 @@ const CareerScreen = () => {
   const [showHelp, setShowHelp] = useState(false);
   const [evolutionModal, setEvolutionModal] = useState(null);
   const [inspirationModal, setInspirationModal] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [pokeclockModal, setPokeclockModal] = useState(false);
   const [isProcessingEvent, setIsProcessingEvent] = useState(false);
   const [isProcessingAction, setIsProcessingAction] = useState(false);
@@ -2252,17 +2253,16 @@ const CareerScreen = () => {
                                       <img
                                         src={trainerImage}
                                         alt={supportName}
-                                        className="w-full h-full"
+                                        className="w-full h-full object-none object-top"
                                         style={{
-                                          transform: 'scale(2.5)',
-                                          transformOrigin: 'top center',
-                                          marginTop: '-2px'
+                                          transform: 'scale(1.8)',
+                                          transformOrigin: 'top center'
                                         }}
                                       />
                                     </div>
                                   )}
                                   <div className="flex-1 min-w-0">
-                                    <div className="font-bold truncate">{supportName.split(' ')[0]}</div>
+                                    <div className="font-bold truncate">{support?.name || supportName}</div>
                                     <div className="flex items-center gap-0.5 sm:gap-1">
                                       <div className="flex-1 bg-blue-200 rounded h-1 min-w-0">
                                         <div className="bg-blue-600 h-1 rounded" style={{ width: `${friendship}%` }} />

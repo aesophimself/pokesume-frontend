@@ -7,15 +7,15 @@
 
 import React from 'react';
 
-// Map icon keys to display names, image paths, and face positioning
-// objectPosition is used to center on the face of each character
+// Map icon keys to display names, image paths, face positioning and zoom
+// objectPosition centers on face, scale zooms in closer
 const ICON_CONFIG = {
-  pikachu: { name: 'Pikachu', path: '/images/profile-icons/pikachu.png', objectPosition: 'center 15%' },
-  squirtle: { name: 'Squirtle', path: '/images/profile-icons/squirtle.png', objectPosition: 'center 10%' },
-  charmander: { name: 'Charmander', path: '/images/profile-icons/charmander.png', objectPosition: 'center 10%' },
-  bulbasaur: { name: 'Bulbasaur', path: '/images/profile-icons/bulbasaur.png', objectPosition: 'center 15%' },
-  mewtwo: { name: 'Mewtwo', path: '/images/profile-icons/mewtwo.png', objectPosition: 'center 10%' },
-  'officer-jenny': { name: 'Officer Jenny', path: '/images/profile-icons/officer-jenny.png', objectPosition: 'center 8%' }
+  pikachu: { name: 'Pikachu', path: '/images/profile-icons/pikachu.png', objectPosition: 'center 5%', scale: 1.4 },
+  squirtle: { name: 'Squirtle', path: '/images/profile-icons/squirtle.png', objectPosition: 'center 0%', scale: 1.5 },
+  charmander: { name: 'Charmander', path: '/images/profile-icons/charmander.png', objectPosition: 'center 0%', scale: 1.5 },
+  bulbasaur: { name: 'Bulbasaur', path: '/images/profile-icons/bulbasaur.png', objectPosition: 'center 5%', scale: 1.4 },
+  mewtwo: { name: 'Mewtwo', path: '/images/profile-icons/mewtwo.png', objectPosition: 'center 0%', scale: 1.5 },
+  'officer-jenny': { name: 'Officer Jenny', path: '/images/profile-icons/officer-jenny.png', objectPosition: 'center 0%', scale: 2.2 }
 };
 
 const ProfileIcon = ({ icon = 'pikachu', size = 32, className = '', showBorder = true }) => {
@@ -31,7 +31,9 @@ const ProfileIcon = ({ icon = 'pikachu', size = 32, className = '', showBorder =
         alt={config.name}
         className="w-full h-full object-cover"
         style={{
-          objectPosition: config.objectPosition || 'center center'
+          objectPosition: config.objectPosition || 'center center',
+          transform: `scale(${config.scale || 1})`,
+          transformOrigin: config.objectPosition || 'center center'
         }}
       />
     </div>

@@ -17,7 +17,9 @@
       "Bash(npm install:*)",
       "Bash(dir \"c:\\pokesume\\pokesume backend\\pokesume-backend\\.env\")",
       "Bash(cmd /c \"type \"\"c:\\pokesume\\pokesume backend\\pokesume-backend\\.env\"\"\")",
-      "Bash(dir \"c:\\pokesume\\pokesume frontend\\pokesume-frontend\\public\\images\")"
+      "Bash(dir \"c:\\pokesume\\pokesume frontend\\pokesume-frontend\\public\\images\")",
+      "Bash(dir:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

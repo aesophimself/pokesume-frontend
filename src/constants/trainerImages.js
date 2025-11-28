@@ -25,14 +25,30 @@ export const GYM_LEADER_IMAGES = {
 
 // Support Card Trainer Images (maps trainer names from support cards)
 export const SUPPORT_TRAINER_IMAGES = {
-  // Legendary tier
+  // Legendary tier (original)
   'Cynthia': '/images/trainers/supports/cynthia.png',
   'Red': '/images/trainers/supports/red.png',
   'Steven': '/images/trainers/supports/steven.png',
   'N': '/images/trainers/supports/n.png',
   'Professor Oak': '/images/trainers/supports/professor_oak.png',
   'Diantha': '/images/trainers/supports/diantha.png',
-  // Rare tier
+  // Legendary tier (new)
+  'Leon': '/images/trainers/supports/leon.png',
+  'Selene': '/images/trainers/supports/selene.png',
+  'Gloria': '/images/trainers/supports/gloria.png',
+  'Nemona': '/images/trainers/supports/nemona.png',
+  'Mustard': '/images/trainers/supports/mustard.png',
+  'Victor': '/images/trainers/supports/victor.png',
+  'Arven': '/images/trainers/supports/arven.png',
+  'Penny': '/images/trainers/supports/penny.png',
+  'Sonia': '/images/trainers/supports/sonia.png',
+  'Hop': '/images/trainers/supports/hop.png',
+  'Geeta': '/images/trainers/supports/geeta.png',
+  'Kieran': '/images/trainers/supports/kieran.png',
+  'Carmine': '/images/trainers/supports/carmine.png',
+  'Drayton': '/images/trainers/supports/drayton.png',
+  'Lacey': '/images/trainers/supports/lacey.png',
+  // Rare tier (original)
   'Lance': '/images/trainers/supports/lance.png',
   'Sabrina': '/images/trainers/supports/sabrina.png',
   'Morty': '/images/trainers/supports/morty.png',
@@ -42,7 +58,16 @@ export const SUPPORT_TRAINER_IMAGES = {
   'Giovanni': '/images/trainers/supports/giovanni.png',
   'Maxie': '/images/trainers/supports/maxie.png',
   'Archie': '/images/trainers/supports/archie.png',
-  // Uncommon tier
+  // Rare tier (new)
+  'Raihan': '/images/trainers/supports/raihan.png',
+  'Marnie': '/images/trainers/supports/marnie.png',
+  'Nessa': '/images/trainers/supports/nessa.png',
+  'Bea': '/images/trainers/supports/bea.png',
+  'Opal': '/images/trainers/supports/opal.png',
+  'Piers': '/images/trainers/supports/piers.png',
+  'Rika': '/images/trainers/supports/rika.png',
+  'Poppy': '/images/trainers/supports/poppy.png',
+  // Uncommon tier (original)
   'Misty': '/images/trainers/supports/misty.png',
   'Brock': '/images/trainers/supports/brock.png',
   'Erika': '/images/trainers/supports/erika.png',
@@ -52,6 +77,15 @@ export const SUPPORT_TRAINER_IMAGES = {
   'Winona': '/images/trainers/supports/winona.png',
   'Karen': '/images/trainers/supports/karen.png',
   'Agatha': '/images/trainers/supports/agatha.png',
+  // Uncommon tier (new)
+  'Milo': '/images/trainers/supports/milo.png',
+  'Kabu': '/images/trainers/supports/kabu.png',
+  'Melony': '/images/trainers/supports/melony.png',
+  'Gordie': '/images/trainers/supports/gordie.png',
+  'Klara': '/images/trainers/supports/klara.png',
+  'Avery': '/images/trainers/supports/avery.png',
+  'Iono': '/images/trainers/supports/iono.png',
+  'Grusha': '/images/trainers/supports/grusha.png',
   // Common tier
   'Whitney': '/images/trainers/supports/whitney.png',
   'Chuck': '/images/trainers/supports/chuck.png',
@@ -90,7 +124,10 @@ export const getSupportImageFromCardName = (cardName) => {
   const specialCases = {
     'ProfessorOakMew': 'Professor Oak',
     'ElitesFourKaren': 'Karen',
-    'LtSurgeRaichu': 'Lt. Surge'
+    'LtSurgeRaichu': 'Lt. Surge',
+    'PopPyTinkaton': 'Poppy',
+    'PennyVaporeon': 'Penny',
+    'AveryRapidashGalar': 'Avery'
   };
 
   if (specialCases[cardName]) {
@@ -100,11 +137,22 @@ export const getSupportImageFromCardName = (cardName) => {
   // For standard names like "CynthiaGarchomp", split at the boundary
   // where a Pokemon name likely starts (common Pokemon names)
   const pokemonNames = [
+    // Original
     'Garchomp', 'Charizard', 'Metagross', 'Dragonite', 'Starmie', 'Onix',
     'Tangela', 'Alakazam', 'Magmar', 'Weezing', 'Miltank', 'Gengar',
     'Poliwrath', 'Steelix', 'Delibird', 'Milotic', 'Skarmory', 'Magneton',
     'Camerupt', 'Lucario', 'Reshiram', 'Haxorus', 'Umbreon', 'Pidgeot',
-    'Persian', 'Mew', 'Diancie', 'Groudon', 'Kyogre'
+    'Persian', 'Mew', 'Diancie', 'Groudon', 'Kyogre',
+    // New Legendary
+    'Lunala', 'Zacian', 'Koraidon', 'Urshifu', 'Eternatus', 'Mabosstiff',
+    'Sylveon', 'Yamper', 'Zamazenta', 'Kingambit', 'Terapagos', 'Ogerpon',
+    'Archaludon', 'Excadrill',
+    // New Rare
+    'Duraludon', 'Grimmsnarl', 'Drednaw', 'Machamp', 'Alcremie', 'Toxtricity',
+    'Whiscash', 'Tinkaton',
+    // New Uncommon
+    'Eldegoss', 'Centiskorch', 'Lapras', 'Coalossal', 'Slowbro', 'Rapidash',
+    'Luxray', 'Altaria'
   ];
 
   for (const pokemon of pokemonNames) {
