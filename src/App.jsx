@@ -54,7 +54,8 @@ const GameRouter = () => {
       'supportSelect', 'supportSelection', 'myPokemon', 'pokemonInventory', 'mySupports',
       'supportInventory', 'trainedPokemon', 'gacha', 'supportGacha', 'career', 'battle',
       'victory', 'gameOver', 'careerEnd', 'history', 'tournaments', 'tournamentDetails',
-      'tournamentBracket', 'tournamentReplay', 'pvp', 'pvpTeamSelect', 'pvpQueue', 'pvpReplay'
+      'tournamentBracket', 'tournamentReplay', 'pvp', 'pvpTeamSelect', 'pvpQueue', 'pvpReplay',
+      'guide'
     ];
 
     if (!validStates.includes(gameState)) {
