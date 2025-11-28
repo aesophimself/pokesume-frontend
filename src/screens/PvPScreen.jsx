@@ -28,12 +28,13 @@ const itemVariants = {
 };
 
 const PvPScreen = () => {
-  const { setGameState } = useGame();
+  const { setGameState, setPvPMatchId } = useGame();
   const { user, authToken } = useAuth();
 
   const [stats, setStats] = useState({ rating: 1000, wins: 0, losses: 0 });
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -54,8 +55,9 @@ const PvPScreen = () => {
         if (matchesData?.matches) {
           setMatches(matchesData.matches);
         }
-      } catch (error) {
-        console.error('Failed to load PvP data:', error);
+      } catch (err) {
+        console.error('Failed to load PvP data:', err);
+        setError(err.message);
         // Keep default values on error
       } finally {
         setLoading(false);
@@ -72,15 +74,16 @@ const PvPScreen = () => {
   };
 
   const getRatingTier = (rating) => {
-    if (rating >= 1800) return { name: 'Master', color: '#FFD700' };
-    if (rating >= 1600) return { name: 'Diamond', color: '#B9F2FF' };
-    if (rating >= 1400) return { name: 'Platinum', color: '#E5E4E2' };
-    if (rating >= 1200) return { name: 'Gold', color: '#FFD700' };
-    if (rating >= 1000) return { name: 'Silver', color: '#C0C0C0' };
+    const r = rating || 1000;
+    if (r >= 1800) return { name: 'Master', color: '#FFD700' };
+    if (r >= 1600) return { name: 'Diamond', color: '#B9F2FF' };
+    if (r >= 1400) return { name: 'Platinum', color: '#E5E4E2' };
+    if (r >= 1200) return { name: 'Gold', color: '#FFD700' };
+    if (r >= 1000) return { name: 'Silver', color: '#C0C0C0' };
     return { name: 'Bronze', color: '#CD7F32' };
   };
 
-  const tier = getRatingTier(stats.rating);
+  const tier = getRatingTier(stats?.rating);
 
   return (
     <div className="min-h-screen bg-pocket-bg p-4">
@@ -225,7 +228,7 @@ const PvPScreen = () => {
                         key={match.id}
                         whileHover={{ x: 4 }}
                         onClick={() => {
-                          // Could navigate to replay screen
+                          setPvPMatchId(match.id);
                           setGameState('pvpReplay');
                         }}
                         className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors ${
