@@ -613,6 +613,28 @@ export const apiGetTrainedPokemon = async (limit = 100, offset = 0, authToken) =
   }
 };
 
+export const apiDeleteTrainedPokemon = async (trainedId, authToken) => {
+  if (!authToken) return null;
+
+  try {
+    const response = await fetch(`${API_URL}/inventory/trained/${trainedId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to delete trained Pokemon');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Delete trained Pokemon error:', error);
+    return null;
+  }
+};
+
 export const apiGetPrimos = async (authToken) => {
   if (!authToken) return { primos: 0 };
 

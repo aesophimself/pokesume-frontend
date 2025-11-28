@@ -5,9 +5,9 @@
  * grade, and inspirations. Shows trained Pokemon history with sorting and filtering.
  */
 
-import React from 'react';
-import { ArrowLeft, Trophy, Star, Shield } from 'lucide-react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { ArrowLeft, Trophy, Star, Shield, Trash2, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useGame } from '../contexts/GameContext';
 import { useInventory } from '../contexts/InventoryContext';
 import {
@@ -39,7 +39,22 @@ const TrainedPokemonScreen = () => {
     setTrainedFilterGrade
   } = useGame();
 
-  const { trainedPokemon } = useInventory();
+  const { trainedPokemon, deleteTrainedPokemon } = useInventory();
+
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDelete = async (trained) => {
+    setDeleting(true);
+    try {
+      await deleteTrainedPokemon(trained.id);
+      setDeleteConfirm(null);
+    } catch (error) {
+      console.error('Failed to delete trained Pokemon:', error);
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   // Sort trained pokemon
   const sortTrainedPokemon = (inventory) => {
@@ -178,11 +193,21 @@ const TrainedPokemonScreen = () => {
         >
           {sortedTrainedPokemon.map((trained, idx) => (
             <motion.div
-              key={idx}
+              key={trained.id || idx}
               variants={itemVariants}
               whileHover={{ y: -2 }}
-              className="pokemon-card"
+              className="pokemon-card relative group"
             >
+              {/* Delete Button */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setDeleteConfirm(trained);
+                }}
+                className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-100 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-200"
+              >
+                <Trash2 size={12} className="text-red-500" />
+              </button>
               <div className="mb-2">
                 {generatePokemonSprite(trained.type, trained.name)}
               </div>
@@ -295,6 +320,67 @@ const TrainedPokemonScreen = () => {
           </motion.div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {deleteConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+            onClick={() => !deleting && setDeleteConfirm(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-2xl shadow-xl max-w-sm w-full overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bg-gradient-to-r from-red-500 to-red-600 p-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Trash2 size={20} className="text-white" />
+                  <h2 className="text-lg font-bold text-white">Delete Pokemon</h2>
+                </div>
+                <button
+                  onClick={() => !deleting && setDeleteConfirm(null)}
+                  className="p-1 rounded-full hover:bg-white/20 transition-colors"
+                  disabled={deleting}
+                >
+                  <X size={20} className="text-white" />
+                </button>
+              </div>
+
+              <div className="p-6 text-center">
+                <div className="mb-4">
+                  {generatePokemonSprite(deleteConfirm.type, deleteConfirm.name)}
+                </div>
+                <h3 className="font-bold text-pocket-text text-lg mb-2">{deleteConfirm.name}</h3>
+                <p className="text-pocket-text-light text-sm mb-4">
+                  Are you sure you want to delete this trained Pokemon? This cannot be undone.
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setDeleteConfirm(null)}
+                    disabled={deleting}
+                    className="flex-1 py-3 rounded-xl border-2 border-gray-300 text-pocket-text font-semibold hover:bg-gray-100 transition-colors disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => handleDelete(deleteConfirm)}
+                    disabled={deleting}
+                    className="flex-1 py-3 rounded-xl bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors disabled:opacity-50"
+                  >
+                    {deleting ? 'Deleting...' : 'Delete'}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

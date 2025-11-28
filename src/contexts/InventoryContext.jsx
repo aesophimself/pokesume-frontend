@@ -15,6 +15,7 @@ import {
   apiAddSupportToInventory,
   apiDeleteSupportFromInventory,
   apiGetTrainedPokemon,
+  apiDeleteTrainedPokemon,
   apiGetPrimos,
   apiUpdatePrimos
 } from '../services/apiService';
@@ -197,6 +198,23 @@ export const InventoryProvider = ({ children }) => {
     }
   };
 
+  // Delete trained Pokemon
+  const deleteTrainedPokemon = async (trainedId) => {
+    if (!authToken) return null;
+
+    try {
+      const result = await apiDeleteTrainedPokemon(trainedId, authToken);
+      if (result) {
+        // Refresh trained Pokemon list
+        await loadTrainedPokemon();
+      }
+      return result;
+    } catch (error) {
+      console.error('Failed to delete trained Pokemon:', error);
+      return null;
+    }
+  };
+
   // Load Primos
   const loadPrimos = async () => {
     if (!authToken) return;
@@ -267,6 +285,7 @@ export const InventoryProvider = ({ children }) => {
     trainedTotal,
     trainedLoading,
     loadTrainedPokemon,
+    deleteTrainedPokemon,
 
     // Primos
     primos,

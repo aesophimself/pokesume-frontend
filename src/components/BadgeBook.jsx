@@ -12,22 +12,24 @@ import { TYPE_COLORS } from './TypeIcon';
 
 // Badge image paths - maps badge key to image filename
 const BADGE_IMAGES = {
-  boulder: null, // No image yet - will use Shield fallback
+  // Kanto badges
+  boulder: '/images/badges/boulder-badge.png',
   cascade: '/images/badges/cascade-badge.png',
   thunder: '/images/badges/thunder-badge.png',
   rainbow: '/images/badges/rainbow-badge.png',
-  soul: null,
+  soul: '/images/badges/soul-badge.png',
   marsh: '/images/badges/marsh-badge.png',
   volcano: '/images/badges/volcano-badge.png',
   earth: '/images/badges/earth-badge.png',
-  zephyr: null,
-  hive: null,
-  plain: null,
-  fog: null,
+  // Johto badges
+  zephyr: '/images/badges/zephyr-badge.png',
+  hive: '/images/badges/hive-badge.png',
+  plain: '/images/badges/plain-badge.png',
+  fog: '/images/badges/fog-badge.png',
   storm: '/images/badges/storm-badge.png',
-  mineral: null,
+  mineral: '/images/badges/mineral-badge.png',
   glacier: '/images/badges/glacier-badge.png',
-  rising: null
+  rising: '/images/badges/rising-badge.png'
 };
 
 const overlayVariants = {
