@@ -170,12 +170,16 @@ const SupportGachaScreen = () => {
                     const trainerImage = getSupportImageFromCardName(SUPPORT_CARDS[rollResult.support].name);
                     return trainerImage && (
                       <div className="flex justify-center mb-3">
-                        <img
-                          src={trainerImage}
-                          alt={SUPPORT_CARDS[rollResult.support].trainer}
-                          className="w-24 h-24 sm:w-28 sm:h-28 object-contain rounded-xl border-4 bg-white shadow-card"
+                        <div
+                          className="w-24 h-24 sm:w-28 sm:h-28 rounded-xl border-4 bg-white shadow-card overflow-hidden flex items-center justify-center"
                           style={{ borderColor: getRarityColor(rollResult.rarity) }}
-                        />
+                        >
+                          <img
+                            src={trainerImage}
+                            alt={SUPPORT_CARDS[rollResult.support].trainer}
+                            className="w-full h-full object-cover object-top"
+                          />
+                        </div>
                       </div>
                     );
                   })()}
@@ -183,7 +187,7 @@ const SupportGachaScreen = () => {
                     {SUPPORT_CARDS[rollResult.support].name}
                   </h3>
                   <p className="text-xs text-pocket-text-light italic mb-3">
-                    {SUPPORT_CARDS[rollResult.support].effect.description}
+                    {SUPPORT_CARDS[rollResult.support].description || SUPPORT_CARDS[rollResult.support].effect?.description}
                   </p>
 
                   {/* Move Hints Display */}

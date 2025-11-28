@@ -279,7 +279,7 @@ const SupportSelectionScreen = () => {
                   </p>
                 )}
 
-                <p className="text-xs text-pocket-text-light italic mb-3">{support.effect.description}</p>
+                <p className="text-xs text-pocket-text-light italic mb-3">{support.description || support.effect?.description}</p>
 
                 <div className="bg-pocket-bg rounded-xl p-2 mb-2 text-xs space-y-1">
                   {statBonuses && <div className="font-bold text-pocket-green">{statBonuses}</div>}
@@ -288,32 +288,29 @@ const SupportSelectionScreen = () => {
                   </div>
                   <div className="text-pocket-text-light">Other Stats: +{support.generalBonusTraining}</div>
 
-                  {support.effect.type === 'training_boost' && (
+                  {/* Special Effects - new format */}
+                  {support.specialEffect && (
                     <div className="border-t border-gray-200 pt-1 mt-1 text-type-psychic font-semibold">
-                      {support.effect.trainingMultiplier && (
-                        <div>Gain Mult: {support.effect.trainingMultiplier}x</div>
+                      {support.specialEffect.statGainMultiplier && (
+                        <div>Stat Gain: {support.specialEffect.statGainMultiplier}x</div>
                       )}
-                      {support.effect.energyCostReduction && (
-                        <div>Energy Cost: -{support.effect.energyCostReduction}</div>
+                      {support.specialEffect.failRateReduction && (
+                        <div>Fail Rate: -{(support.specialEffect.failRateReduction * 100).toFixed(0)}%</div>
                       )}
-                      {support.effect.failureReduction && (
-                        <div>Fail Rate: -{(support.effect.failureReduction * 100).toFixed(0)}%</div>
+                      {support.specialEffect.maxEnergyBonus && (
+                        <div>Max Energy: +{support.specialEffect.maxEnergyBonus}</div>
                       )}
-                    </div>
-                  )}
-                  {support.effect.type === 'energy_boost' && (
-                    <div className="border-t border-gray-200 pt-1 mt-1 text-type-psychic font-semibold">
-                      {support.effect.energyBonus && <div>Max Energy: +{support.effect.energyBonus}</div>}
-                      {support.effect.restBonus && <div>Rest Bonus: +{support.effect.restBonus}</div>}
-                    </div>
-                  )}
-                  {support.effect.type === 'experience_boost' && (
-                    <div className="border-t border-gray-200 pt-1 mt-1 text-type-psychic font-semibold">
-                      {support.effect.skillPointMultiplier && (
-                        <div>SP Mult: {support.effect.skillPointMultiplier}x</div>
+                      {support.specialEffect.restBonus && (
+                        <div>Rest Bonus: +{support.specialEffect.restBonus}</div>
                       )}
-                      {support.effect.friendshipBonus && (
-                        <div>Friendship: +{support.effect.friendshipBonus}</div>
+                      {support.specialEffect.skillPointMultiplier && (
+                        <div>SP Mult: {support.specialEffect.skillPointMultiplier}x</div>
+                      )}
+                      {support.specialEffect.friendshipGainBonus && (
+                        <div>Friend Gain: +{support.specialEffect.friendshipGainBonus}</div>
+                      )}
+                      {support.specialEffect.energyCostReduction && (
+                        <div>Energy Cost: -{support.specialEffect.energyCostReduction}</div>
                       )}
                     </div>
                   )}

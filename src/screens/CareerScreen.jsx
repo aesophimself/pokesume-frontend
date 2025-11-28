@@ -335,6 +335,7 @@ const CareerScreen = () => {
   const [isProcessingEvent, setIsProcessingEvent] = useState(false);
   const [isProcessingAction, setIsProcessingAction] = useState(false);
   const lastProcessedTurnRef = useRef(null);
+  const declinedEventRef = useRef(false);
 
   // ============================================================================
   // HELPER FUNCTIONS (Component-specific)
@@ -811,6 +812,9 @@ const CareerScreen = () => {
   useEffect(() => {
     // Skip if still processing an event resolution (prevents flicker during state transition)
     if (isProcessingEvent) return;
+
+    // Skip if we just declined an event and are waiting for training options
+    if (declinedEventRef.current) return;
 
     if (careerData && !careerData.currentTrainingOptions && !careerData.pendingEvent && !careerData.eventResult && !evolutionModal && !inspirationModal) {
       // Don't generate training on gym turns or Elite 4 turns
@@ -1556,11 +1560,14 @@ const CareerScreen = () => {
                       <button
                         onClick={async () => {
                           // Decline the battle - clear event and generate training options
+                          // Mark that we declined to prevent re-triggering events
+                          declinedEventRef.current = true;
                           setCareerData(prev => ({
                             ...prev,
                             pendingEvent: null
                           }));
                           await requestNewTrainingOptions();
+                          declinedEventRef.current = false;
                         }}
                         className="bg-gray-600 text-white py-2 sm:py-3 rounded-lg font-bold hover:bg-gray-700 transition"
                       >
@@ -1649,17 +1656,15 @@ const CareerScreen = () => {
                         Object.values(careerData.eventResult.stats).some(v => v < 0) ? 'bg-red-50 border-red-500' : 'bg-green-50 border-green-500'
                       }`}>
                         <div className="font-bold mb-2 text-center">Stat Changes:</div>
-                        <div className="flex justify-center">
-                          <div className="grid grid-cols-5 gap-2 text-sm max-w-md">
-                            {Object.entries(careerData.eventResult.stats).map(([stat, value]) => (
-                              <div key={stat} className="text-center">
-                                <div className="text-gray-600">{stat}</div>
-                                <div className={`font-bold ${value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                  {value >= 0 ? '+' : ''}{value}
-                                </div>
+                        <div className="flex flex-wrap justify-center gap-4 text-sm">
+                          {Object.entries(careerData.eventResult.stats).map(([stat, value]) => (
+                            <div key={stat} className="text-center">
+                              <div className="text-gray-600">{stat}</div>
+                              <div className={`font-bold ${value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                {value >= 0 ? '+' : ''}{value}
                               </div>
-                            ))}
-                          </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     )}
