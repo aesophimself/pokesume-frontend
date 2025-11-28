@@ -43,7 +43,6 @@ const PvPScreen = () => {
         }
       } catch (err) {
         console.error('Failed to load PvP data:', err);
-        setError(err.message);
         // Keep default values on error
       } finally {
         setLoading(false);

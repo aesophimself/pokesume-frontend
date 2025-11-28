@@ -350,6 +350,7 @@ const CareerScreen = () => {
   const [showHelp, setShowHelp] = useState(false);
   const [evolutionModal, setEvolutionModal] = useState(null);
   const [inspirationModal, setInspirationModal] = useState(null);
+  const [pokeclockModal, setPokeclockModal] = useState(false);
   const [isProcessingEvent, setIsProcessingEvent] = useState(false);
   const [isProcessingAction, setIsProcessingAction] = useState(false);
   const lastProcessedTurnRef = useRef(null);
