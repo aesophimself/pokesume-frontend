@@ -17,12 +17,17 @@ const ProfileIconSelector = ({ currentIcon, onClose, onIconChange }) => {
   const [selectedIcon, setSelectedIcon] = useState(currentIcon || 'pikachu');
   const [icons, setIcons] = useState(Object.keys(ICON_CONFIG));
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const loadIcons = async () => {
-      const availableIcons = await apiGetProfileIcons();
-      if (availableIcons && availableIcons.length > 0) {
-        setIcons(availableIcons);
+      try {
+        const availableIcons = await apiGetProfileIcons();
+        if (availableIcons && availableIcons.length > 0) {
+          setIcons(availableIcons);
+        }
+      } catch (err) {
+        console.error('Failed to load icons:', err);
       }
     };
     loadIcons();
@@ -34,13 +39,23 @@ const ProfileIconSelector = ({ currentIcon, onClose, onIconChange }) => {
       return;
     }
 
+    setError(null);
     setSaving(true);
-    const result = await apiUpdateProfileIcon(selectedIcon, authToken);
-    setSaving(false);
 
-    if (result) {
-      onIconChange(selectedIcon);
-      onClose();
+    try {
+      const result = await apiUpdateProfileIcon(selectedIcon, authToken);
+
+      if (result) {
+        onIconChange(selectedIcon);
+        onClose();
+      } else {
+        setError('Failed to save icon. Please try again.');
+      }
+    } catch (err) {
+      console.error('Save icon error:', err);
+      setError('Failed to save icon. Please try again.');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -142,20 +157,25 @@ const ProfileIconSelector = ({ currentIcon, onClose, onIconChange }) => {
           </div>
 
           {/* Footer */}
-          <div className="p-4 bg-pocket-bg border-t border-gray-200 flex gap-3">
-            <button
-              onClick={onClose}
-              className="flex-1 py-3 rounded-xl border-2 border-gray-300 text-pocket-text font-semibold hover:bg-gray-100 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="flex-1 py-3 rounded-xl bg-pocket-blue text-white font-semibold hover:bg-blue-600 transition-colors disabled:opacity-50"
-            >
-              {saving ? 'Saving...' : 'Save'}
-            </button>
+          <div className="p-4 bg-pocket-bg border-t border-gray-200">
+            {error && (
+              <p className="text-red-500 text-sm text-center mb-3">{error}</p>
+            )}
+            <div className="flex gap-3">
+              <button
+                onClick={onClose}
+                className="flex-1 py-3 rounded-xl border-2 border-gray-300 text-pocket-text font-semibold hover:bg-gray-100 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="flex-1 py-3 rounded-xl bg-pocket-blue text-white font-semibold hover:bg-blue-600 transition-colors disabled:opacity-50"
+              >
+                {saving ? 'Saving...' : 'Save'}
+              </button>
+            </div>
           </div>
         </motion.div>
       </motion.div>
