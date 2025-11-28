@@ -119,6 +119,35 @@ export const apiGoogleLogin = async (credential) => {
   }
 };
 
+export const apiSetUsername = async (username, authToken) => {
+  try {
+    console.log('apiSetUsername called:', { username });
+
+    const url = `${API_URL}/auth/set-username`;
+    const response = await fetch(url, {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify({ username })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to set username');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('apiSetUsername error:', error);
+    throw error;
+  }
+};
+
 // ============================================================================
 // POKEMON/ROSTER API
 // ============================================================================
@@ -1165,5 +1194,47 @@ export const apiGetUserBadges = async (authToken) => {
   } catch (error) {
     console.error('Get user badges error:', error);
     return { badges: [], allBadges: [] };
+  }
+};
+
+export const apiGetProfileIcons = async () => {
+  try {
+    const response = await fetch(`${API_URL}/profile/icons`);
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to fetch profile icons');
+    }
+
+    return data.icons;
+  } catch (error) {
+    console.error('Get profile icons error:', error);
+    return ['pikachu', 'squirtle', 'charmander', 'bulbasaur', 'mewtwo', 'officer-jenny'];
+  }
+};
+
+export const apiUpdateProfileIcon = async (icon, authToken) => {
+  if (!authToken) return null;
+
+  try {
+    const response = await fetch(`${API_URL}/profile/icon`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify({ icon })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to update profile icon');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Update profile icon error:', error);
+    return null;
   }
 };

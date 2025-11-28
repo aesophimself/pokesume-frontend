@@ -18,7 +18,8 @@ import {
   Swords,
   BookOpen,
   Crown,
-  Shield
+  Shield,
+  Pencil
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useGame } from '../contexts/GameContext';
@@ -26,6 +27,8 @@ import { apiGetProfile, apiGetUserBadges } from '../services/apiService';
 import { PokemonSprite, getPokemonGrade, getGradeColor } from '../utils/gameUtils';
 import { TYPE_COLORS } from '../components/TypeIcon';
 import BadgeBook from '../components/BadgeBook';
+import ProfileIcon from '../components/ProfileIcon';
+import ProfileIconSelector from '../components/ProfileIconSelector';
 
 // Badge image paths - maps badge key to image filename
 const BADGE_IMAGES = {
@@ -183,6 +186,8 @@ const ProfileScreen = () => {
   const [badgeData, setBadgeData] = useState({ badges: [], allBadges: [] });
   const [loading, setLoading] = useState(true);
   const [showBadgeBook, setShowBadgeBook] = useState(false);
+  const [showIconSelector, setShowIconSelector] = useState(false);
+  const [currentIcon, setCurrentIcon] = useState('pikachu');
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -193,7 +198,10 @@ const ProfileScreen = () => {
           apiGetUserBadges(token)
         ]);
 
-        if (profileData) setProfile(profileData);
+        if (profileData) {
+          setProfile(profileData);
+          setCurrentIcon(profileData.user?.profileIcon || 'pikachu');
+        }
         if (badgesData) setBadgeData(badgesData);
       } catch (error) {
         console.error('Failed to load profile:', error);
@@ -203,6 +211,14 @@ const ProfileScreen = () => {
 
     loadProfile();
   }, [token]);
+
+  const handleIconChange = (newIcon) => {
+    setCurrentIcon(newIcon);
+    setProfile(prev => ({
+      ...prev,
+      user: { ...prev.user, profileIcon: newIcon }
+    }));
+  };
 
   // Create badge lookup map
   const ownedBadges = {};
@@ -253,10 +269,21 @@ const ProfileScreen = () => {
           className="bg-white rounded-2xl p-5 mb-4 shadow-card"
         >
           <div className="flex items-center gap-4 mb-4">
-            {/* Avatar */}
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-pocket-blue to-pocket-red flex items-center justify-center">
-              <User size={32} className="text-white" />
-            </div>
+            {/* Avatar with edit button */}
+            <button
+              onClick={() => setShowIconSelector(true)}
+              className="relative group"
+            >
+              <ProfileIcon
+                icon={currentIcon}
+                size={64}
+                showBorder={true}
+                className="ring-4 ring-pocket-blue/30 group-hover:ring-pocket-blue transition-all"
+              />
+              <div className="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/30 transition-all flex items-center justify-center">
+                <Pencil size={20} className="text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+            </button>
 
             {/* User details */}
             <div className="flex-1">
@@ -379,6 +406,15 @@ const ProfileScreen = () => {
           />
         )}
       </AnimatePresence>
+
+      {/* Profile Icon Selector Modal */}
+      {showIconSelector && (
+        <ProfileIconSelector
+          currentIcon={currentIcon}
+          onClose={() => setShowIconSelector(false)}
+          onIconChange={handleIconChange}
+        />
+      )}
     </div>
   );
 };

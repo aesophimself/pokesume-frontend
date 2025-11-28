@@ -6,7 +6,7 @@
  */
 
 import React, { createContext, useContext, useState } from 'react';
-import { apiLogin, apiRegister, apiLogout, apiGoogleLogin } from '../services/apiService';
+import { apiLogin, apiRegister, apiLogout, apiGoogleLogin, apiSetUsername } from '../services/apiService';
 
 const AuthContext = createContext(null);
 
@@ -119,6 +119,29 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('pokesume_user', JSON.stringify(updatedUser));
   };
 
+  // Set username for new Google users
+  const setUsername = async (username) => {
+    try {
+      setAuthError(null);
+      setAuthLoading(true);
+
+      const data = await apiSetUsername(username, authToken);
+
+      // Update token and user with new username
+      setAuthToken(data.token);
+      setUser(data.user);
+      localStorage.setItem('pokesume_token', data.token);
+      localStorage.setItem('pokesume_user', JSON.stringify(data.user));
+
+      return data;
+    } catch (error) {
+      setAuthError(error.message);
+      throw error;
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
   const value = {
     user,
     authToken,
@@ -129,6 +152,7 @@ export const AuthProvider = ({ children }) => {
     googleLogin,
     logout,
     updateUser,
+    setUsername,
     setAuthError
   };
 

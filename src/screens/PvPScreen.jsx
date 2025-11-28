@@ -13,6 +13,7 @@ import { motion } from 'framer-motion';
 import { useGame } from '../contexts/GameContext';
 import { useAuth } from '../contexts/AuthContext';
 import { apiGetPvPStats, apiGetPvPMatches } from '../services/apiService';
+import ProfileIcon from '../components/ProfileIcon';
 
 const PvPScreen = () => {
   const { setGameState, setPvPMatchId } = useGame();
@@ -206,6 +207,9 @@ const PvPScreen = () => {
                     const opponentName = isPlayer1
                       ? (match.player2_username || 'Trainer')
                       : match.player1_username;
+                    const opponentIcon = isPlayer1
+                      ? (match.player2_profile_icon || 'pikachu')
+                      : (match.player1_profile_icon || 'pikachu');
                     const ratingChange = isPlayer1
                       ? match.player1_rating_change
                       : match.player2_rating_change;
@@ -226,14 +230,22 @@ const PvPScreen = () => {
                         }`}
                       >
                         <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                            won ? 'bg-green-200' : 'bg-red-200'
-                          }`}>
-                            {won ? (
-                              <Trophy size={20} className="text-green-600" />
-                            ) : (
-                              <Swords size={20} className="text-red-600" />
-                            )}
+                          <div className="relative">
+                            <ProfileIcon
+                              icon={opponentIcon}
+                              size={40}
+                              showBorder={true}
+                              className={won ? 'ring-green-300' : 'ring-red-300'}
+                            />
+                            <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center ${
+                              won ? 'bg-green-500' : 'bg-red-500'
+                            }`}>
+                              {won ? (
+                                <Trophy size={12} className="text-white" />
+                              ) : (
+                                <Swords size={12} className="text-white" />
+                              )}
+                            </div>
                           </div>
                           <div>
                             <div className="font-bold text-sm">

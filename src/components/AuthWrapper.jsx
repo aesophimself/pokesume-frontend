@@ -9,9 +9,10 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import AuthModal from './AuthModal';
+import UsernameSetupModal from './UsernameSetupModal';
 
 export default function AuthWrapper({ children }) {
-  const { user, authToken, authError, authLoading, login, register, googleLogin, setAuthError } = useAuth();
+  const { user, authToken, authError, authLoading, login, register, googleLogin, setUsername, setAuthError } = useAuth();
 
   const [authMode, setAuthMode] = useState('login');
   const [authForm, setAuthForm] = useState({ username: '', email: '', password: '' });
@@ -72,6 +73,18 @@ export default function AuthWrapper({ children }) {
     }
   };
 
+  // Handle username setup for new Google users
+  const handleUsernameSubmit = async (username) => {
+    try {
+      console.log('[Auth] Setting username:', username);
+      await setUsername(username);
+      console.log('[Auth] Username set successfully');
+    } catch (error) {
+      console.error('[Auth] Username setup error:', error);
+      // Error is already set by context
+    }
+  };
+
   // If user is not authenticated, show login screen (non-closable)
   if (!user || !authToken) {
     return (
@@ -94,6 +107,19 @@ export default function AuthWrapper({ children }) {
     );
   }
 
-  // User is authenticated, render children
+  // If user needs to set username (new Google user), show username setup modal
+  if (user.needsUsername) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center bg-gradient-to-b from-purple-400 to-blue-500">
+        <UsernameSetupModal
+          onSubmit={handleUsernameSubmit}
+          loading={authLoading}
+          error={authError}
+        />
+      </div>
+    );
+  }
+
+  // User is authenticated and has username, render children
   return <>{children}</>;
 }

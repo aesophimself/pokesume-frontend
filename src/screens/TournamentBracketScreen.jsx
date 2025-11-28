@@ -9,10 +9,11 @@
  */
 
 import React from 'react';
-import { ArrowLeft, Trophy, Users, Play } from 'lucide-react';
+import { ArrowLeft, Trophy, Play } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useGame } from '../contexts/GameContext';
 import { useAuth } from '../contexts/AuthContext';
+import ProfileIcon from '../components/ProfileIcon';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -197,7 +198,18 @@ const TournamentBracketScreen = () => {
                                   : 'bg-white'
                               }`}>
                                 <div className="flex items-center gap-2">
-                                  <Users size={14} className="text-pocket-text-light" />
+                                  {match.player1_username ? (
+                                    <ProfileIcon
+                                      icon={match.player1_profile_icon || 'pikachu'}
+                                      size={24}
+                                      showBorder={true}
+                                      className={match.winner_user_id === match.player1_user_id ? 'ring-pocket-green' : 'ring-gray-200'}
+                                    />
+                                  ) : (
+                                    <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
+                                      <span className="text-[10px] text-gray-400">?</span>
+                                    </div>
+                                  )}
                                   <span className={`text-sm ${
                                     match.winner_user_id === match.player1_user_id ? 'font-bold text-pocket-green' : 'text-pocket-text'
                                   }`}>
@@ -206,7 +218,7 @@ const TournamentBracketScreen = () => {
                                 </div>
                                 {match.battle_results && (
                                   <span className="text-sm font-bold text-pocket-text">
-                                    {parseBattleResults(match.battle_results)?.score?.split('-')[0] || '0'}
+                                    {parseBattleResults(match.battle_results)?.player1Wins || '0'}
                                   </span>
                                 )}
                               </div>
@@ -223,7 +235,18 @@ const TournamentBracketScreen = () => {
                                   : 'bg-white'
                               }`}>
                                 <div className="flex items-center gap-2">
-                                  <Users size={14} className="text-pocket-text-light" />
+                                  {match.player2_username ? (
+                                    <ProfileIcon
+                                      icon={match.player2_profile_icon || 'pikachu'}
+                                      size={24}
+                                      showBorder={true}
+                                      className={match.winner_user_id === match.player2_user_id ? 'ring-pocket-green' : 'ring-gray-200'}
+                                    />
+                                  ) : (
+                                    <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
+                                      <span className="text-[10px] text-gray-400">?</span>
+                                    </div>
+                                  )}
                                   <span className={`text-sm ${
                                     match.winner_user_id === match.player2_user_id ? 'font-bold text-pocket-green' : 'text-pocket-text'
                                   }`}>
@@ -232,7 +255,7 @@ const TournamentBracketScreen = () => {
                                 </div>
                                 {match.battle_results && (
                                   <span className="text-sm font-bold text-pocket-text">
-                                    {parseBattleResults(match.battle_results)?.score?.split('-')[1] || '0'}
+                                    {parseBattleResults(match.battle_results)?.player2Wins || '0'}
                                   </span>
                                 )}
                               </div>

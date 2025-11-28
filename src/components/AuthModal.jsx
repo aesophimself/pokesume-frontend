@@ -12,6 +12,7 @@ import { User, X } from 'lucide-react';
 
 // Google Client ID - should match the one in backend .env
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+console.log('[AuthModal] GOOGLE_CLIENT_ID configured:', !!GOOGLE_CLIENT_ID);
 
 // Google Sign-In Button Component
 const GoogleSignInButton = ({ onSuccess, onError, disabled }) => {
@@ -151,7 +152,21 @@ const AuthModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center p-4 z-50">
+      {/* Game Logo */}
+      <motion.div
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.1 }}
+        className="mb-6"
+      >
+        <img
+          src="/images/logo.png"
+          alt="Pokesume Pretty Duel!"
+          className="w-72 md:w-96 h-auto drop-shadow-lg"
+        />
+      </motion.div>
+
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
