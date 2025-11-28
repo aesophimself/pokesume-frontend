@@ -128,7 +128,17 @@ const PvPTeamSelectScreen = () => {
                       {generatePokemonSprite(pokemon.primaryType, pokemon.name)}
                     </div>
                     <div className="text-xs font-bold truncate">{pokemon.name}</div>
-                    <TypeBadge type={pokemon.primaryType} size={10} className="text-[8px]" />
+                    <div className="flex items-center justify-center gap-1">
+                      {pokemon.stats && (
+                        <span
+                          className="px-1 py-0.5 rounded text-[8px] font-bold text-white"
+                          style={{ backgroundColor: getGradeColor(getPokemonGrade(pokemon.stats)) }}
+                        >
+                          {getPokemonGrade(pokemon.stats)}
+                        </span>
+                      )}
+                      <TypeBadge type={pokemon.primaryType} size={10} className="text-[8px]" />
+                    </div>
                   </div>
                 ) : (
                   <div className="text-gray-400 text-sm">Slot {index + 1}</div>

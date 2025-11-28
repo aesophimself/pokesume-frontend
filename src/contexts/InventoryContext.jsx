@@ -184,7 +184,8 @@ export const InventoryProvider = ({ children }) => {
           strategyGrade: pokemonData.strategyGrade,
           inspirations: pokemonData.inspirations,
           grade: grade,
-          completionType: pokemonData.completionType
+          completionType: pokemonData.completionType,
+          gymsDefeated: pokemonData.gymsDefeated || 0
         };
       });
       setTrainedPokemon(normalizedPokemon);

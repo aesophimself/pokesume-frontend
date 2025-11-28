@@ -9,7 +9,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Swords, Clock, Users } from 'lucide-react';
-import { generatePokemonSprite } from '../utils/gameUtils';
+import { generatePokemonSprite, getGradeColor, getPokemonGrade } from '../utils/gameUtils';
 import { TypeBadge } from '../components/TypeIcon';
 import { motion } from 'framer-motion';
 import { useGame } from '../contexts/GameContext';
@@ -279,7 +279,7 @@ const PvPQueueScreen = () => {
                   ? 'Looking for players with similar rating...'
                   : queueTime < 60
                     ? 'Expanding search range...'
-                    : 'AI opponent will be generated soon...'}
+                    : 'Finding an opponent for you...'}
               </p>
 
               <button
@@ -311,7 +311,17 @@ const PvPQueueScreen = () => {
                     {generatePokemonSprite(pokemon.primaryType || pokemon.type, pokemon.name)}
                   </div>
                   <div className="text-xs font-bold truncate max-w-[60px]">{pokemon.name}</div>
-                  <TypeBadge type={pokemon.primaryType || pokemon.type} size={10} className="text-[8px]" />
+                  <div className="flex items-center gap-1">
+                    {pokemon.stats && (
+                      <span
+                        className="px-1 py-0.5 rounded text-[8px] font-bold text-white"
+                        style={{ backgroundColor: getGradeColor(getPokemonGrade(pokemon.stats)) }}
+                      >
+                        {getPokemonGrade(pokemon.stats)}
+                      </span>
+                    )}
+                    <TypeBadge type={pokemon.primaryType || pokemon.type} size={10} className="text-[8px]" />
+                  </div>
                 </div>
               ))}
             </div>

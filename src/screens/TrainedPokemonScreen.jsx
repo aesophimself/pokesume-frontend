@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { ArrowLeft, Trophy, Star } from 'lucide-react';
+import { ArrowLeft, Trophy, Star, Shield } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useGame } from '../contexts/GameContext';
 import { useInventory } from '../contexts/InventoryContext';
@@ -46,7 +46,7 @@ const TrainedPokemonScreen = () => {
     const sorted = [...inventory];
     switch (trainedSortBy) {
       case 'date':
-        return sorted.sort((a, b) => b.completedAt - a.completedAt); // Most recent first
+        return sorted.sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt)); // Most recent first
       case 'grade':
         const gradeOrder = ['UU+', 'UU', 'S+', 'S', 'A+', 'A', 'B+', 'B', 'C+', 'C', 'D+', 'D', 'E+', 'E', 'F+', 'F'];
         return sorted.sort((a, b) => {
@@ -60,6 +60,8 @@ const TrainedPokemonScreen = () => {
           const typeB = b.type || 'Normal';
           return typeA.localeCompare(typeB);
         });
+      case 'gyms':
+        return sorted.sort((a, b) => (b.gymsDefeated || 0) - (a.gymsDefeated || 0)); // Most gyms first
       default:
         return sorted;
     }
@@ -119,17 +121,22 @@ const TrainedPokemonScreen = () => {
           {/* Sort Options */}
           <div className="flex items-center gap-2 flex-wrap mb-3">
             <span className="text-sm font-semibold text-pocket-text-light">Sort:</span>
-            {['date', 'grade', 'type'].map(sort => (
+            {[
+              { key: 'date', label: 'Date' },
+              { key: 'grade', label: 'Grade' },
+              { key: 'type', label: 'Type' },
+              { key: 'gyms', label: 'Gyms' }
+            ].map(sort => (
               <button
-                key={sort}
-                onClick={() => setTrainedSortBy(sort)}
+                key={sort.key}
+                onClick={() => setTrainedSortBy(sort.key)}
                 className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
-                  trainedSortBy === sort
+                  trainedSortBy === sort.key
                     ? 'bg-amber-500 text-white'
                     : 'bg-pocket-bg text-pocket-text-light hover:bg-gray-200'
                 }`}
               >
-                {sort.charAt(0).toUpperCase() + sort.slice(1)}
+                {sort.label}
               </button>
             ))}
           </div>
@@ -191,8 +198,14 @@ const TrainedPokemonScreen = () => {
                   {trained.grade || '?'}
                 </span>
               </div>
-              <div className="text-[10px] text-pocket-text-light text-center mb-2">
-                {new Date(trained.completedAt).toLocaleDateString()}
+              {/* Gyms Defeated & Date */}
+              <div className="flex items-center justify-center gap-2 text-[10px] text-pocket-text-light mb-2">
+                <div className="flex items-center gap-1">
+                  <Shield size={10} className="text-amber-500" />
+                  <span className="font-semibold">{trained.gymsDefeated || 0}/8</span>
+                </div>
+                <span>•</span>
+                <span>{new Date(trained.completedAt).toLocaleDateString()}</span>
               </div>
 
               {/* Inspirations Display */}
