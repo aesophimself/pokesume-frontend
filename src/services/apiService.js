@@ -676,21 +676,21 @@ export const apiUpdateCareer = async (careerState, authToken) => {
   }
 };
 
-export const apiProcessBattle = async (opponent, isGymLeader, authToken) => {
+export const apiProcessBattle = async (opponent, isGymLeader, authToken, isEventBattle = false) => {
   if (!authToken) {
     console.error('[apiProcessBattle] No auth token');
     return null;
   }
 
   try {
-    console.log('[apiProcessBattle] Sending request to server:', { opponent, isGymLeader });
+    console.log('[apiProcessBattle] Sending request to server:', { opponent, isGymLeader, isEventBattle });
     const response = await fetch(`${API_URL}/career/battle`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${authToken}`
       },
-      body: JSON.stringify({ opponent, isGymLeader })
+      body: JSON.stringify({ opponent, isGymLeader, isEventBattle })
     });
 
     const data = await response.json();

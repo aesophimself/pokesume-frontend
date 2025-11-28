@@ -18,7 +18,8 @@ import {
   Medal,
   CircleDot,
   Gift,
-  Star
+  Star,
+  HelpCircle
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useGame } from '../contexts/GameContext';
@@ -104,6 +105,13 @@ const MENU_ITEMS = [
     icon: Swords,
     color: '#C03028',
     screen: 'pvp'
+  },
+  {
+    key: 'guide',
+    label: 'Game Guide',
+    icon: HelpCircle,
+    color: '#3B82F6',
+    screen: 'guide'
   }
 ];
 

@@ -37,6 +37,7 @@ import PvPScreen from './screens/PvPScreen';
 import PvPTeamSelectScreen from './screens/PvPTeamSelectScreen';
 import PvPQueueScreen from './screens/PvPQueueScreen';
 import PvPReplayScreen from './screens/PvPReplayScreen';
+import GameGuideScreen from './screens/GameGuideScreen';
 
 /**
  * GameRouter
@@ -143,6 +144,9 @@ const GameRouter = () => {
 
     case 'pvpReplay':
       return <PvPReplayScreen />;
+
+    case 'guide':
+      return <GameGuideScreen />;
 
     default:
       return <MenuScreen />;

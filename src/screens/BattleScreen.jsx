@@ -348,7 +348,14 @@ const BattleScreen = () => {
                         {getPokemonGrade(battleState.player.stats)}
                       </span>
                     </div>
-                    <TypeBadge type={battleState.player.primaryType} size={14} />
+                    <div className="flex items-center gap-1">
+                      {battleState.player.strategy && (
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-gray-600 text-white">
+                          {battleState.player.strategy}
+                        </span>
+                      )}
+                      <TypeBadge type={battleState.player.primaryType} size={14} />
+                    </div>
                   </div>
 
                   {/* HP Bar */}
@@ -438,7 +445,14 @@ const BattleScreen = () => {
                         {getPokemonGrade(battleState.opponent.stats)}
                       </span>
                     </div>
-                    <TypeBadge type={battleState.opponent.primaryType} size={14} />
+                    <div className="flex items-center gap-1">
+                      {battleState.opponent.strategy && (
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-gray-600 text-white">
+                          {battleState.opponent.strategy}
+                        </span>
+                      )}
+                      <TypeBadge type={battleState.opponent.primaryType} size={14} />
+                    </div>
                   </div>
 
                   {/* HP Bar */}

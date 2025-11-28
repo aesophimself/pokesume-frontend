@@ -666,20 +666,21 @@ const CareerScreen = () => {
   /**
    * Start battle with opponent
    */
-  const startBattle = async (opponent, isGymLeader = false, isEliteFour = false) => {
-    // Prevent wild battles at 0 energy
-    if (!isGymLeader && !isEliteFour && careerData.energy <= 0) {
+  const startBattle = async (opponent, isGymLeader = false, isEliteFour = false, isEventBattle = false) => {
+    // Prevent wild battles at 0 energy (gym leaders and event battles don't cost energy upfront)
+    if (!isGymLeader && !isEliteFour && !isEventBattle && careerData.energy <= 0) {
       return; // Don't start battle
     }
 
     console.log('[startBattle] Processing server-side battle:', {
       opponent: opponent.name,
       isGymLeader,
-      isEliteFour
+      isEliteFour,
+      isEventBattle
     });
 
     // Call server to process battle
-    const battleResult = await processBattle(opponent, isGymLeader);
+    const battleResult = await processBattle(opponent, isGymLeader, isEventBattle);
 
     if (!battleResult) {
       console.error('[startBattle] Failed to get battle result from server');
@@ -1263,8 +1264,13 @@ const CareerScreen = () => {
                       {getPokemonGrade(careerData.currentStats)}
                     </span>
                   </div>
-                  <div className="text-xs text-gray-600">
+                  <div className="flex items-center gap-2 text-xs text-gray-600">
                     <TypeBadge type={careerData.pokemon.primaryType} size={14} />
+                    {careerData.pokemon.strategy && (
+                      <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-gray-600 text-white">
+                        {careerData.pokemon.strategy} <span style={{ color: getAptitudeColor(careerData.pokemon.strategyGrade) }}>({careerData.pokemon.strategyGrade})</span>
+                      </span>
+                    )}
                   </div>
                   {/* Type Aptitudes - Show all 6 types */}
                   <div className="flex text-[10px] sm:text-xs mt-1 flex-wrap gap-x-2 gap-y-0.5">
@@ -1551,7 +1557,7 @@ const CareerScreen = () => {
                             pendingEvent: null
                           }));
 
-                          startBattle(eventOpponent, false);
+                          startBattle(eventOpponent, false, false, true); // isEventBattle = true
                         }}
                         className="bg-red-600 text-white py-2 sm:py-3 rounded-lg font-bold hover:bg-red-700 transition"
                       >

@@ -181,7 +181,7 @@ export const CareerProvider = ({ children }) => {
   };
 
   // Process battle (server-authoritative)
-  const processBattle = async (opponent, isGymLeader) => {
+  const processBattle = async (opponent, isGymLeader, isEventBattle = false) => {
     if (!authToken) {
       console.error('[processBattle] No auth token');
       return null;
@@ -190,8 +190,8 @@ export const CareerProvider = ({ children }) => {
     setCareerLoading(true);
     setCareerError(null);
     try {
-      console.log('[processBattle] Sending battle request:', { opponent, isGymLeader });
-      const result = await apiProcessBattle(opponent, isGymLeader, authToken);
+      console.log('[processBattle] Sending battle request:', { opponent, isGymLeader, isEventBattle });
+      const result = await apiProcessBattle(opponent, isGymLeader, authToken, isEventBattle);
       console.log('[processBattle] Server response:', result);
       console.log('[processBattle] result.success:', result?.success, 'result.careerState exists:', !!result?.careerState);
       if (result && result.success) {
