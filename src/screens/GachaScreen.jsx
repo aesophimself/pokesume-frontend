@@ -358,7 +358,7 @@ const GachaScreen = () => {
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.2, type: 'spring' }}
-                  className="mb-4"
+                  className="mb-4 flex justify-center"
                 >
                   {generatePokemonSprite(POKEMON[rollResult.pokemon]?.primaryType || 'Normal', rollResult.pokemon)}
                 </motion.div>

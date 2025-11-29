@@ -11,7 +11,7 @@ import { Sparkles, ArrowLeft, Gift, Star, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGame } from '../contexts/GameContext';
 import { useInventory } from '../contexts/InventoryContext';
-import { getRarityColor, getSupportCardAttributes } from '../utils/gameUtils';
+import { getRarityColor } from '../utils/gameUtils';
 import { TYPE_COLORS } from '../components/TypeIcon';
 import { SUPPORT_CARDS, SUPPORT_GACHA_RARITY } from '../shared/gameData';
 import { getSupportImageFromCardName } from '../constants/trainerImages';
@@ -500,7 +500,24 @@ const SupportGachaScreen = () => {
               </button>
 
               {(() => {
-                const support = getSupportCardAttributes(selectedSupport, SUPPORT_CARDS);
+                // Get raw card data directly
+                const card = SUPPORT_CARDS[selectedSupport];
+                if (!card) return null;
+
+                // Compute normalized values inline
+                const support = {
+                  ...card,
+                  // Training bonuses from trainingBonus object
+                  typeBonusTraining: card.trainingBonus?.typeMatch ?? 4,
+                  generalBonusTraining: card.trainingBonus?.otherStats ?? 2,
+                  friendshipBonusTraining: card.trainingBonus?.maxFriendshipTypeMatch ?? 8,
+                  // Appearance rates
+                  appearanceChance: card.appearanceRate ?? 0.40,
+                  typeAppearancePriority: card.typeMatchPreference ?? 0.65,
+                  // Base stats alias
+                  baseStatIncrease: card.baseStats || { HP: 0, Attack: 0, Defense: 0, Instinct: 0, Speed: 0 }
+                };
+
                 const limitBreak = getSupportLimitBreak(selectedSupport);
                 const trainerImage = getSupportImageFromCardName(support.name);
 
@@ -552,7 +569,7 @@ const SupportGachaScreen = () => {
 
                     {/* Description */}
                     <p className="text-xs text-pocket-text-light italic mb-4 text-center">
-                      {support.description || support.effect?.description}
+                      {support.description}
                     </p>
 
                     {/* Base Stats */}
@@ -578,7 +595,7 @@ const SupportGachaScreen = () => {
                       <div className="grid grid-cols-2 gap-1 text-xs">
                         <div className="flex justify-between">
                           <span className="text-pocket-text-light">Friendship</span>
-                          <span className="text-pocket-blue font-bold">{support.initialFriendship}</span>
+                          <span className="text-pocket-blue font-bold">{support.initialFriendship ?? 30}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-pocket-text-light">Type Match</span>
