@@ -7,8 +7,8 @@
  */
 
 import React, { useState } from 'react';
-import { Sparkles, ArrowLeft, CircleDot, Star } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Sparkles, ArrowLeft, CircleDot, Star, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useGame } from '../contexts/GameContext';
 import { useInventory } from '../contexts/InventoryContext';
 import {
@@ -41,6 +41,7 @@ const GachaScreen = () => {
   const [rollResult, setRollResult] = useState(null);
   const [multiRollResults, setMultiRollResults] = useState(null);
   const [isRolling, setIsRolling] = useState(false);
+  const [selectedPokemon, setSelectedPokemon] = useState(null);
 
   // Single roll function (returns result, doesn't manage isRolling state)
   const performSingleRoll = async () => {
@@ -178,7 +179,8 @@ const GachaScreen = () => {
                       initial={{ scale: 0, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ delay: index * 0.05 }}
-                      className={`relative rounded-lg border-2 p-1 ${RARITY_BORDER_STYLES[result.rarity]}`}
+                      onClick={() => setSelectedPokemon(result.pokemon)}
+                      className={`relative rounded-lg border-2 p-1 cursor-pointer hover:ring-2 hover:ring-pocket-blue transition-all ${RARITY_BORDER_STYLES[result.rarity]}`}
                     >
                       {/* NEW badge for non-duplicates */}
                       {!result.isDuplicate && (
@@ -434,6 +436,145 @@ const GachaScreen = () => {
           )}
         </motion.div>
       </div>
+
+      {/* Pokemon Detail Modal */}
+      <AnimatePresence>
+        {selectedPokemon && POKEMON[selectedPokemon] && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+            onClick={() => setSelectedPokemon(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-2xl shadow-card-lg p-6 max-w-sm w-full max-h-[90vh] overflow-y-auto relative"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setSelectedPokemon(null)}
+                className="absolute top-4 right-4 p-2 text-pocket-text-light hover:text-pocket-text rounded-lg"
+              >
+                <X size={20} />
+              </button>
+
+              {(() => {
+                const pokemon = POKEMON[selectedPokemon];
+                const limitBreak = getPokemonLimitBreak(selectedPokemon);
+                const rarity = Object.entries(GACHA_RARITY).find(([_, data]) =>
+                  data.pokemon.includes(selectedPokemon)
+                )?.[0] || 'Common';
+
+                return (
+                  <>
+                    {/* Pokemon sprite and name */}
+                    <div className="text-center mb-4">
+                      <div className="mb-3">
+                        {generatePokemonSprite(pokemon.primaryType || 'Normal', selectedPokemon)}
+                      </div>
+                      <span
+                        className="px-2 py-0.5 rounded-full text-[10px] font-bold text-white inline-block mb-2"
+                        style={{ backgroundColor: getRarityColor(rarity) }}
+                      >
+                        {rarity}
+                      </span>
+                      <h3 className="font-bold text-xl text-pocket-text">{selectedPokemon}</h3>
+                      <div className="flex justify-center gap-2 mt-2">
+                        <TypeBadge type={pokemon.primaryType} size={16} />
+                        {pokemon.secondaryType && <TypeBadge type={pokemon.secondaryType} size={16} />}
+                      </div>
+                      <div className="flex justify-center mt-2">
+                        <LimitBreakDiamonds level={limitBreak} size={14} />
+                      </div>
+                      {limitBreak > 0 && (
+                        <p className="text-sm text-pocket-green font-semibold mt-1">
+                          +{limitBreak * 5}% Base Stats
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Base Stats */}
+                    <div className="bg-pocket-bg rounded-xl p-3 mb-3">
+                      <h4 className="font-bold text-pocket-text text-sm mb-2">Base Stats</h4>
+                      <div className="space-y-1.5 text-xs">
+                        {Object.entries(pokemon.baseStats).map(([stat, value]) => (
+                          <div key={stat} className="flex items-center gap-2">
+                            <span className="text-pocket-text-light w-16">{stat}</span>
+                            <div className="flex-1 bg-gray-200 rounded-full h-2">
+                              <div
+                                className="h-2 rounded-full bg-pocket-blue"
+                                style={{ width: `${Math.min(100, (value / 200) * 100)}%` }}
+                              />
+                            </div>
+                            <span className="font-bold text-pocket-text w-8 text-right">{value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Type Aptitudes */}
+                    {pokemon.typeAptitudes && (
+                      <div className="bg-pocket-bg rounded-xl p-3 mb-3">
+                        <h4 className="font-bold text-pocket-text text-sm mb-2">Type Aptitudes</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {Object.entries(pokemon.typeAptitudes).map(([color, grade]) => (
+                            <div
+                              key={color}
+                              className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold"
+                              style={{
+                                backgroundColor: color === 'Red' ? '#fee2e2' :
+                                  color === 'Blue' ? '#dbeafe' :
+                                  color === 'Yellow' ? '#fef9c3' :
+                                  color === 'Green' ? '#dcfce7' :
+                                  color === 'Purple' ? '#f3e8ff' : '#f3f4f6',
+                                color: color === 'Red' ? '#dc2626' :
+                                  color === 'Blue' ? '#2563eb' :
+                                  color === 'Yellow' ? '#ca8a04' :
+                                  color === 'Green' ? '#16a34a' :
+                                  color === 'Purple' ? '#9333ea' : '#4b5563'
+                              }}
+                            >
+                              <span>{color}</span>
+                              <span className="opacity-70">{grade}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Strategy Aptitudes */}
+                    {pokemon.strategyAptitudes && (
+                      <div className="bg-pocket-bg rounded-xl p-3">
+                        <h4 className="font-bold text-pocket-text text-sm mb-2">Strategy Aptitudes</h4>
+                        <div className="grid grid-cols-2 gap-1 text-xs">
+                          {Object.entries(pokemon.strategyAptitudes).map(([strategy, grade]) => (
+                            <div key={strategy} className="flex justify-between px-2 py-1 bg-white rounded">
+                              <span className="text-pocket-text-light">{strategy}</span>
+                              <span className="font-bold text-pocket-text">{grade}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
+
+              {/* Close button */}
+              <button
+                onClick={() => setSelectedPokemon(null)}
+                className="w-full mt-4 py-2 rounded-xl bg-pocket-bg text-pocket-text-light font-semibold hover:bg-gray-200 transition-colors"
+              >
+                Close
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
