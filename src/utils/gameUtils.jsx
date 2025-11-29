@@ -132,6 +132,29 @@ export const getPokemonRarity = (pokemonName) => {
   return 'Common';
 };
 
+/**
+ * Returns the best strategy for a Pokemon based on strategyAptitudes
+ * @param strategyAptitudes - Object with strategy grades {Scaler: 'A', Nuker: 'B', ...}
+ * @returns Object with {name: string, grade: string} for the highest graded strategy
+ */
+export const getBestStrategy = (strategyAptitudes) => {
+  if (!strategyAptitudes) return null;
+
+  const gradeOrder = ['S', 'A', 'B', 'C', 'D', 'E', 'F'];
+  let bestStrategy = null;
+  let bestGradeIndex = gradeOrder.length;
+
+  for (const [strategy, grade] of Object.entries(strategyAptitudes)) {
+    const gradeIndex = gradeOrder.indexOf(grade);
+    if (gradeIndex !== -1 && gradeIndex < bestGradeIndex) {
+      bestGradeIndex = gradeIndex;
+      bestStrategy = { name: strategy, grade };
+    }
+  }
+
+  return bestStrategy;
+};
+
 // ============================================================================
 // INSPIRATION UTILITIES
 // ============================================================================

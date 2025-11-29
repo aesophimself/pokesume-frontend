@@ -14,6 +14,8 @@ import {
   generatePokemonSprite,
   getPokemonRarity,
   getRarityColor,
+  getBestStrategy,
+  getAptitudeColor,
   StatIcon
 } from '../utils/gameUtils';
 import { TypeBadge, TYPE_COLORS } from '../components/TypeIcon';
@@ -193,6 +195,17 @@ const PokemonSelectionScreen = () => {
                     </div>
                     <div className="flex items-center gap-2 mb-2">
                       <TypeBadge type={pokemon.primaryType} size={12} />
+                      {(() => {
+                        const bestStrat = getBestStrategy(pokemon.strategyAptitudes);
+                        return bestStrat ? (
+                          <span
+                            className="px-2 py-0.5 rounded-full text-[10px] font-bold text-white"
+                            style={{ backgroundColor: getAptitudeColor(bestStrat.grade) }}
+                          >
+                            {bestStrat.name}
+                          </span>
+                        ) : null;
+                      })()}
                     </div>
                     {/* Stats Row */}
                     <div className="flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-pocket-text-light">
