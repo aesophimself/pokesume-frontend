@@ -29,7 +29,7 @@ const LIMIT_BREAK_SHARD_REWARDS = {
 
 const GachaScreen = () => {
   const { setGameState } = useGame();
-  const { primos, pokemonInventory, addPokemon, updatePrimos, getPokemonLimitBreak, limitBreakShards } = useInventory();
+  const { primos, addPokemon, updatePrimos, getPokemonLimitBreak } = useInventory();
   const [rollResult, setRollResult] = useState(null);
   const [isRolling, setIsRolling] = useState(false);
 

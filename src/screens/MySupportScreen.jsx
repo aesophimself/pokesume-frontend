@@ -306,7 +306,7 @@ const MySupportScreen = () => {
                       )}
                       {support.specialEffect.energyRegenBonus && (
                         <div className="flex justify-between">
-                          <span className="text-pocket-text-light">Energy Regen</span>
+                          <span className="text-pocket-text-light">Speed Training Energy Regen</span>
                           <span className="text-pocket-green font-bold">+{support.specialEffect.energyRegenBonus}</span>
                         </div>
                       )}

@@ -26,7 +26,7 @@ const LIMIT_BREAK_SHARD_REWARDS = {
 
 const SupportGachaScreen = () => {
   const { setGameState } = useGame();
-  const { primos, supportInventory, addSupport, updatePrimos, getSupportLimitBreak } = useInventory();
+  const { primos, addSupport, updatePrimos, getSupportLimitBreak } = useInventory();
   const [rollResult, setRollResult] = useState(null);
   const [isRolling, setIsRolling] = useState(false);
 

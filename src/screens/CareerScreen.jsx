@@ -332,6 +332,7 @@ const CareerScreen = () => {
   const [showStrategySelector, setShowStrategySelector] = useState(false);
   const [isProcessingEvent, setIsProcessingEvent] = useState(false);
   const [isProcessingAction, setIsProcessingAction] = useState(false);
+  const [forgetMoveConfirm, setForgetMoveConfirm] = useState(null);
   const lastProcessedTurnRef = useRef(null);
   const declinedEventRef = useRef(false);
 
@@ -1356,7 +1357,7 @@ const CareerScreen = () => {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               {/* Pokemon Info */}
               <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-                <div className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20">
+                <div className="flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24">
                   {generatePokemonSprite(careerData.pokemon.primaryType, careerData.pokemon.name)}
                 </div>
                 <div className="min-w-0 flex-1">
@@ -1914,35 +1915,61 @@ const CareerScreen = () => {
                         <div>DMG: {move.damage}</div>
                         <div>Stam: {move.stamina} | WU: {move.warmup} | CD: {move.cooldown}</div>
                       </div>
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
+                      {forgetMoveConfirm === moveName ? (
+                        <div className="flex gap-1 mt-1">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
 
-                          setCareerData(prev => {
-                            // Remove from known abilities
-                            const newKnownAbilities = prev.knownAbilities.filter(m => m !== moveName);
+                              setCareerData(prev => {
+                                // Remove from known abilities
+                                const newKnownAbilities = prev.knownAbilities.filter(m => m !== moveName);
 
-                            // Add to learnable abilities if not already there
-                            const newLearnableAbilities = [...prev.pokemon.learnableAbilities];
-                            if (!newLearnableAbilities.includes(moveName)) {
-                              newLearnableAbilities.push(moveName);
-                            }
+                                // Add to learnable abilities if not already there
+                                const newLearnableAbilities = [...prev.pokemon.learnableAbilities];
+                                if (!newLearnableAbilities.includes(moveName)) {
+                                  newLearnableAbilities.push(moveName);
+                                }
 
-                            return {
-                              ...prev,
-                              knownAbilities: newKnownAbilities,
-                              pokemon: {
-                                ...prev.pokemon,
-                                learnableAbilities: newLearnableAbilities
-                              }
-                            };
-                          });
-                        }}
-                        className="w-full mt-1 bg-red-500 text-white text-[10px] sm:text-xs py-0.5 sm:py-1 rounded hover:bg-red-600 cursor-pointer"
-                      >
-                        Forget
-                      </button>
+                                return {
+                                  ...prev,
+                                  knownAbilities: newKnownAbilities,
+                                  pokemon: {
+                                    ...prev.pokemon,
+                                    learnableAbilities: newLearnableAbilities
+                                  }
+                                };
+                              });
+                              setForgetMoveConfirm(null);
+                            }}
+                            className="flex-1 bg-red-600 text-white text-[10px] sm:text-xs py-0.5 sm:py-1 rounded hover:bg-red-700 cursor-pointer"
+                          >
+                            Confirm
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setForgetMoveConfirm(null);
+                            }}
+                            className="flex-1 bg-gray-400 text-white text-[10px] sm:text-xs py-0.5 sm:py-1 rounded hover:bg-gray-500 cursor-pointer"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setForgetMoveConfirm(moveName);
+                          }}
+                          className="w-full mt-1 bg-red-500 text-white text-[10px] sm:text-xs py-0.5 sm:py-1 rounded hover:bg-red-600 cursor-pointer"
+                        >
+                          Forget
+                        </button>
+                      )}
                     </div>
                   );
                 })}
@@ -2126,6 +2153,26 @@ const CareerScreen = () => {
                                 {move.effect.type === 'recoil' && `Recoil ${Math.round((move.effect.damagePercent || 0.1) * 100)}%`}
                                 {move.effect.type === 'exhaust' && `Self-Exhaust`}
                                 {move.effect.type === 'evasion' && `Evasion`}
+                                {move.effect.type === 'high_crit' && `High Crit`}
+                                {move.effect.type === 'buff_speed' && `+Speed`}
+                                {move.effect.type === 'buff_attack' && `+Attack`}
+                                {move.effect.type === 'buff_defense' && `+Defense`}
+                                {move.effect.type === 'buff_instinct' && `+Instinct`}
+                                {move.effect.type === 'buff_attack_defense' && `+Atk/Def`}
+                                {move.effect.type === 'buff_attack_speed' && `+Atk/Spd`}
+                                {move.effect.type === 'debuff_attack' && `-Attack`}
+                                {move.effect.type === 'debuff_defense' && `-Defense`}
+                                {move.effect.type === 'debuff_speed' && `-Speed`}
+                                {move.effect.type === 'debuff_instinct' && `-Instinct`}
+                                {move.effect.type === 'debuff_accuracy' && `-Accuracy`}
+                                {move.effect.type === 'debuff_instinct_self' && `Self -Inst`}
+                                {move.effect.type === 'debuff_speed_self' && `Self -Spd`}
+                                {move.effect.type === 'debuff_attack_self' && `Self -Atk`}
+                                {move.effect.type === 'heal_self' && `Heal ${Math.round((move.effect.healPercent || 0.5) * 100)}%`}
+                                {move.effect.type === 'badly_poison' && `Bad Poison`}
+                                {move.effect.type?.startsWith('weather_') && `Weather`}
+                                {move.effect.type?.startsWith('terrain_') && `Terrain`}
+                                {move.effect.type === 'buff_crit' && `+Crit Rate`}
                               </div>
                             )}
                           </div>
