@@ -10,6 +10,7 @@ import { Clock, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useGame } from '../contexts/GameContext';
 import { useCareer } from '../contexts/CareerContext';
+import { useInventory } from '../contexts/InventoryContext';
 import {
   generatePokemonSprite,
   getGradeColor,
@@ -22,11 +23,11 @@ import { getGymLeaderBadge } from '../constants/badgeImages';
 import BadgeModal from '../components/BadgeModal';
 
 /**
- * Generate inspirations based on final Pokemon stats, aptitudes, and strategy
- * Picks a RANDOM stat and RANDOM aptitude, then determines stars based on value/grade with % rolls
- * Also generates strategy inspiration based on strategy aptitude grade
+ * Generate inspirations based on final Pokemon stats, aptitudes, and strategy aptitudes
+ * Picks a RANDOM stat, RANDOM type aptitude, and RANDOM strategy aptitude
+ * Determines stars based on value/grade with identical weighting for aptitudes and strategies
  */
-const generateInspirations = (stats, aptitudes, strategyGrade = 'C', isVictory = false) => {
+const generateInspirations = (stats, aptitudes, strategyAptitudes = null, isVictory = false) => {
   if (!stats || Object.keys(stats).length === 0) return null;
 
   const colorToType = {
@@ -36,6 +37,26 @@ const generateInspirations = (stats, aptitudes, strategyGrade = 'C', isVictory =
     'Purple': 'Psychic',
     'Yellow': 'Electric',
     'Orange': 'Fighting'
+  };
+
+  const aptitudeOrder = ['F', 'E', 'D', 'C', 'B', 'A', 'S'];
+
+  // Helper function to determine stars from grade (same weighting for both aptitudes and strategies)
+  // F-C grade: 75% chance 1 star, 25% chance 2 star
+  // B-S grade: 50% chance 1 star, 30% chance 2 star, 20% chance 3 star
+  const getStarsFromGrade = (grade) => {
+    const index = aptitudeOrder.indexOf(grade);
+    const roll = Math.random();
+
+    if (index <= 3) {
+      // F, E, D, C: 75% 1-star, 25% 2-star
+      return roll < 0.75 ? 1 : 2;
+    } else {
+      // B, A, S: 50% 1-star, 30% 2-star, 20% 3-star
+      if (roll < 0.50) return 1;
+      if (roll < 0.80) return 2;
+      return 3;
+    }
   };
 
   // Pick a RANDOM stat (not highest)
@@ -66,42 +87,35 @@ const generateInspirations = (stats, aptitudes, strategyGrade = 'C', isVictory =
     else statStars = 3;
   }
 
-  // Pick a RANDOM aptitude (not best)
+  // Pick a RANDOM type aptitude
   const aptitudeKeys = Object.keys(aptitudes || {});
-  const aptitudeOrder = ['F', 'E', 'D', 'C', 'B', 'A', 'S'];
+  let aptitudeResult = { name: 'Fire', color: 'Red', grade: 'D', stars: 1 };
 
-  // Determine strategy stars based on strategy grade (same distribution as aptitudes)
-  const strategyIndex = aptitudeOrder.indexOf(strategyGrade);
-  let strategyStars = 1;
-  if (strategyIndex <= 3) { // F, E, D, C
-    strategyStars = 1;
-  } else if (strategyIndex === 4) { // B
-    strategyStars = 2;
-  } else { // A, S
-    strategyStars = 3;
-  }
-
-  if (aptitudeKeys.length === 0) {
-    return {
-      stat: { name: randomStat, value: statValue, stars: statStars },
-      aptitude: { name: 'Fire', color: 'Red', grade: 'D', stars: 1 },
-      strategy: { grade: strategyGrade, stars: strategyStars }
+  if (aptitudeKeys.length > 0) {
+    const randomAptitudeKey = aptitudeKeys[Math.floor(Math.random() * aptitudeKeys.length)];
+    const aptitudeGrade = aptitudes[randomAptitudeKey];
+    aptitudeResult = {
+      name: colorToType[randomAptitudeKey] || randomAptitudeKey,
+      color: randomAptitudeKey,
+      grade: aptitudeGrade,
+      stars: getStarsFromGrade(aptitudeGrade)
     };
   }
 
-  const randomAptitudeKey = aptitudeKeys[Math.floor(Math.random() * aptitudeKeys.length)];
-  const aptitudeGrade = aptitudes[randomAptitudeKey];
+  // Pick a RANDOM strategy from strategyAptitudes (same logic as type aptitudes)
+  let strategyResult = { name: 'Chipper', grade: 'C', stars: 1 };
 
-  // Determine aptitude stars based on grade
-  const aptitudeIndex = aptitudeOrder.indexOf(aptitudeGrade);
-
-  let aptitudeStars = 1;
-  if (aptitudeIndex <= 3) { // F, E, D, C
-    aptitudeStars = 1;
-  } else if (aptitudeIndex === 4) { // B
-    aptitudeStars = 2;
-  } else { // A, S
-    aptitudeStars = 3;
+  if (strategyAptitudes && typeof strategyAptitudes === 'object') {
+    const strategyKeys = Object.keys(strategyAptitudes);
+    if (strategyKeys.length > 0) {
+      const randomStrategyKey = strategyKeys[Math.floor(Math.random() * strategyKeys.length)];
+      const strategyGrade = strategyAptitudes[randomStrategyKey];
+      strategyResult = {
+        name: randomStrategyKey,
+        grade: strategyGrade,
+        stars: getStarsFromGrade(strategyGrade)
+      };
+    }
   }
 
   return {
@@ -110,22 +124,15 @@ const generateInspirations = (stats, aptitudes, strategyGrade = 'C', isVictory =
       value: statValue,
       stars: statStars
     },
-    aptitude: {
-      name: colorToType[randomAptitudeKey] || randomAptitudeKey,
-      color: randomAptitudeKey,
-      grade: aptitudeGrade,
-      stars: aptitudeStars
-    },
-    strategy: {
-      grade: strategyGrade,
-      stars: strategyStars
-    }
+    aptitude: aptitudeResult,
+    strategy: strategyResult
   };
 };
 
 const BattleScreen = () => {
   const { battleState, battleSpeed, setBattleSpeed, setGameState, setBattleState, setCareerHistory, setCompletedCareerData } = useGame();
   const { careerData, completeCareer, consumePokeclock } = useCareer();
+  const { loadPrimos } = useInventory();
   const battleLogRef = useRef(null);
   const [showBadgeModal, setShowBadgeModal] = useState(false);
   const [earnedBadge, setEarnedBadge] = useState(null);
@@ -164,13 +171,15 @@ const BattleScreen = () => {
         // Mark as shown immediately to prevent duplicate triggers
         badgeShownRef.current = true;
         setEarnedBadge({ ...badgeInfo, gymLeaderName: badge.gymLeaderName });
+        // Refresh primos after gym leader victory (primos were awarded server-side)
+        loadPrimos();
         // Small delay to let battle complete animation finish
         setTimeout(() => {
           setShowBadgeModal(true);
         }, 1500);
       }
     }
-  }, [battleState?.player.currentHP, battleState?.opponent.currentHP, battleState, showBadgeModal]);
+  }, [battleState?.player.currentHP, battleState?.opponent.currentHP, battleState, showBadgeModal, loadPrimos]);
 
   if (!battleState) {
     return null;
@@ -218,7 +227,7 @@ const BattleScreen = () => {
         const inspirations = generateInspirations(
           careerData?.currentStats,
           careerData?.pokemon?.typeAptitudes,
-          careerData?.pokemon?.strategyGrade || 'C',
+          careerData?.pokemon?.strategyAptitudes,
           false // defeat
         );
 
@@ -226,12 +235,16 @@ const BattleScreen = () => {
         const result = await completeCareer('defeated', inspirations);
 
         if (result && result.savedCareerData) {
+          // Refresh primos balance after earning career completion reward
+          loadPrimos();
+
           // Save completed career data for GameOver screen
           setCompletedCareerData({
             ...result.savedCareerData,
             trainedPokemon: result.trainedPokemon,
             inspirations: inspirations,
-            victory: false
+            victory: false,
+            primosReward: result.primosReward || 0
           });
 
           // Add to career history
@@ -266,19 +279,23 @@ const BattleScreen = () => {
       const inspirations = generateInspirations(
         careerData?.currentStats,
         careerData?.pokemon?.typeAptitudes,
-        careerData?.pokemon?.strategyGrade || 'C',
+        careerData?.pokemon?.strategyAptitudes,
         true // victory
       );
 
       const result = await completeCareer('champion', inspirations);
 
       if (result && result.savedCareerData) {
+        // Refresh primos balance after earning career completion reward
+        loadPrimos();
+
         // Save completed career data for Victory screen
         setCompletedCareerData({
           ...result.savedCareerData,
           trainedPokemon: result.trainedPokemon,
           inspirations: inspirations,
-          victory: true
+          victory: true,
+          primosReward: result.primosReward || 0
         });
 
         // Add to career history
@@ -613,6 +630,7 @@ const BattleScreen = () => {
         onClose={() => setShowBadgeModal(false)}
         badge={earnedBadge}
         gymLeaderName={earnedBadge?.gymLeaderName}
+        primosReward={battleState?.rewards?.primosReward || 0}
       />
 
       {/* Pokeclock Modal for Gym Battle Retries */}

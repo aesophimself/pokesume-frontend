@@ -3,6 +3,82 @@
  * Maps trainer names to their sprite images
  */
 
+// Face positioning config for support trainer icons
+// scale: zoom level (1.0 = no zoom, 1.5 = 50% zoom)
+// offsetY: vertical offset in % (negative = move up, positive = move down)
+// offsetX: horizontal offset in % (negative = move left, positive = move right)
+export const TRAINER_FACE_CONFIG = {
+  // Default config for trainers without specific settings
+  default: { scale: 1.3, offsetY: -5, offsetX: 0 },
+  // Legendary tier (original)
+  'Cynthia': { scale: 1.4, offsetY: -8, offsetX: 0 },
+  'Red': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Steven': { scale: 1.4, offsetY: -8, offsetX: 0 },
+  'N': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Professor Oak': { scale: 1.4, offsetY: -5, offsetX: 0 },
+  'Diantha': { scale: 1.4, offsetY: -8, offsetX: 0 },
+  // Legendary tier (new)
+  'Leon': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Selene': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Gloria': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Nemona': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Mustard': { scale: 1.4, offsetY: -5, offsetX: 0 },
+  'Victor': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Arven': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Penny': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Sonia': { scale: 1.3, offsetY: -8, offsetX: 0 },
+  'Hop': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Geeta': { scale: 1.4, offsetY: -8, offsetX: 0 },
+  'Kieran': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Carmine': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Drayton': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Lacey': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  // Rare tier (original)
+  'Lance': { scale: 1.4, offsetY: -8, offsetX: 0 },
+  'Sabrina': { scale: 1.4, offsetY: -8, offsetX: 0 },
+  'Morty': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Wallace': { scale: 1.4, offsetY: -8, offsetX: 0 },
+  'Iris': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Blue': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Giovanni': { scale: 1.4, offsetY: -5, offsetX: 0 },
+  'Maxie': { scale: 1.4, offsetY: -5, offsetX: 0 },
+  'Archie': { scale: 1.4, offsetY: -5, offsetX: 0 },
+  // Rare tier (new)
+  'Raihan': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Marnie': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Nessa': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Bea': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Opal': { scale: 1.4, offsetY: -5, offsetX: 0 },
+  'Piers': { scale: 1.3, offsetY: -8, offsetX: 0 },
+  'Rika': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Poppy': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  // Uncommon tier (original)
+  'Misty': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Brock': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Erika': { scale: 1.4, offsetY: -8, offsetX: 0 },
+  'Blaine': { scale: 1.4, offsetY: -5, offsetX: 0 },
+  'Koga': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Jasmine': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Winona': { scale: 1.4, offsetY: -8, offsetX: 0 },
+  'Karen': { scale: 1.4, offsetY: -8, offsetX: 0 },
+  'Agatha': { scale: 1.4, offsetY: -5, offsetX: 0 },
+  // Uncommon tier (new)
+  'Milo': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Kabu': { scale: 1.4, offsetY: -5, offsetX: 0 },
+  'Melony': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Gordie': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Klara': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Avery': { scale: 1.3, offsetY: -8, offsetX: 0 },
+  'Iono': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Grusha': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  // Common tier
+  'Whitney': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Chuck': { scale: 1.3, offsetY: -5, offsetX: 0 },
+  'Pryce': { scale: 1.4, offsetY: -5, offsetX: 0 },
+  'Wattson': { scale: 1.4, offsetY: -5, offsetX: 0 },
+  'Flannery': { scale: 1.3, offsetY: -5, offsetX: 0 },
+};
+
 // Gym Leader Images
 export const GYM_LEADER_IMAGES = {
   'Blaine': '/images/trainers/gym-leaders/blaine.png',
@@ -105,6 +181,11 @@ export const getSupportTrainerImage = (trainerName) => {
   return SUPPORT_TRAINER_IMAGES[trainerName] || GYM_LEADER_IMAGES[trainerName] || '/images/trainers/supports/default.png';
 };
 
+// Helper function to get face positioning config for a trainer
+export const getTrainerFaceConfig = (trainerName) => {
+  return TRAINER_FACE_CONFIG[trainerName] || TRAINER_FACE_CONFIG.default;
+};
+
 // Helper function to extract trainer name from support card name or key
 // Handles both formats:
 // - Display name: "Cynthia & Garchomp"
@@ -164,4 +245,61 @@ export const getSupportImageFromCardName = (cardName) => {
 
   // Fallback: just return the whole name as trainer (won't match, will use default)
   return getSupportTrainerImage(cardName);
+};
+
+// Helper to extract trainer name from card name
+const extractTrainerName = (cardName) => {
+  if (!cardName) return null;
+
+  // If it contains &, it's a display name format
+  if (cardName.includes('&')) {
+    return cardName.split('&')[0]?.trim();
+  }
+
+  // Handle special cases
+  const specialCases = {
+    'ProfessorOakMew': 'Professor Oak',
+    'ElitesFourKaren': 'Karen',
+    'LtSurgeRaichu': 'Lt. Surge',
+    'PopPyTinkaton': 'Poppy',
+    'PennyVaporeon': 'Penny',
+    'AveryRapidashGalar': 'Avery'
+  };
+
+  if (specialCases[cardName]) {
+    return specialCases[cardName];
+  }
+
+  // Pokemon names to strip from the end
+  const pokemonNames = [
+    'Garchomp', 'Charizard', 'Metagross', 'Dragonite', 'Starmie', 'Onix',
+    'Tangela', 'Alakazam', 'Magmar', 'Weezing', 'Miltank', 'Gengar',
+    'Poliwrath', 'Steelix', 'Delibird', 'Milotic', 'Skarmory', 'Magneton',
+    'Camerupt', 'Lucario', 'Reshiram', 'Haxorus', 'Umbreon', 'Pidgeot',
+    'Persian', 'Mew', 'Diancie', 'Groudon', 'Kyogre',
+    'Lunala', 'Zacian', 'Koraidon', 'Urshifu', 'Eternatus', 'Mabosstiff',
+    'Sylveon', 'Yamper', 'Zamazenta', 'Kingambit', 'Terapagos', 'Ogerpon',
+    'Archaludon', 'Excadrill',
+    'Duraludon', 'Grimmsnarl', 'Drednaw', 'Machamp', 'Alcremie', 'Toxtricity',
+    'Whiscash', 'Tinkaton',
+    'Eldegoss', 'Centiskorch', 'Lapras', 'Coalossal', 'Slowbro', 'Rapidash',
+    'Luxray', 'Altaria'
+  ];
+
+  for (const pokemon of pokemonNames) {
+    if (cardName.endsWith(pokemon)) {
+      return cardName.slice(0, -pokemon.length);
+    }
+  }
+
+  return cardName;
+};
+
+// Get support image with face positioning config
+// Returns { image, config } where config has scale, offsetX, offsetY
+export const getSupportImageWithConfig = (cardName) => {
+  const trainerName = extractTrainerName(cardName);
+  const image = getSupportTrainerImage(trainerName);
+  const config = getTrainerFaceConfig(trainerName);
+  return { image, config, trainerName };
 };

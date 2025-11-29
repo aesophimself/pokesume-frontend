@@ -38,7 +38,7 @@ import {
   EVOLUTION_CONFIG,
   ELITE_FOUR
 } from '../shared/gameData';
-import { getSupportImageFromCardName, getGymLeaderImage } from '../constants/trainerImages';
+import { getSupportImageWithConfig, getGymLeaderImage } from '../constants/trainerImages';
 import { TypeIcon, TypeBadge, TYPE_COLORS } from '../components/TypeIcon';
 
 // ============================================================================
@@ -153,7 +153,7 @@ const getMoveDescription = (move) => {
 /**
  * Check if current turn triggers inspiration and apply bonuses
  */
-const checkAndApplyInspiration = (turn, selectedInspirations, currentStats, currentAptitudes, currentStrategyGrade = 'C') => {
+const checkAndApplyInspiration = (turn, selectedInspirations, currentStats, currentAptitudes, currentStrategyAptitudes = null) => {
   const inspirationTurns = [11, 23, 35, 47, 59];
 
   console.log('[checkAndApplyInspiration] Turn:', turn, 'Selected:', selectedInspirations?.length);
@@ -180,7 +180,7 @@ const checkAndApplyInspiration = (turn, selectedInspirations, currentStats, curr
   // Create copies to mutate
   const updatedStats = { ...currentStats };
   const updatedAptitudes = { ...currentAptitudes };
-  let updatedStrategyGrade = currentStrategyGrade;
+  const updatedStrategyAptitudes = { ...(currentStrategyAptitudes || {}) };
 
   const inspirationResults = selectedInspirations
     .filter(insp => insp && insp.inspirations)
@@ -207,7 +207,7 @@ const checkAndApplyInspiration = (turn, selectedInspirations, currentStats, curr
         };
       }
 
-      // Check for aptitude upgrade
+      // Check for type aptitude upgrade
       if (aptInsp && aptInsp.color && aptInsp.stars) {
         const upgradeChance = aptInsp.stars === 1 ? 0.03 : aptInsp.stars === 2 ? 0.10 : 0.20;
         if (Math.random() < upgradeChance) {
@@ -228,20 +228,24 @@ const checkAndApplyInspiration = (turn, selectedInspirations, currentStats, curr
         }
       }
 
-      // Check for strategy aptitude upgrade (same % chance as attack aptitudes)
-      if (strategyInsp && strategyInsp.stars) {
+      // Check for strategy aptitude upgrade (same % chance as type aptitudes)
+      // Now uses strategy name to upgrade specific strategy aptitude
+      if (strategyInsp && strategyInsp.name && strategyInsp.stars) {
         const upgradeChance = strategyInsp.stars === 1 ? 0.03 : strategyInsp.stars === 2 ? 0.10 : 0.20;
         if (Math.random() < upgradeChance) {
-          const currentIndex = aptitudeOrder.indexOf(updatedStrategyGrade);
+          const strategyName = strategyInsp.name;
+          const currentGrade = updatedStrategyAptitudes[strategyName] || 'C';
+          const currentIndex = aptitudeOrder.indexOf(currentGrade);
           if (currentIndex < aptitudeOrder.length - 1) { // Not already S
             const newGrade = aptitudeOrder[currentIndex + 1];
+            updatedStrategyAptitudes[strategyName] = newGrade;
             result.strategyUpgrade = {
-              from: updatedStrategyGrade,
+              strategy: strategyName,
+              from: currentGrade,
               to: newGrade,
               stars: strategyInsp.stars,
               chance: upgradeChance
             };
-            updatedStrategyGrade = newGrade;
           }
         }
       }
@@ -254,7 +258,7 @@ const checkAndApplyInspiration = (turn, selectedInspirations, currentStats, curr
     results: inspirationResults,
     updatedStats,
     updatedAptitudes,
-    updatedStrategyGrade
+    updatedStrategyAptitudes
   };
 
   console.log('[checkAndApplyInspiration] Result:', finalResult);
@@ -262,53 +266,25 @@ const checkAndApplyInspiration = (turn, selectedInspirations, currentStats, curr
 };
 
 /**
- * Get support card attributes with rarity-based defaults
+ * Get support card attributes using the card's actual trainingBonus values
+ * Must match backend career.js getSupportCardAttributes
  */
 const getSupportCardAttributes = (supportKey) => {
   const card = SUPPORT_CARDS[supportKey];
   if (!card) return null;
 
-  // Get rarity-based defaults
-  const rarityDefaults = {
-    'Legendary': {
-      initialFriendship: 40,
-      typeBonusTraining: 10,
-      generalBonusTraining: 2,
-      friendshipBonusTraining: 15,
-      appearanceChance: 0.25,
-      typeAppearancePriority: 3.0
-    },
-    'Rare': {
-      initialFriendship: 30,
-      typeBonusTraining: 8,
-      generalBonusTraining: 2,
-      friendshipBonusTraining: 12,
-      appearanceChance: 0.35,
-      typeAppearancePriority: 2.5
-    },
-    'Uncommon': {
-      initialFriendship: 20,
-      typeBonusTraining: 6,
-      generalBonusTraining: 2,
-      friendshipBonusTraining: 10,
-      appearanceChance: 0.40,
-      typeAppearancePriority: 2.0
-    },
-    'Common': {
-      initialFriendship: 10,
-      typeBonusTraining: 5,
-      generalBonusTraining: 1,
-      friendshipBonusTraining: 8,
-      appearanceChance: 0.45,
-      typeAppearancePriority: 1.5
-    }
-  };
-
-  const defaults = rarityDefaults[card.rarity] || rarityDefaults['Common'];
+  // Extract training bonuses from card's trainingBonus object
+  const trainingBonus = card.trainingBonus || {};
 
   return {
     ...card,
-    ...defaults,
+    // Map card's trainingBonus to the expected property names
+    typeBonusTraining: trainingBonus.typeMatch || 5,
+    generalBonusTraining: trainingBonus.otherStats || 1,
+    friendshipBonusTraining: trainingBonus.maxFriendshipTypeMatch || 10,
+    // Use card's actual appearance settings
+    appearanceChance: card.appearanceRate || 0.40,
+    typeAppearancePriority: 1 + (card.typeMatchPreference || 0.10) * 10,
     supportType: card.type || card.supportType
   };
 };
@@ -331,7 +307,8 @@ const CareerScreen = () => {
     generateTraining,
     triggerEvent,
     resolveEvent: resolveEventOnServer,
-    learnAbility: learnAbilityOnServer
+    learnAbility: learnAbilityOnServer,
+    changeStrategy
   } = useCareer();
 
   // Wrapper function that updates both local state and backend
@@ -352,6 +329,7 @@ const CareerScreen = () => {
   const [inspirationModal, setInspirationModal] = useState(null);
   // eslint-disable-next-line no-unused-vars
   const [pokeclockModal, setPokeclockModal] = useState(false);
+  const [showStrategySelector, setShowStrategySelector] = useState(false);
   const [isProcessingEvent, setIsProcessingEvent] = useState(false);
   const [isProcessingAction, setIsProcessingAction] = useState(false);
   const lastProcessedTurnRef = useRef(null);
@@ -400,41 +378,41 @@ const CareerScreen = () => {
   const applyEvolution = (fromName, toName, toStage) => {
     console.log('=== applyEvolution START ===');
     console.log('fromName:', fromName, 'toName:', toName, 'toStage:', toStage);
-    console.log('Current stats BEFORE evolution:', careerData.currentStats);
-
-    // Determine stat boost based on evolution chain
-    const baseName = careerData.basePokemonName || careerData.pokemon.name;
-    const evolutionChain = EVOLUTION_CHAINS[baseName];
-    const statBoost = evolutionChain && evolutionChain.stages === 2
-      ? EVOLUTION_CONFIG.STAT_BOOST.TWO_STAGE  // 5% for two-stage evolutions
-      : EVOLUTION_CONFIG.STAT_BOOST.ONE_STAGE; // 10% for one-stage evolutions
-
-    console.log('Base Pokemon:', baseName);
-    console.log('Evolution chain stages:', evolutionChain?.stages);
-    console.log('Applying stat boost:', (statBoost * 100) + '%');
-
-    const newStats = {};
-    for (const [stat, value] of Object.entries(careerData.currentStats)) {
-      newStats[stat] = Math.round(value * (1 + statBoost));
-    }
-    console.log('New stats AFTER boost:', newStats);
 
     // Get evolution data - if it doesn't exist, keep current Pokemon data but update name
     const evolutionData = POKEMON[toName];
     console.log('evolutionData exists?:', !!evolutionData);
 
-    if (!evolutionData) {
-      console.log('No evolution data found - using base Pokemon data with updated name');
-      // Keep current Pokemon data but update the name
-      const updatedPokemon = {
-        ...careerData.pokemon,
-        name: toName
-      };
+    setCareerData(prev => {
+      // Determine stat boost based on evolution chain (use prev for latest state)
+      const baseName = prev.basePokemonName || prev.pokemon.name;
+      const evolutionChain = EVOLUTION_CHAINS[baseName];
+      const statBoost = evolutionChain && evolutionChain.stages === 2
+        ? EVOLUTION_CONFIG.STAT_BOOST.TWO_STAGE  // 5% for two-stage evolutions
+        : EVOLUTION_CONFIG.STAT_BOOST.ONE_STAGE; // 10% for one-stage evolutions
 
-      console.log('Updated pokemon object:', updatedPokemon);
-      console.log('Setting currentStats to:', newStats);
+      console.log('Base Pokemon:', baseName);
+      console.log('Evolution chain stages:', evolutionChain?.stages);
+      console.log('Applying stat boost:', (statBoost * 100) + '%');
+      console.log('Current stats BEFORE evolution:', prev.currentStats);
 
-      setCareerData(prev => {
+      // Calculate new stats using prev (latest state)
+      const newStats = {};
+      for (const [stat, value] of Object.entries(prev.currentStats)) {
+        newStats[stat] = Math.round(value * (1 + statBoost));
+      }
+      console.log('New stats AFTER boost:', newStats);
+
+      if (!evolutionData) {
+        console.log('No evolution data found - using base Pokemon data with updated name');
+        // Keep current Pokemon data but update the name
+        const updatedPokemon = {
+          ...prev.pokemon,
+          name: toName
+        };
+
+        console.log('Updated pokemon object:', updatedPokemon);
+
         const updated = {
           ...prev,
           pokemon: updatedPokemon,
@@ -445,56 +423,53 @@ const CareerScreen = () => {
             turn: prev.turn,
             type: 'evolution',
             message: `${fromName} evolved into ${toName}!`
-          }, ...prev.turnLog]
+          }, ...(prev.turnLog || [])]
         };
         console.log('New careerData after evolution:', updated);
         return updated;
-      });
-
-      setEvolutionModal(null);
-      console.log('=== applyEvolution END ===');
-      return;
-    }
-
-    // Add signature move for final evolution
-    let signatureMove = null;
-    const chain = EVOLUTION_CHAINS[baseName];
-    if (chain) {
-      if ((chain.stages === 1 && toStage === 1) || (chain.stages === 2 && toStage === 2)) {
-        // Add signature move based on type
-        const moveMap = {
-          Fire: 'FireBlast',
-          Water: 'HydroPump',
-          Grass: 'SolarBeam',
-          Poison: 'PsychicBlast',
-          Electric: 'Thunder'
-        };
-        signatureMove = moveMap[evolutionData.primaryType];
       }
-    }
 
-    const newLearnableAbilities = [...careerData.pokemon.learnableAbilities];
-    if (signatureMove && !newLearnableAbilities.includes(signatureMove) && !careerData.knownAbilities.includes(signatureMove)) {
-      newLearnableAbilities.push(signatureMove);
-    }
+      // Add signature move for final evolution
+      let signatureMove = null;
+      const chain = EVOLUTION_CHAINS[baseName];
+      if (chain) {
+        if ((chain.stages === 1 && toStage === 1) || (chain.stages === 2 && toStage === 2)) {
+          // Add signature move based on type
+          const moveMap = {
+            Fire: 'FireBlast',
+            Water: 'HydroPump',
+            Grass: 'SolarBeam',
+            Poison: 'PsychicBlast',
+            Electric: 'Thunder'
+          };
+          signatureMove = moveMap[evolutionData.primaryType];
+        }
+      }
 
-    setCareerData(prev => ({
-      ...prev,
-      pokemon: {
-        ...evolutionData,
-        learnableAbilities: newLearnableAbilities
-      },
-      currentStats: newStats,
-      evolutionStage: toStage,
-      basePokemonName: prev.basePokemonName, // Preserve the original base name
-      turnLog: [{
-        turn: prev.turn,
-        type: 'evolution',
-        message: `${fromName} evolved into ${toName}!${signatureMove ? ` Learned signature move: ${signatureMove}!` : ''}`
-      }, ...prev.turnLog]
-    }));
+      const newLearnableAbilities = [...prev.pokemon.learnableAbilities];
+      if (signatureMove && !newLearnableAbilities.includes(signatureMove) && !prev.knownAbilities.includes(signatureMove)) {
+        newLearnableAbilities.push(signatureMove);
+      }
+
+      return {
+        ...prev,
+        pokemon: {
+          ...evolutionData,
+          learnableAbilities: newLearnableAbilities
+        },
+        currentStats: newStats,
+        evolutionStage: toStage,
+        basePokemonName: prev.basePokemonName, // Preserve the original base name
+        turnLog: [{
+          turn: prev.turn,
+          type: 'evolution',
+          message: `${fromName} evolved into ${toName}!${signatureMove ? ` Learned signature move: ${signatureMove}!` : ''}`
+        }, ...(prev.turnLog || [])]
+      };
+    });
 
     setEvolutionModal(null);
+    console.log('=== applyEvolution END ===');
   };
 
   /**
@@ -512,6 +487,12 @@ const CareerScreen = () => {
       if (!result) {
         console.error('Training failed - no result from server');
         return;
+      }
+
+      // Handle recovered state (action was already processed or state was stale)
+      if (result.recovered) {
+        console.log('State recovered after interruption, continuing with synced state');
+        return; // State has been synced, UI will update via careerData change
       }
 
       // Server has already updated careerData through CareerContext
@@ -549,7 +530,7 @@ const CareerScreen = () => {
         selectedInspirations,
         result.careerState.currentStats,
         result.careerState.pokemon.typeAptitudes,
-        result.careerState.pokemon.strategyGrade || 'C'
+        result.careerState.pokemon.strategyAptitudes
       );
 
       if (inspirationResult && inspirationResult.results.length > 0) {
@@ -606,6 +587,12 @@ const CareerScreen = () => {
         return;
       }
 
+      // Handle recovered state (action was already processed or state was stale)
+      if (result.recovered) {
+        console.log('State recovered after interruption, continuing with synced state');
+        return; // State has been synced, UI will update via careerData change
+      }
+
       // Server has already updated careerData through CareerContext
       // Now handle client-side presentation (modals, animations)
       const nextTurn = result.careerState.turn;
@@ -616,7 +603,7 @@ const CareerScreen = () => {
         selectedInspirations,
         result.careerState.currentStats,
         result.careerState.pokemon.typeAptitudes,
-        result.careerState.pokemon.strategyGrade || 'C'
+        result.careerState.pokemon.strategyAptitudes
       );
 
       if (inspirationResult && inspirationResult.results.length > 0) {
@@ -948,6 +935,82 @@ const CareerScreen = () => {
     );
   };
 
+  // Strategy Selector Modal - allows player to choose battle strategy
+  const StrategySelector = () => {
+    if (!showStrategySelector || !careerData?.pokemon?.strategyAptitudes) return null;
+
+    const strategies = ['Scaler', 'Nuker', 'Debuffer', 'Chipper', 'MadLad'];
+    const strategyDescriptions = {
+      Scaler: 'Buffs first, then highest damage moves',
+      Nuker: 'Saves stamina for powerful attacks',
+      Debuffer: 'Prioritizes status effects before damage',
+      Chipper: 'Rapid low-stamina attacks for pressure',
+      MadLad: 'Completely random move selection'
+    };
+
+    const handleStrategySelect = async (strategy) => {
+      const result = await changeStrategy(strategy);
+      if (result) {
+        setShowStrategySelector(false);
+      }
+    };
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onClick={() => setShowStrategySelector(false)}>
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="bg-white rounded-2xl p-4 max-w-sm w-full shadow-card-lg"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <h2 className="text-lg font-bold text-pocket-text mb-3 text-center">Select Battle Strategy</h2>
+
+          <div className="space-y-2">
+            {strategies.map(strategy => {
+              const grade = careerData.pokemon.strategyAptitudes[strategy] || 'C';
+              const isSelected = careerData.pokemon.strategy === strategy;
+
+              return (
+                <button
+                  key={strategy}
+                  onClick={() => handleStrategySelect(strategy)}
+                  className={`w-full p-3 rounded-xl border-2 transition-all text-left ${
+                    isSelected
+                      ? 'border-pocket-blue bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-400 bg-white'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-pocket-text">{strategy}</span>
+                      {isSelected && (
+                        <span className="text-xs text-pocket-blue font-bold">(Active)</span>
+                      )}
+                    </div>
+                    <span
+                      className="px-2 py-0.5 rounded-full text-xs font-bold text-white"
+                      style={{ backgroundColor: getAptitudeColor(grade) }}
+                    >
+                      {grade}
+                    </span>
+                  </div>
+                  <p className="text-xs text-pocket-text-light mt-1">{strategyDescriptions[strategy]}</p>
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            onClick={() => setShowStrategySelector(false)}
+            className="w-full mt-4 py-2 rounded-xl border-2 border-gray-300 text-pocket-text font-semibold hover:bg-gray-100 transition-colors"
+          >
+            Cancel
+          </button>
+        </motion.div>
+      </div>
+    );
+  };
+
   const InspirationModal = () => {
     console.log('[InspirationModal] Render, modal state:', inspirationModal);
     if (!inspirationModal) return null;
@@ -1003,7 +1066,7 @@ const CareerScreen = () => {
                 {result.strategyUpgrade && (
                   <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
                     <div className="text-orange-700 font-bold mb-1 text-sm">
-                      Strategy Aptitude: {result.strategyUpgrade.from} → {result.strategyUpgrade.to}
+                      {result.strategyUpgrade.strategy} Strategy: {result.strategyUpgrade.from} → {result.strategyUpgrade.to}
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-pocket-text-light">
@@ -1142,9 +1205,11 @@ const CareerScreen = () => {
                   <h4 className="font-bold text-gray-800 mb-1">Strategies</h4>
                   <p className="text-sm ml-2">Each Pokemon has a preferred battle strategy:</p>
                   <div className="text-sm ml-2 space-y-1">
-                    <p><strong>Nuker:</strong> 40% faster warmup, 40% slower cooldown</p>
-                    <p><strong>Balanced:</strong> 10% faster on both</p>
-                    <p><strong>Scaler:</strong> 40% slower warmup, 40% faster cooldown</p>
+                    <p><strong>Scaler:</strong> Buffs first, then highest damage moves</p>
+                    <p><strong>Nuker:</strong> Saves stamina for powerful attacks</p>
+                    <p><strong>Debuffer:</strong> Prioritizes status effects</p>
+                    <p><strong>Chipper:</strong> Rapid low-stamina attacks</p>
+                    <p><strong>MadLad:</strong> Random move selection</p>
                   </div>
                   <p className="text-sm ml-2 mt-1">Strategy aptitude grade affects stamina costs.</p>
                 </div>
@@ -1306,10 +1371,14 @@ const CareerScreen = () => {
                   </div>
                   <div className="flex items-center gap-2 text-xs text-gray-600">
                     <TypeBadge type={careerData.pokemon.primaryType} size={14} />
-                    {careerData.pokemon.strategy && (
-                      <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-gray-600 text-white">
-                        {careerData.pokemon.strategy} <span style={{ color: getAptitudeColor(careerData.pokemon.strategyGrade) }}>({careerData.pokemon.strategyGrade})</span>
-                      </span>
+                    {careerData.pokemon.strategyAptitudes && (
+                      <button
+                        onClick={() => setShowStrategySelector(true)}
+                        className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-gray-600 text-white hover:bg-gray-500 transition-colors cursor-pointer"
+                        title="Click to change strategy"
+                      >
+                        {careerData.pokemon.strategy || 'Select'} <span style={{ color: getAptitudeColor(careerData.pokemon.strategyGrade || 'C') }}>({careerData.pokemon.strategyGrade || '?'})</span>
+                      </button>
                     )}
                   </div>
                   {/* Type Aptitudes - Show all 6 types */}
@@ -1574,8 +1643,8 @@ const CareerScreen = () => {
                           const mult = careerData.pendingEvent.difficulty * turnScaling;
 
                           const eventOpponent = {
-                            name: 'Wandering Champion',
-                            pokemon: eventPokemon.name,
+                            name: eventPokemon.name,
+                            trainerName: 'Wandering Champion',
                             primaryType: eventPokemon.primaryType,
                             stats: {
                               HP: Math.floor(eventPokemon.baseStats.HP * mult),
@@ -2135,6 +2204,7 @@ const CareerScreen = () => {
                     const failChance = calculateFailChance(careerData.energy, stat);
 
                     let statGain = GAME_CONFIG.TRAINING.BASE_STAT_GAINS[stat];
+                    let energyRegenBonus = 0; // Bonus energy for Speed training from support cards
                     option.supports.forEach(supportName => {
                       const support = getSupportCardAttributes(supportName);
                       if (!support) return;
@@ -2148,6 +2218,14 @@ const CareerScreen = () => {
                         statGain += isMaxFriendship ? support.friendshipBonusTraining : support.typeBonusTraining;
                       } else {
                         statGain += support.generalBonusTraining;
+                      }
+
+                      // Collect energy regen bonus for Speed training
+                      if (stat === 'Speed') {
+                        const supportCard = SUPPORT_CARDS[supportName];
+                        if (supportCard?.specialEffect?.energyRegenBonus) {
+                          energyRegenBonus += supportCard.specialEffect.energyRegenBonus;
+                        }
                       }
                     });
 
@@ -2217,7 +2295,7 @@ const CareerScreen = () => {
                           <span className="text-green-600 font-bold"> +{statGain}</span>
                         </div>
                         <div className="text-[9px] sm:text-xs text-gray-600 mb-0.5 sm:mb-1">
-                          {energyCost > 0 ? `-${energyCost}` : `+${Math.abs(energyCost)}`} Energy
+                          {energyCost > 0 ? `-${energyCost}` : `+${Math.abs(energyCost)}`}{energyRegenBonus > 0 ? <span className="text-green-600 font-bold">+{energyRegenBonus}</span> : ''} Energy
                         </div>
                         <div className="text-[9px] sm:text-xs font-bold mb-0.5 sm:mb-1" style={{ color: failChance === 0 ? '#16a34a' : failChance <= 25 ? '#eab308' : '#ef4444' }}>
                           Fail: {failChance}%
@@ -2245,7 +2323,7 @@ const CareerScreen = () => {
                               const support = getSupportCardAttributes(supportName);
                               const initialFriendship = support?.initialFriendship || 0;
                               const friendship = careerData.supportFriendships?.[supportName] ?? initialFriendship;
-                              const trainerImage = getSupportImageFromCardName(supportName);
+                              const { image: trainerImage, config: faceConfig } = getSupportImageWithConfig(supportName);
                               return (
                                 <div key={supportName} className="bg-blue-100 text-blue-800 text-[8px] sm:text-xs px-0.5 sm:px-1 py-0.5 rounded flex items-center gap-1">
                                   {trainerImage && (
@@ -2253,9 +2331,9 @@ const CareerScreen = () => {
                                       <img
                                         src={trainerImage}
                                         alt={supportName}
-                                        className="w-full h-full object-none object-top"
+                                        className="w-full h-full object-cover"
                                         style={{
-                                          transform: 'scale(1.8)',
+                                          transform: `scale(${faceConfig.scale}) translate(${faceConfig.offsetX}%, ${faceConfig.offsetY}%)`,
                                           transformOrigin: 'top center'
                                         }}
                                       />
@@ -2437,6 +2515,7 @@ const CareerScreen = () => {
       {/* MODALS */}
       <EvolutionModal />
       <InspirationModal />
+      <StrategySelector />
       <PokeclockModal />
       <HelpModal />
     </>

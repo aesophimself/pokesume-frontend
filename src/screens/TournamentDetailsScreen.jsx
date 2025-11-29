@@ -9,7 +9,7 @@
  * - Registered players list
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Trophy, Clock, Users, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useGame } from '../contexts/GameContext';
@@ -46,6 +46,39 @@ const TournamentDetailsScreen = () => {
   const { trainedPokemon } = useInventory();
 
   const [selectedTeam, setSelectedTeam] = useState([null, null, null]);
+  const [countdown, setCountdown] = useState('');
+
+  // Calculate countdown to tournament start
+  const getCountdown = (startTime) => {
+    const now = new Date();
+    const start = new Date(startTime);
+    const diff = start - now;
+
+    if (diff <= 0) return 'Started';
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    if (days > 0) return `${days}d ${hours}h ${minutes}m`;
+    if (hours > 0) return `${hours}h ${minutes}m ${seconds}s`;
+    return `${minutes}m ${seconds}s`;
+  };
+
+  // Update countdown every second
+  useEffect(() => {
+    if (!selectedTournament?.start_time) return;
+
+    const updateCountdown = () => {
+      setCountdown(getCountdown(selectedTournament.start_time));
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+
+    return () => clearInterval(interval);
+  }, [selectedTournament?.start_time]);
 
   const userHasRosters = trainedPokemon.length >= 3;
   const canEnter = user && userHasRosters &&
@@ -163,10 +196,16 @@ const TournamentDetailsScreen = () => {
               </p>
             </div>
             <div className="bg-pocket-bg rounded-xl p-3">
-              <span className="text-pocket-text-light text-xs">Start Time</span>
+              <span className="text-pocket-text-light text-xs">
+                {selectedTournament?.status === 'in_progress' || selectedTournament?.status === 'completed'
+                  ? 'Started'
+                  : 'Starts In'}
+              </span>
               <p className="font-bold text-pocket-text mt-1 flex items-center gap-1">
                 <Clock size={14} />
-                {new Date(selectedTournament?.start_time).toLocaleDateString()}
+                {selectedTournament?.status === 'in_progress' || selectedTournament?.status === 'completed'
+                  ? new Date(selectedTournament?.start_time).toLocaleDateString()
+                  : countdown}
               </p>
             </div>
             <div className="bg-pocket-bg rounded-xl p-3">

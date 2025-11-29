@@ -55,7 +55,7 @@ export const GameProvider = ({ children }) => {
   const [tournaments, setTournaments] = useState([]);
   const [selectedTournament, setSelectedTournament] = useState(null);
   const [tournamentBracket, setTournamentBracket] = useState(null);
-  const [tournamentsLoading, setTournamentsLoading] = useState(false);
+  const [tournamentsLoading, setTournamentsLoading] = useState(true);
   const [selectedTeam, setSelectedTeam] = useState([null, null, null]);
   const [tournamentDetails, setTournamentDetails] = useState(null);
   const [selectedReplay, setSelectedReplay] = useState(null);

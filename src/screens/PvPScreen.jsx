@@ -203,7 +203,10 @@ const PvPScreen = () => {
                 <div className="space-y-3">
                   {matches.map((match) => {
                     const isPlayer1 = match.player1_id === user?.id;
-                    const won = match.winner_id === user?.id;
+                    // Use battles_won to determine winner (handles AI matches where winner_id may be null)
+                    const yourBattlesWon = isPlayer1 ? (match.battles_won_p1 || 0) : (match.battles_won_p2 || 0);
+                    const opponentBattlesWon = isPlayer1 ? (match.battles_won_p2 || 0) : (match.battles_won_p1 || 0);
+                    const won = yourBattlesWon > opponentBattlesWon;
                     const opponentName = isPlayer1
                       ? (match.player2_username || 'Trainer')
                       : match.player1_username;
@@ -213,9 +216,6 @@ const PvPScreen = () => {
                     const ratingChange = isPlayer1
                       ? match.player1_rating_change
                       : match.player2_rating_change;
-                    // Show score from user's perspective (your wins - opponent wins)
-                    const yourBattlesWon = isPlayer1 ? (match.battles_won_p1 || 0) : (match.battles_won_p2 || 0);
-                    const opponentBattlesWon = isPlayer1 ? (match.battles_won_p2 || 0) : (match.battles_won_p1 || 0);
 
                     return (
                       <motion.div

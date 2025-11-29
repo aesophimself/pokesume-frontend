@@ -98,14 +98,44 @@ const SupportSelectionScreen = () => {
     return upgraded;
   };
 
-  // Apply strategy grade upgrade
-  const applyStrategyGradeUpgrade = (currentGrade, upgrades) => {
-    const gradeOrder = ['F', 'E', 'D', 'C', 'B', 'A', 'S'];
-    const currentIndex = gradeOrder.indexOf(currentGrade);
-    if (currentIndex === -1) return currentGrade;
+  // Apply strategy grade upgrade to all strategy aptitudes
+  const applyStrategyAptitudesUpgrade = (strategyAptitudes, upgrades) => {
+    if (!strategyAptitudes || upgrades === 0) return strategyAptitudes;
 
-    const newIndex = Math.min(currentIndex + upgrades, gradeOrder.length - 1);
-    return gradeOrder[newIndex];
+    const gradeOrder = ['F', 'E', 'D', 'C', 'B', 'A', 'S'];
+    const upgraded = { ...strategyAptitudes };
+
+    // Upgrade each strategy aptitude
+    for (const [strategy, grade] of Object.entries(upgraded)) {
+      const currentIndex = gradeOrder.indexOf(grade);
+      if (currentIndex !== -1) {
+        const newIndex = Math.min(currentIndex + upgrades, gradeOrder.length - 1);
+        upgraded[strategy] = gradeOrder[newIndex];
+      }
+    }
+
+    return upgraded;
+  };
+
+  // Derive best strategy and grade from strategyAptitudes
+  const deriveStrategyFromAptitudes = (strategyAptitudes) => {
+    const gradeRank = { 'S': 6, 'A': 5, 'B': 4, 'C': 3, 'D': 2, 'E': 1, 'F': 0 };
+    let bestStrategy = 'Chipper';
+    let bestGrade = 'C';
+    let bestRank = 0;
+
+    if (strategyAptitudes) {
+      for (const [strategy, grade] of Object.entries(strategyAptitudes)) {
+        const rank = gradeRank[grade] || 0;
+        if (rank > bestRank) {
+          bestStrategy = strategy;
+          bestGrade = grade;
+          bestRank = rank;
+        }
+      }
+    }
+
+    return { strategy: bestStrategy, strategyGrade: bestGrade };
   };
 
   const [typeFilter, setTypeFilter] = useState('All');
@@ -163,31 +193,39 @@ const SupportSelectionScreen = () => {
     // Calculate inspiration bonuses (2 stars = 1 grade upgrade)
     const { aptitudeUpgrades, strategyUpgrades } = calculateInspirationBonuses();
 
-    // Apply inspiration upgrades to aptitudes
+    // Apply inspiration upgrades to type aptitudes
     const upgradedAptitudes = applyGradeUpgrades(
       pokemonData.typeAptitudes || {},
       aptitudeUpgrades
     );
 
-    // Apply inspiration upgrades to strategy grade
-    const upgradedStrategyGrade = applyStrategyGradeUpgrade(
-      pokemonData.strategyGrade || 'C',
+    // Apply inspiration upgrades to strategy aptitudes
+    const upgradedStrategyAptitudes = applyStrategyAptitudesUpgrade(
+      pokemonData.strategyAptitudes || {},
       strategyUpgrades
     );
+
+    // Derive default strategy from best aptitude
+    const { strategy: defaultStrategy, strategyGrade: defaultStrategyGrade } =
+      deriveStrategyFromAptitudes(upgradedStrategyAptitudes);
 
     const pokemon = {
       name: selectedPokemon,
       ...pokemonData,
       typeAptitudes: upgradedAptitudes,
-      strategyGrade: upgradedStrategyGrade
+      strategyAptitudes: upgradedStrategyAptitudes,
+      strategy: defaultStrategy,
+      strategyGrade: defaultStrategyGrade
     };
 
     console.log('[SupportSelectionScreen] Starting career with inspiration bonuses:', {
       originalAptitudes: pokemonData.typeAptitudes,
       upgradedAptitudes,
       aptitudeUpgrades,
-      originalStrategyGrade: pokemonData.strategyGrade,
-      upgradedStrategyGrade,
+      originalStrategyAptitudes: pokemonData.strategyAptitudes,
+      upgradedStrategyAptitudes,
+      defaultStrategy,
+      defaultStrategyGrade,
       strategyUpgrades
     });
 

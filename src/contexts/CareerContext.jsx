@@ -15,6 +15,7 @@ import {
   apiCompleteCareer,
   apiAbandonCareer,
   apiUsePokeclock,
+  apiChangeStrategy,
   apiTrainStat,
   apiRest,
   apiGenerateTraining,
@@ -299,44 +300,99 @@ export const CareerProvider = ({ children }) => {
     }
   };
 
-  // Server-authoritative training
+  // Change the Pokemon's active battle strategy
+  const changeStrategy = async (strategy) => {
+    if (!authToken) return null;
+
+    try {
+      const result = await apiChangeStrategy(strategy, authToken);
+      if (result && result.success) {
+        updateCareerFromServer(result.careerState);
+        return result;
+      }
+      return null;
+    } catch (error) {
+      console.error('Failed to change strategy:', error);
+      setCareerError(error.message);
+      return null;
+    }
+  };
+
+  // Server-authoritative training with state version for idempotency
   const trainStat = async (stat) => {
     if (!authToken) return null;
 
     setCareerLoading(true);
     setCareerError(null);
     try {
-      const result = await apiTrainStat(stat, authToken);
+      const expectedVersion = careerData?.stateVersion;
+      const result = await apiTrainStat(stat, expectedVersion, authToken);
+
       if (result && result.success) {
         updateCareerFromServer(result.careerState);
         return result;
       }
+
+      // Handle recoverable errors - sync state from server response
+      if (result && result.currentState) {
+        console.log('Recovering from state mismatch, syncing with server state');
+        updateCareerFromServer(result.currentState);
+        return { success: false, recovered: true, code: result.code };
+      }
+
+      // Network error - reload state from server
+      if (result && result.code === 'NETWORK_ERROR') {
+        console.log('Network error during training, reloading career state');
+        await loadActiveCareer();
+        return { success: false, recovered: true, code: 'NETWORK_ERROR' };
+      }
+
       return null;
     } catch (error) {
       console.error('Failed to train stat:', error);
       setCareerError(error.message);
+      // Attempt to reload career state on any error
+      await loadActiveCareer();
       return null;
     } finally {
       setCareerLoading(false);
     }
   };
 
-  // Server-authoritative rest
+  // Server-authoritative rest with state version for idempotency
   const restOnServer = async () => {
     if (!authToken) return null;
 
     setCareerLoading(true);
     setCareerError(null);
     try {
-      const result = await apiRest(authToken);
+      const expectedVersion = careerData?.stateVersion;
+      const result = await apiRest(expectedVersion, authToken);
+
       if (result && result.success) {
         updateCareerFromServer(result.careerState);
         return result;
       }
+
+      // Handle recoverable errors - sync state from server response
+      if (result && result.currentState) {
+        console.log('Recovering from state mismatch, syncing with server state');
+        updateCareerFromServer(result.currentState);
+        return { success: false, recovered: true, code: result.code };
+      }
+
+      // Network error - reload state from server
+      if (result && result.code === 'NETWORK_ERROR') {
+        console.log('Network error during rest, reloading career state');
+        await loadActiveCareer();
+        return { success: false, recovered: true, code: 'NETWORK_ERROR' };
+      }
+
       return null;
     } catch (error) {
       console.error('Failed to rest:', error);
       setCareerError(error.message);
+      await loadActiveCareer();
       return null;
     } finally {
       setCareerLoading(false);
@@ -458,6 +514,7 @@ export const CareerProvider = ({ children }) => {
     completeCareer,
     abandonCareer,
     consumePokeclock,
+    changeStrategy,
 
     // Server-authoritative operations
     trainStat,

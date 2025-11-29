@@ -2,7 +2,7 @@
  * TypeIcon Component
  *
  * Displays Pokemon type icons using SVG images from pokeresources gen8 icons.
- * Supports all game types: Fire, Water, Grass, Electric, Psychic, Normal, Fighting, Poison
+ * Supports all game types: Fire, Water, Grass, Electric, Psychic, Normal, Fighting
  */
 
 import React from 'react';
@@ -15,8 +15,7 @@ const TYPE_ICONS = {
   Electric: '/images/types/electric.svg',
   Psychic: '/images/types/psychic.svg',
   Normal: '/images/types/normal.svg',
-  Fighting: '/images/types/fighting.svg',
-  Poison: '/images/types/poison.svg'
+  Fighting: '/images/types/fighting.svg'
 };
 
 // Background colors for each type (for the badge background)
@@ -27,8 +26,7 @@ const TYPE_COLORS = {
   Electric: '#F8D030',
   Psychic: '#F85888',
   Normal: '#A8A878',
-  Fighting: '#C03028',
-  Poison: '#A040A0'
+  Fighting: '#C03028'
 };
 
 /**

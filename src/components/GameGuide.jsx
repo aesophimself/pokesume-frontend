@@ -184,11 +184,10 @@ const GameGuide = ({ isModal = false, onClose, showHeader = true }) => {
 
         <SubSection title="Strategy Types">
           <div className="bg-pocket-bg rounded p-2 space-y-1">
-            <p><strong className="text-red-500">Nuker:</strong> -30% warmup, +30% cooldown (burst damage, front-loaded)</p>
-            <p><strong className="text-blue-500">Balanced:</strong> -10% both warmup and cooldown (consistent)</p>
-            <p><strong className="text-green-500">Scaler:</strong> +20% warmup, -20% cooldown (sustained DPS)</p>
-            <p><strong className="text-purple-500">Chipper:</strong> -50% warmup, -30% cooldown (rapid attacks)</p>
-            <p><strong className="text-yellow-500">Debuffer:</strong> Standard timing, prioritizes status effects</p>
+            <p><strong className="text-green-500">Scaler:</strong> Buffs first, then uses highest damage moves</p>
+            <p><strong className="text-red-500">Nuker:</strong> Saves stamina for most powerful attacks</p>
+            <p><strong className="text-yellow-500">Debuffer:</strong> Prioritizes status effects before damage</p>
+            <p><strong className="text-purple-500">Chipper:</strong> Rapid low-stamina attacks for sustained pressure</p>
             <p><strong className="text-gray-500">MadLad:</strong> Completely random move selection</p>
           </div>
           <p className="mt-1 text-xs"><strong>Strategy Grade</strong> (F-UU) affects stamina costs - better grade = lower ability costs.</p>

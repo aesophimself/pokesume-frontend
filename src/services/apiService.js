@@ -864,11 +864,37 @@ export const apiUsePokeclock = async (authToken) => {
   }
 };
 
+export const apiChangeStrategy = async (strategy, authToken) => {
+  if (!authToken) return null;
+
+  try {
+    const response = await fetch(`${API_URL}/career/change-strategy`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ strategy })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to change strategy');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Change strategy error:', error);
+    return null;
+  }
+};
+
 // ============================================================================
 // CAREER API - Server-Authoritative Actions
 // ============================================================================
 
-export const apiTrainStat = async (stat, authToken) => {
+export const apiTrainStat = async (stat, expectedVersion, authToken) => {
   if (!authToken) return null;
 
   try {
@@ -878,23 +904,27 @@ export const apiTrainStat = async (stat, authToken) => {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${authToken}`
       },
-      body: JSON.stringify({ stat })
+      body: JSON.stringify({ stat, expectedVersion })
     });
 
     const data = await response.json();
 
     if (!response.ok) {
+      // Return error with recovery state if available
+      if (data.code === 'VERSION_MISMATCH' || data.code === 'INVALID_SELECTION') {
+        return { success: false, error: data.error, code: data.code, currentState: data.currentState };
+      }
       throw new Error(data.error || 'Failed to process training');
     }
 
     return data;
   } catch (error) {
     console.error('Train stat error:', error);
-    return null;
+    return { success: false, error: error.message, code: 'NETWORK_ERROR' };
   }
 };
 
-export const apiRest = async (authToken) => {
+export const apiRest = async (expectedVersion, authToken) => {
   if (!authToken) return null;
 
   try {
@@ -903,19 +933,23 @@ export const apiRest = async (authToken) => {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${authToken}`
-      }
+      },
+      body: JSON.stringify({ expectedVersion })
     });
 
     const data = await response.json();
 
     if (!response.ok) {
+      if (data.code === 'VERSION_MISMATCH') {
+        return { success: false, error: data.error, code: data.code, currentState: data.currentState };
+      }
       throw new Error(data.error || 'Failed to process rest');
     }
 
     return data;
   } catch (error) {
     console.error('Rest error:', error);
-    return null;
+    return { success: false, error: error.message, code: 'NETWORK_ERROR' };
   }
 };
 

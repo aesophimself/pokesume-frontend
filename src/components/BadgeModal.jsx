@@ -5,9 +5,9 @@
  */
 
 import React from 'react';
-import { Trophy, X } from 'lucide-react';
+import { Trophy, X, Sparkles } from 'lucide-react';
 
-const BadgeModal = ({ isOpen, onClose, badge, gymLeaderName }) => {
+const BadgeModal = ({ isOpen, onClose, badge, gymLeaderName, primosReward }) => {
   if (!isOpen || !badge) return null;
 
   return (
@@ -64,6 +64,15 @@ const BadgeModal = ({ isOpen, onClose, badge, gymLeaderName }) => {
               {badge.region} Region
             </p>
           </div>
+
+          {/* Primos reward */}
+          {primosReward > 0 && (
+            <div className="bg-purple-100 rounded-lg p-3 mb-4 flex items-center justify-center gap-2">
+              <Sparkles className="text-purple-600" size={20} />
+              <span className="text-purple-800 font-bold">+{primosReward} Primos</span>
+              <Sparkles className="text-purple-600" size={20} />
+            </div>
+          )}
 
           {/* Continue button */}
           <button

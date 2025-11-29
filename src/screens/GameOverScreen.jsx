@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { ArrowLeft, Star, XCircle } from 'lucide-react';
+import { ArrowLeft, Star, XCircle, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useGame } from '../contexts/GameContext';
 import { useInventory } from '../contexts/InventoryContext';
@@ -19,41 +19,12 @@ import {
 import { TypeBadge } from '../components/TypeIcon';
 
 /**
- * Generate inspirations based on final Pokemon stats, aptitudes, and strategy
+ * Generate inspirations based on final Pokemon stats, aptitudes, and strategy aptitudes
+ * Picks a RANDOM stat, RANDOM type aptitude, and RANDOM strategy aptitude
+ * Determines stars based on value/grade with identical weighting for aptitudes and strategies
  */
-const generateInspirations = (stats, aptitudes, strategyGrade = 'C') => {
-  // Find the highest stat for stat inspiration
-  const statEntries = Object.entries(stats);
-  const highestStat = statEntries.reduce((best, [name, value]) => {
-    return value > best.value ? { name, value } : best;
-  }, { name: statEntries[0][0], value: statEntries[0][1] });
-
-  // Calculate stars based on stat value
-  const statStars = highestStat.value >= 400 ? 3 : highestStat.value >= 250 ? 2 : 1;
-
-  // Find best aptitude for aptitude inspiration
-  const aptitudeOrder = ['F', 'E', 'D', 'C', 'B', 'A', 'S'];
-  const aptitudeEntries = Object.entries(aptitudes || {});
-  const bestAptitude = aptitudeEntries.reduce((best, [color, grade]) => {
-    const currentIdx = aptitudeOrder.indexOf(grade);
-    const bestIdx = aptitudeOrder.indexOf(best.grade);
-    return currentIdx > bestIdx ? { color, grade } : best;
-  }, { color: aptitudeEntries[0]?.[0] || 'Red', grade: aptitudeEntries[0]?.[1] || 'D' });
-
-  // Calculate stars based on aptitude grade
-  const aptitudeStars = ['S', 'A'].includes(bestAptitude.grade) ? 3 :
-                        ['B', 'C'].includes(bestAptitude.grade) ? 2 : 1;
-
-  // Calculate strategy stars based on strategy grade (same distribution as aptitudes)
-  const strategyIndex = aptitudeOrder.indexOf(strategyGrade);
-  let strategyStars = 1;
-  if (strategyIndex <= 3) { // F, E, D, C
-    strategyStars = 1;
-  } else if (strategyIndex === 4) { // B
-    strategyStars = 2;
-  } else { // A, S
-    strategyStars = 3;
-  }
+const generateInspirations = (stats, aptitudes, strategyAptitudes = null) => {
+  if (!stats || Object.keys(stats).length === 0) return null;
 
   const colorToType = {
     'Red': 'Fire',
@@ -64,22 +35,75 @@ const generateInspirations = (stats, aptitudes, strategyGrade = 'C') => {
     'Orange': 'Fighting'
   };
 
+  const aptitudeOrder = ['F', 'E', 'D', 'C', 'B', 'A', 'S'];
+
+  // Helper function to determine stars from grade (same weighting for both aptitudes and strategies)
+  // F-C grade: 75% chance 1 star, 25% chance 2 star
+  // B-S grade: 50% chance 1 star, 30% chance 2 star, 20% chance 3 star
+  const getStarsFromGrade = (grade) => {
+    const index = aptitudeOrder.indexOf(grade);
+    const roll = Math.random();
+
+    if (index <= 3) {
+      // F, E, D, C: 75% 1-star, 25% 2-star
+      return roll < 0.75 ? 1 : 2;
+    } else {
+      // B, A, S: 50% 1-star, 30% 2-star, 20% 3-star
+      if (roll < 0.50) return 1;
+      if (roll < 0.80) return 2;
+      return 3;
+    }
+  };
+
+  // Pick a RANDOM stat
+  const statNames = ['HP', 'Attack', 'Defense', 'Instinct', 'Speed'];
+  const randomStat = statNames[Math.floor(Math.random() * statNames.length)];
+  const statValue = stats[randomStat];
+
+  if (statValue === undefined) return null;
+
+  // Determine stat stars based on stat value
+  const statStars = statValue >= 400 ? 3 : statValue >= 250 ? 2 : 1;
+
+  // Pick a RANDOM type aptitude
+  const aptitudeKeys = Object.keys(aptitudes || {});
+  let aptitudeResult = { name: 'Fire', color: 'Red', grade: 'D', stars: 1 };
+
+  if (aptitudeKeys.length > 0) {
+    const randomAptitudeKey = aptitudeKeys[Math.floor(Math.random() * aptitudeKeys.length)];
+    const aptitudeGrade = aptitudes[randomAptitudeKey];
+    aptitudeResult = {
+      name: colorToType[randomAptitudeKey] || randomAptitudeKey,
+      color: randomAptitudeKey,
+      grade: aptitudeGrade,
+      stars: getStarsFromGrade(aptitudeGrade)
+    };
+  }
+
+  // Pick a RANDOM strategy from strategyAptitudes (same logic as type aptitudes)
+  let strategyResult = { name: 'Chipper', grade: 'C', stars: 1 };
+
+  if (strategyAptitudes && typeof strategyAptitudes === 'object') {
+    const strategyKeys = Object.keys(strategyAptitudes);
+    if (strategyKeys.length > 0) {
+      const randomStrategyKey = strategyKeys[Math.floor(Math.random() * strategyKeys.length)];
+      const strategyGrade = strategyAptitudes[randomStrategyKey];
+      strategyResult = {
+        name: randomStrategyKey,
+        grade: strategyGrade,
+        stars: getStarsFromGrade(strategyGrade)
+      };
+    }
+  }
+
   return {
     stat: {
-      name: highestStat.name,
-      value: highestStat.value,
+      name: randomStat,
+      value: statValue,
       stars: statStars
     },
-    aptitude: {
-      name: colorToType[bestAptitude.color] || bestAptitude.color,
-      color: bestAptitude.color,
-      grade: bestAptitude.grade,
-      stars: aptitudeStars
-    },
-    strategy: {
-      grade: strategyGrade,
-      stars: strategyStars
-    }
+    aptitude: aptitudeResult,
+    strategy: strategyResult
   };
 };
 
@@ -109,7 +133,7 @@ const GameOverScreen = () => {
       ? generateInspirations(
           completedCareerData.currentStats,
           completedCareerData.pokemon.typeAptitudes,
-          completedCareerData.pokemon.strategyGrade || 'C'
+          completedCareerData.pokemon.strategyAptitudes
         )
       : null);
 
@@ -222,6 +246,13 @@ const GameOverScreen = () => {
           <p className="text-white/70 text-xs mt-1">
             Turn {finalTurn} | Gyms Defeated: {gymsDefeated}/5
           </p>
+          {completedCareerData.primosReward > 0 && (
+            <div className="mt-3 bg-white/20 rounded-lg px-4 py-2 inline-flex items-center gap-2">
+              <Sparkles className="text-white" size={18} />
+              <span className="text-white font-bold">+{completedCareerData.primosReward} Primos</span>
+              <Sparkles className="text-white" size={18} />
+            </div>
+          )}
         </motion.div>
 
         {/* Pokemon Card */}
@@ -320,7 +351,7 @@ const GameOverScreen = () => {
               {inspirations.strategy && (
                 <div className="bg-purple-50 rounded-xl p-3 border-2 border-purple-200">
                   <div className="text-[10px] font-bold text-type-psychic mb-1">STRATEGY</div>
-                  <div className="font-bold text-pocket-text mb-1 text-sm">Aptitude</div>
+                  <div className="font-bold text-pocket-text mb-1 text-sm">{inspirations.strategy.name}</div>
                   <div className="text-xs text-pocket-text-light mb-2">Grade: {inspirations.strategy.grade}</div>
                   <div className="flex gap-0.5">
                     {[...Array(inspirations.strategy.stars)].map((_, i) => (
