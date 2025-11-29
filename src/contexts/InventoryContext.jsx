@@ -12,9 +12,11 @@ import {
   apiGetPokemonInventory,
   apiAddPokemonToInventory,
   apiDeletePokemonFromInventory,
+  apiLimitBreakPokemon,
   apiGetSupportInventory,
   apiAddSupportToInventory,
   apiDeleteSupportFromInventory,
+  apiLimitBreakSupport,
   apiGetTrainedPokemon,
   apiDeleteTrainedPokemon,
   apiGetPrimos,
@@ -135,6 +137,25 @@ export const InventoryProvider = ({ children }) => {
     }
   };
 
+  // Limit break Pokemon using shards
+  const limitBreakPokemonWithShards = async (pokemonId) => {
+    if (!authToken) return null;
+
+    try {
+      const result = await apiLimitBreakPokemon(pokemonId, authToken);
+      if (result && result.success) {
+        // Update local shard count
+        setLimitBreakShards(result.remainingShards);
+        // Refresh inventory to get updated limit break level
+        await loadPokemonInventory();
+      }
+      return result;
+    } catch (error) {
+      console.error('Failed to limit break Pokemon:', error);
+      return null;
+    }
+  };
+
   // Load Support inventory
   const loadSupportInventory = async (limit = 100, offset = 0) => {
     if (!authToken) return;
@@ -189,6 +210,25 @@ export const InventoryProvider = ({ children }) => {
       return result;
     } catch (error) {
       console.error('Failed to delete Support:', error);
+      return null;
+    }
+  };
+
+  // Limit break Support using shards
+  const limitBreakSupportWithShards = async (supportId) => {
+    if (!authToken) return null;
+
+    try {
+      const result = await apiLimitBreakSupport(supportId, authToken);
+      if (result && result.success) {
+        // Update local shard count
+        setLimitBreakShards(result.remainingShards);
+        // Refresh inventory to get updated limit break level
+        await loadSupportInventory();
+      }
+      return result;
+    } catch (error) {
+      console.error('Failed to limit break Support:', error);
       return null;
     }
   };
@@ -306,6 +346,9 @@ export const InventoryProvider = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authToken, user]);
 
+  // Shard cost constant
+  const SHARD_COST_PER_LIMIT_BREAK = 10;
+
   const value = {
     // Pokemon inventory
     pokemonInventory,
@@ -316,6 +359,7 @@ export const InventoryProvider = ({ children }) => {
     addPokemon,
     deletePokemon,
     getPokemonLimitBreak,
+    limitBreakPokemonWithShards,
 
     // Support inventory
     supportInventory,
@@ -326,6 +370,7 @@ export const InventoryProvider = ({ children }) => {
     addSupport,
     deleteSupport,
     getSupportLimitBreak,
+    limitBreakSupportWithShards,
 
     // Trained Pokemon
     trainedPokemon,
@@ -343,7 +388,8 @@ export const InventoryProvider = ({ children }) => {
 
     // Limit break helpers
     getLimitBreakStatBonus,
-    MAX_LIMIT_BREAK
+    MAX_LIMIT_BREAK,
+    SHARD_COST_PER_LIMIT_BREAK
   };
 
   return <InventoryContext.Provider value={value}>{children}</InventoryContext.Provider>;

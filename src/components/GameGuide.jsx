@@ -338,19 +338,29 @@ const GameGuide = ({ isModal = false, onClose, showHeader = true }) => {
       <GuideSection title="Gacha System" icon={Gift} iconColor="text-pink-500">
         <SubSection title="Pokemon Gacha">
           <div className="space-y-1">
-            <p>• Cost: <strong className="text-amber-500">100 Primos</strong> per roll</p>
+            <p>• Cost: <strong className="text-amber-500">100 Primos</strong> per roll (1000 for 10-roll)</p>
             <p>• Pokemon are graded by total base stats (D to S+)</p>
             <p>• Each Pokemon has unique types, aptitudes, and strategies</p>
-            <p>• Duplicates are automatically refunded</p>
+            <p>• Duplicates increase <strong className="text-purple-500">Limit Break</strong> level</p>
           </div>
         </SubSection>
 
         <SubSection title="Support Gacha">
           <div className="space-y-1">
-            <p>• Cost: <strong className="text-amber-500">100 Primos</strong> per roll</p>
+            <p>• Cost: <strong className="text-amber-500">100 Primos</strong> per roll (1000 for 10-roll)</p>
             <p>• Support cards help during career runs</p>
             <p>• Higher rarity = better bonuses and move hints</p>
-            <p>• Duplicates refund your Primos</p>
+            <p>• Duplicates increase <strong className="text-purple-500">Limit Break</strong> level</p>
+          </div>
+        </SubSection>
+
+        <SubSection title="Limit Break System">
+          <div className="bg-pocket-bg rounded p-2 space-y-1 text-xs">
+            <p>Rolling duplicates increases Limit Break level (shown as rainbow diamonds):</p>
+            <p>• Each level grants <strong className="text-green-500">+5% base stats</strong></p>
+            <p>• Maximum level: <strong className="text-pocket-text">4</strong> (total +20% stats)</p>
+            <p>• Max level duplicates award <strong className="text-purple-500">Limit Break Shards</strong></p>
+            <p>• Shards can be used for future upgrades</p>
           </div>
         </SubSection>
 

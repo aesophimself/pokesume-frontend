@@ -432,6 +432,9 @@ const SupportSelectionScreen = () => {
                       {support.specialEffect.restBonus && (
                         <div>Rest Bonus: +{support.specialEffect.restBonus}</div>
                       )}
+                      {support.specialEffect.energyRegenBonus && (
+                        <div>Energy Regen: +{support.specialEffect.energyRegenBonus}</div>
+                      )}
                       {support.specialEffect.skillPointMultiplier && (
                         <div>SP Mult: {support.specialEffect.skillPointMultiplier}x</div>
                       )}

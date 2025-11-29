@@ -3255,14 +3255,13 @@ const SUPPORT_CARDS = {
   // High variance with different specializations
   // Cards with statGainMultiplier have reduced base stats (~60-70% of normal)
   // ============================================================================
-  CynthiaGarchomp: {
+  Cynthia: {
     name: 'Cynthia',
     trainer: 'Cynthia',
-    pokemon: 'Garchomp',
     rarity: 'Legendary',
     supportType: 'Instinct',
     baseStats: { HP: 0, Attack: 20, Defense: 0, Instinct: 45, Speed: 10 },
-    trainingBonus: { typeMatch: 9, otherStats: 2, maxFriendshipTypeMatch: 24 },
+    trainingBonus: { typeMatch: 14, otherStats: 2, maxFriendshipTypeMatch: 36 },
     initialFriendship: 10,
     appearanceRate: 0.38,
     typeMatchPreference: 0.05,
@@ -3270,14 +3269,13 @@ const SUPPORT_CARDS = {
     moveHints: ['Earthquake', 'DragonClaw', 'Outrage', 'StoneEdge', 'SwordsDance'],
     description: 'The Sinnoh Champion grants overwhelming growth potential'
   },
-  RedCharizard: {
+  Red: {
     name: 'Red',
     trainer: 'Red',
-    pokemon: 'Charizard',
     rarity: 'Legendary',
     supportType: 'Attack',
     baseStats: { HP: 0, Attack: 80, Defense: 0, Instinct: 10, Speed: 20 },
-    trainingBonus: { typeMatch: 10, otherStats: 1, maxFriendshipTypeMatch: 27 },
+    trainingBonus: { typeMatch: 15, otherStats: 1, maxFriendshipTypeMatch: 41 },
     initialFriendship: 0,
     appearanceRate: 0.28,
     typeMatchPreference: 0.55,
@@ -3285,10 +3283,9 @@ const SUPPORT_CARDS = {
     moveHints: ['FlareBlitz', 'DragonDance', 'AirSlash', 'HeatWave', 'BlastBurn'],
     description: 'The legendary trainer pushes limits to the extreme'
   },
-  StevenMetagross: {
+  Steven: {
     name: 'Steven',
     trainer: 'Steven',
-    pokemon: 'Metagross',
     rarity: 'Legendary',
     supportType: 'Defense',
     baseStats: { HP: 30, Attack: 0, Defense: 60, Instinct: 10, Speed: 0 },
@@ -3300,10 +3297,9 @@ const SUPPORT_CARDS = {
     moveHints: ['MeteorMash', 'ZenHeadbutt', 'BulletPunch', 'IronDefense', 'Earthquake'],
     description: 'The Hoenn Champion fortifies iron defenses'
   },
-  NReshiram: {
+  N: {
     name: 'N',
     trainer: 'N',
-    pokemon: 'Reshiram',
     rarity: 'Legendary',
     supportType: 'Instinct',
     baseStats: { HP: 0, Attack: 15, Defense: 0, Instinct: 65, Speed: 15 },
@@ -3315,10 +3311,9 @@ const SUPPORT_CARDS = {
     moveHints: ['BlueFlare', 'FusionFlare', 'DragonPulse', 'DracoMeteor', 'Psychic'],
     description: 'The King of Team Plasma bonds through truth'
   },
-  ProfessorOakMew: {
+  ProfessorOak: {
     name: 'Professor Oak',
     trainer: 'Professor Oak',
-    pokemon: 'Mew',
     rarity: 'Legendary',
     supportType: 'Instinct',
     baseStats: { HP: 20, Attack: 15, Defense: 15, Instinct: 35, Speed: 15 },
@@ -3330,10 +3325,9 @@ const SUPPORT_CARDS = {
     moveHints: ['Psychic', 'AuraSphere', 'Transform', 'Metronome', 'AncientPower'],
     description: 'The Professor grants knowledge and wisdom'
   },
-  DianthaDiancie: {
+  Diantha: {
     name: 'Diantha',
     trainer: 'Diantha',
-    pokemon: 'Diancie',
     rarity: 'Legendary',
     supportType: 'Instinct',
     baseStats: { HP: 10, Attack: 0, Defense: 15, Instinct: 40, Speed: 5 },
@@ -3345,14 +3339,13 @@ const SUPPORT_CARDS = {
     moveHints: ['DiamondStorm', 'Moonblast', 'DazzlingGleam', 'RockPolish', 'Reflect'],
     description: 'The Kalos Champion radiates brilliance and growth'
   },
-  LeonCharizard: {
+  Leon: {
     name: 'Leon',
     trainer: 'Leon',
-    pokemon: 'Charizard',
     rarity: 'Legendary',
     supportType: 'Attack',
     baseStats: { HP: 0, Attack: 70, Defense: 0, Instinct: 10, Speed: 25 },
-    trainingBonus: { typeMatch: 9, otherStats: 2, maxFriendshipTypeMatch: 24 },
+    trainingBonus: { typeMatch: 14, otherStats: 2, maxFriendshipTypeMatch: 36 },
     initialFriendship: 15,
     appearanceRate: 0.40,
     typeMatchPreference: 0.10,
@@ -3360,10 +3353,9 @@ const SUPPORT_CARDS = {
     moveHints: ['GMaxWildfire', 'FlareBlitz', 'AirSlash', 'DragonPulse', 'AncientPower'],
     description: 'The undefeated Galar Champion unleashes fiery power'
   },
-  SeleneLunala: {
+  Selene: {
     name: 'Selene',
     trainer: 'Selene',
-    pokemon: 'Lunala',
     rarity: 'Legendary',
     supportType: 'Instinct',
     baseStats: { HP: 15, Attack: 0, Defense: 10, Instinct: 60, Speed: 15 },
@@ -3375,10 +3367,9 @@ const SUPPORT_CARDS = {
     moveHints: ['MoongeistBeam', 'Psychic', 'ShadowBall', 'Moonblast', 'Roost'],
     description: 'The Alola Champion channels moonlight power'
   },
-  GloriaZacian: {
+  Gloria: {
     name: 'Gloria',
     trainer: 'Gloria',
-    pokemon: 'Zacian',
     rarity: 'Legendary',
     supportType: 'Attack',
     baseStats: { HP: 0, Attack: 75, Defense: 10, Instinct: 5, Speed: 20 },
@@ -3390,10 +3381,9 @@ const SUPPORT_CARDS = {
     moveHints: ['BehemothBlade', 'PlayRough', 'CloseCombat', 'SwordsDance', 'SacredSword'],
     description: 'The Galar Champion wields the legendary blade'
   },
-  NemonaKoraidon: {
+  Nemona: {
     name: 'Nemona',
     trainer: 'Nemona',
-    pokemon: 'Koraidon',
     rarity: 'Legendary',
     supportType: 'Speed',
     baseStats: { HP: 10, Attack: 25, Defense: 0, Instinct: 10, Speed: 55 },
@@ -3405,14 +3395,13 @@ const SUPPORT_CARDS = {
     moveHints: ['CollisionCourse', 'Outrage', 'FlareBlitz', 'DrainPunch', 'DragonDance'],
     description: 'The battle-loving Champion befriends with enthusiasm'
   },
-  MustardUrshifu: {
+  Mustard: {
     name: 'Mustard',
     trainer: 'Mustard',
-    pokemon: 'Urshifu',
     rarity: 'Legendary',
     supportType: 'Attack',
     baseStats: { HP: 0, Attack: 75, Defense: 10, Instinct: 5, Speed: 15 },
-    trainingBonus: { typeMatch: 10, otherStats: 1, maxFriendshipTypeMatch: 26 },
+    trainingBonus: { typeMatch: 15, otherStats: 1, maxFriendshipTypeMatch: 39 },
     initialFriendship: 5,
     appearanceRate: 0.30,
     typeMatchPreference: 0.45,
@@ -3420,10 +3409,9 @@ const SUPPORT_CARDS = {
     moveHints: ['WickedBlow', 'SurgingStrikes', 'CloseCombat', 'Uturn', 'PoisonJab'],
     description: 'The former Champion masters martial arts'
   },
-  VictorEternatus: {
+  Victor: {
     name: 'Victor',
     trainer: 'Victor',
-    pokemon: 'Eternatus',
     rarity: 'Legendary',
     supportType: 'Instinct',
     baseStats: { HP: 10, Attack: 10, Defense: 0, Instinct: 40, Speed: 10 },
@@ -3435,10 +3423,9 @@ const SUPPORT_CARDS = {
     moveHints: ['DynamaxCannon', 'CrossPoison', 'DragonPulse', 'Flamethrower', 'Recover'],
     description: 'The Galar Champion harnesses infinite potential'
   },
-  ArvenMabosstiff: {
+  Arven: {
     name: 'Arven',
     trainer: 'Arven',
-    pokemon: 'Mabosstiff',
     rarity: 'Legendary',
     supportType: 'HP',
     baseStats: { HP: 55, Attack: 20, Defense: 15, Instinct: 0, Speed: 5 },
@@ -3450,10 +3437,9 @@ const SUPPORT_CARDS = {
     moveHints: ['Crunch', 'PlayRough', 'Reversal', 'Psychicfangs', 'Rest'],
     description: 'The culinary expert nurtures with care'
   },
-  PennyVaporeon: {
+  Penny: {
     name: 'Penny',
     trainer: 'Penny',
-    pokemon: 'Sylveon',
     rarity: 'Legendary',
     supportType: 'Defense',
     baseStats: { HP: 30, Attack: 0, Defense: 50, Instinct: 20, Speed: 0 },
@@ -3465,10 +3451,9 @@ const SUPPORT_CARDS = {
     moveHints: ['Moonblast', 'MistyTerrain', 'LightScreen', 'Wish', 'HyperVoice'],
     description: 'The Team Star boss protects her friends'
   },
-  SoniaYamper: {
+  Sonia: {
     name: 'Sonia',
     trainer: 'Sonia',
-    pokemon: 'Yamper',
     rarity: 'Legendary',
     supportType: 'Instinct',
     baseStats: { HP: 15, Attack: 10, Defense: 10, Instinct: 50, Speed: 15 },
@@ -3480,10 +3465,9 @@ const SUPPORT_CARDS = {
     moveHints: ['Spark', 'Nuzzle', 'PlayRough', 'WildCharge', 'Charm'],
     description: 'The new Professor researches with curiosity'
   },
-  HopZamazenta: {
+  Hop: {
     name: 'Hop',
     trainer: 'Hop',
-    pokemon: 'Zamazenta',
     rarity: 'Legendary',
     supportType: 'HP',
     baseStats: { HP: 60, Attack: 10, Defense: 20, Instinct: 5, Speed: 10 },
@@ -3495,14 +3479,13 @@ const SUPPORT_CARDS = {
     moveHints: ['BehemothBash', 'CloseCombat', 'IronDefense', 'Crunch', 'WildCharge'],
     description: 'The aspiring researcher supports with heart'
   },
-  GeetaKingambit: {
+  Geeta: {
     name: 'Geeta',
     trainer: 'Geeta',
-    pokemon: 'Kingambit',
     rarity: 'Legendary',
     supportType: 'Instinct',
     baseStats: { HP: 10, Attack: 15, Defense: 10, Instinct: 40, Speed: 0 },
-    trainingBonus: { typeMatch: 9, otherStats: 2, maxFriendshipTypeMatch: 23 },
+    trainingBonus: { typeMatch: 14, otherStats: 2, maxFriendshipTypeMatch: 35 },
     initialFriendship: 10,
     appearanceRate: 0.35,
     typeMatchPreference: 0.35,
@@ -3510,10 +3493,9 @@ const SUPPORT_CARDS = {
     moveHints: ['KowtowCleave', 'SuckerPunch', 'IronHead', 'SwordsDance', 'LowKick'],
     description: 'The Paldea Champion leads with strategic growth'
   },
-  KieranTerapagos: {
+  Kieran: {
     name: 'Kieran',
     trainer: 'Kieran',
-    pokemon: 'Terapagos',
     rarity: 'Legendary',
     supportType: 'Instinct',
     baseStats: { HP: 20, Attack: 0, Defense: 10, Instinct: 35, Speed: 5 },
@@ -3525,10 +3507,9 @@ const SUPPORT_CARDS = {
     moveHints: ['TeraStarstorm', 'EarthPower', 'DarkPulse', 'Psychic', 'Recover'],
     description: 'The Blueberry Champion commands crystalline potential'
   },
-  CarmineOgerpon: {
+  Carmine: {
     name: 'Carmine',
     trainer: 'Carmine',
-    pokemon: 'Ogerpon',
     rarity: 'Legendary',
     supportType: 'Speed',
     baseStats: { HP: 10, Attack: 25, Defense: 5, Instinct: 5, Speed: 55 },
@@ -3540,10 +3521,9 @@ const SUPPORT_CARDS = {
     moveHints: ['IvyCudgel', 'HornLeech', 'PlayRough', 'Uturn', 'SwordsDance'],
     description: 'The Kitakami native dances with masks'
   },
-  DraytonArchaludon: {
+  Drayton: {
     name: 'Drayton',
     trainer: 'Drayton',
-    pokemon: 'Archaludon',
     rarity: 'Legendary',
     supportType: 'Defense',
     baseStats: { HP: 20, Attack: 15, Defense: 55, Instinct: 10, Speed: 0 },
@@ -3555,10 +3535,9 @@ const SUPPORT_CARDS = {
     moveHints: ['ElectroDrift', 'FlashCannon', 'DracoMeteor', 'BodyPress', 'IronDefense'],
     description: 'The Dragon Elite bridges power and defense'
   },
-  LaceyExcadrill: {
+  Lacey: {
     name: 'Lacey',
     trainer: 'Lacey',
-    pokemon: 'Excadrill',
     rarity: 'Legendary',
     supportType: 'Speed',
     baseStats: { HP: 0, Attack: 25, Defense: 5, Instinct: 10, Speed: 55 },
@@ -3576,14 +3555,13 @@ const SUPPORT_CARDS = {
   // Good variance with clear specializations
   // Cards with statGainMultiplier have reduced base stats (~60-70% of normal)
   // ============================================================================
-  LanceDragonite: {
+  Lance: {
     name: 'Lance',
     trainer: 'Lance',
-    pokemon: 'Dragonite',
     rarity: 'Rare',
     supportType: 'Attack',
     baseStats: { HP: 0, Attack: 55, Defense: 0, Instinct: 10, Speed: 15 },
-    trainingBonus: { typeMatch: 7, otherStats: 2, maxFriendshipTypeMatch: 20 },
+    trainingBonus: { typeMatch: 11, otherStats: 2, maxFriendshipTypeMatch: 30 },
     initialFriendship: 15,
     appearanceRate: 0.35,
     typeMatchPreference: 0.10,
@@ -3591,14 +3569,13 @@ const SUPPORT_CARDS = {
     moveHints: ['DragonDance', 'Outrage', 'ExtremeSpeed', 'DragonRush', 'FirePunch'],
     description: 'The Dragon Master enhances draconic power'
   },
-  SabrinaAlakazam: {
+  Sabrina: {
     name: 'Sabrina',
     trainer: 'Sabrina',
-    pokemon: 'Alakazam',
     rarity: 'Rare',
     supportType: 'Instinct',
     baseStats: { HP: 0, Attack: 0, Defense: 0, Instinct: 55, Speed: 20 },
-    trainingBonus: { typeMatch: 7, otherStats: 2, maxFriendshipTypeMatch: 18 },
+    trainingBonus: { typeMatch: 11, otherStats: 2, maxFriendshipTypeMatch: 27 },
     initialFriendship: 10,
     appearanceRate: 0.32,
     typeMatchPreference: 0.15,
@@ -3606,10 +3583,9 @@ const SUPPORT_CARDS = {
     moveHints: ['Psychic', 'FutureSight', 'FocusBlast', 'CalmMind', 'ShadowBall'],
     description: 'The Saffron Gym Leader sharpens the mind'
   },
-  MortyGengar: {
+  Morty: {
     name: 'Morty',
     trainer: 'Morty',
-    pokemon: 'Gengar',
     rarity: 'Rare',
     supportType: 'Speed',
     baseStats: { HP: 0, Attack: 10, Defense: 0, Instinct: 15, Speed: 45 },
@@ -3621,10 +3597,9 @@ const SUPPORT_CARDS = {
     moveHints: ['ShadowBall', 'SludgeBomb', 'Hypnosis', 'DreamEater', 'Hex'],
     description: 'The Ecruteak Gym Leader channels ghostly power'
   },
-  WallaceMillotic: {
+  Wallace: {
     name: 'Wallace',
     trainer: 'Wallace',
-    pokemon: 'Milotic',
     rarity: 'Rare',
     supportType: 'HP',
     baseStats: { HP: 50, Attack: 0, Defense: 15, Instinct: 5, Speed: 0 },
@@ -3636,25 +3611,9 @@ const SUPPORT_CARDS = {
     moveHints: ['Surf', 'IceBeam', 'Recover', 'DragonTail', 'AquaRing'],
     description: 'The Hoenn Champion exudes elegance'
   },
-  CynthiaLucario: {
-    name: 'Cynthia',
-    trainer: 'Cynthia',
-    pokemon: 'Lucario',
-    rarity: 'Rare',
-    supportType: 'Attack',
-    baseStats: { HP: 0, Attack: 50, Defense: 10, Instinct: 5, Speed: 15 },
-    trainingBonus: { typeMatch: 6, otherStats: 3, maxFriendshipTypeMatch: 17 },
-    initialFriendship: 20,
-    appearanceRate: 0.38,
-    typeMatchPreference: 0.35,
-    specialEffect: { failRateReduction: 0.08 },
-    moveHints: ['AuraSphere', 'CloseCombat', 'ExtremeSpeed', 'BulletPunch', 'SwordsDance'],
-    description: 'The Champion refines fighting technique'
-  },
-  IrisHaxorus: {
+  Iris: {
     name: 'Iris',
     trainer: 'Iris',
-    pokemon: 'Haxorus',
     rarity: 'Rare',
     supportType: 'Attack',
     baseStats: { HP: 0, Attack: 50, Defense: 0, Instinct: 5, Speed: 15 },
@@ -3666,10 +3625,9 @@ const SUPPORT_CARDS = {
     moveHints: ['DragonDance', 'Outrage', 'Earthquake', 'DragonClaw', 'SwordsDance'],
     description: 'The Unova Champion commands dragons'
   },
-  BluePidgeot: {
+  Blue: {
     name: 'Blue',
     trainer: 'Blue',
-    pokemon: 'Pidgeot',
     rarity: 'Rare',
     supportType: 'Speed',
     baseStats: { HP: 0, Attack: 10, Defense: 5, Instinct: 10, Speed: 45 },
@@ -3681,14 +3639,13 @@ const SUPPORT_CARDS = {
     moveHints: ['Hurricane', 'BraveBird', 'AirSlash', 'Roost', 'UTurn'],
     description: 'The rival trainer pushes limits'
   },
-  GiovanniPersian: {
+  Giovanni: {
     name: 'Giovanni',
     trainer: 'Giovanni',
-    pokemon: 'Persian',
     rarity: 'Rare',
     supportType: 'Speed',
     baseStats: { HP: 0, Attack: 15, Defense: 0, Instinct: 10, Speed: 45 },
-    trainingBonus: { typeMatch: 8, otherStats: 1, maxFriendshipTypeMatch: 21 },
+    trainingBonus: { typeMatch: 12, otherStats: 1, maxFriendshipTypeMatch: 32 },
     initialFriendship: 0,
     appearanceRate: 0.30,
     typeMatchPreference: 0.55,
@@ -3696,10 +3653,9 @@ const SUPPORT_CARDS = {
     moveHints: ['Slash', 'Swift', 'Bite', 'NastyPlot', 'Headbutt'],
     description: 'The Rocket Boss commands ruthless speed'
   },
-  MaxieGroudon: {
+  Maxie: {
     name: 'Maxie',
     trainer: 'Maxie',
-    pokemon: 'Groudon',
     rarity: 'Rare',
     supportType: 'Defense',
     baseStats: { HP: 15, Attack: 15, Defense: 40, Instinct: 0, Speed: 0 },
@@ -3711,10 +3667,9 @@ const SUPPORT_CARDS = {
     moveHints: ['Earthquake', 'PrecipiceBlades', 'FirePunch', 'BulkUp', 'LavaPlume'],
     description: 'The Magma Leader harnesses earth power'
   },
-  ArchieKyogre: {
+  Archie: {
     name: 'Archie',
     trainer: 'Archie',
-    pokemon: 'Kyogre',
     rarity: 'Rare',
     supportType: 'HP',
     baseStats: { HP: 55, Attack: 0, Defense: 10, Instinct: 5, Speed: 0 },
@@ -3726,10 +3681,9 @@ const SUPPORT_CARDS = {
     moveHints: ['OriginPulse', 'HydroPump', 'IceBeam', 'Thunder', 'AquaRing'],
     description: 'The Aqua Leader commands the seas'
   },
-  RaihanDuraludon: {
+  Raihan: {
     name: 'Raihan',
     trainer: 'Raihan',
-    pokemon: 'Duraludon',
     rarity: 'Rare',
     supportType: 'Defense',
     baseStats: { HP: 10, Attack: 15, Defense: 40, Instinct: 5, Speed: 5 },
@@ -3741,10 +3695,9 @@ const SUPPORT_CARDS = {
     moveHints: ['SteelBeam', 'DracoMeteor', 'FlashCannon', 'Thunderbolt', 'BodyPress'],
     description: 'The Hammerlocke Gym Leader storms with steel defense'
   },
-  MarnieGrimmsnarl: {
+  Marnie: {
     name: 'Marnie',
     trainer: 'Marnie',
-    pokemon: 'Grimmsnarl',
     rarity: 'Rare',
     supportType: 'Attack',
     baseStats: { HP: 10, Attack: 45, Defense: 15, Instinct: 5, Speed: 5 },
@@ -3756,10 +3709,9 @@ const SUPPORT_CARDS = {
     moveHints: ['SpiritBreak', 'DarkPulse', 'ThunderWave', 'Taunt', 'BulkUp'],
     description: 'The Spikemuth Gym Leader inspires fierce loyalty'
   },
-  NessaDrednaw: {
+  Nessa: {
     name: 'Nessa',
     trainer: 'Nessa',
-    pokemon: 'Drednaw',
     rarity: 'Rare',
     supportType: 'HP',
     baseStats: { HP: 45, Attack: 15, Defense: 10, Instinct: 0, Speed: 5 },
@@ -3771,14 +3723,13 @@ const SUPPORT_CARDS = {
     moveHints: ['Liquidation', 'RockTomb', 'JawLock', 'ShellSmash', 'HeadSmash'],
     description: 'The Hulbury Gym Leader builds endurance'
   },
-  BeaMachamp: {
+  Bea: {
     name: 'Bea',
     trainer: 'Bea',
-    pokemon: 'Machamp',
     rarity: 'Rare',
     supportType: 'Attack',
     baseStats: { HP: 0, Attack: 55, Defense: 10, Instinct: 0, Speed: 10 },
-    trainingBonus: { typeMatch: 7, otherStats: 2, maxFriendshipTypeMatch: 18 },
+    trainingBonus: { typeMatch: 11, otherStats: 2, maxFriendshipTypeMatch: 27 },
     initialFriendship: 10,
     appearanceRate: 0.35,
     typeMatchPreference: 0.30,
@@ -3786,10 +3737,9 @@ const SUPPORT_CARDS = {
     moveHints: ['CloseCombat', 'CrossChop', 'BulkUp', 'KnockOff', 'IcePunch'],
     description: 'The Stow-on-Side Gym Leader trains relentlessly'
   },
-  OpalAlcremie: {
+  Opal: {
     name: 'Opal',
     trainer: 'Opal',
-    pokemon: 'Alcremie',
     rarity: 'Rare',
     supportType: 'HP',
     baseStats: { HP: 45, Attack: 0, Defense: 15, Instinct: 15, Speed: 0 },
@@ -3801,10 +3751,9 @@ const SUPPORT_CARDS = {
     moveHints: ['DrainingKiss', 'DazzlingGleam', 'Recover', 'CalmMind', 'Encore'],
     description: 'The Ballonlea Gym Leader sweetens training'
   },
-  PiersToxtricity: {
+  Piers: {
     name: 'Piers',
     trainer: 'Piers',
-    pokemon: 'Toxtricity',
     rarity: 'Rare',
     supportType: 'Speed',
     baseStats: { HP: 0, Attack: 20, Defense: 0, Instinct: 5, Speed: 45 },
@@ -3816,10 +3765,9 @@ const SUPPORT_CARDS = {
     moveHints: ['Overdrive', 'SludgeWave', 'BoomBurst', 'ShiftGear', 'Discharge'],
     description: 'The punk rock Gym Leader amplifies tempo'
   },
-  RikaWhiscash: {
+  Rika: {
     name: 'Rika',
     trainer: 'Rika',
-    pokemon: 'Whiscash',
     rarity: 'Rare',
     supportType: 'HP',
     baseStats: { HP: 50, Attack: 10, Defense: 10, Instinct: 5, Speed: 0 },
@@ -3831,10 +3779,9 @@ const SUPPORT_CARDS = {
     moveHints: ['Earthquake', 'IceBeam', 'Surf', 'ZenHeadbutt', 'Rest'],
     description: 'The Elite Four member interrogates the earth'
   },
-  PopPyTinkaton: {
+  Poppy: {
     name: 'Poppy',
     trainer: 'Poppy',
-    pokemon: 'Tinkaton',
     rarity: 'Rare',
     supportType: 'Defense',
     baseStats: { HP: 10, Attack: 20, Defense: 35, Instinct: 5, Speed: 5 },
@@ -3852,14 +3799,13 @@ const SUPPORT_CARDS = {
   // Moderate variance with useful specializations
   // Cards with statGainMultiplier have reduced base stats (~60-70% of normal)
   // ============================================================================
-  MistyStarmie: {
+  Misty: {
     name: 'Misty',
     trainer: 'Misty',
-    pokemon: 'Starmie',
     rarity: 'Uncommon',
     supportType: 'HP',
     baseStats: { HP: 35, Attack: 0, Defense: 10, Instinct: 5, Speed: 5 },
-    trainingBonus: { typeMatch: 5, otherStats: 2, maxFriendshipTypeMatch: 14 },
+    trainingBonus: { typeMatch: 8, otherStats: 2, maxFriendshipTypeMatch: 21 },
     initialFriendship: 30,
     appearanceRate: 0.48,
     typeMatchPreference: 0.25,
@@ -3867,10 +3813,9 @@ const SUPPORT_CARDS = {
     moveHints: ['HydroPump', 'Psychic', 'RapidSpin', 'IceBeam', 'Recover'],
     description: 'The Cerulean Gym Leader improves training efficiency'
   },
-  BrockOnix: {
+  Brock: {
     name: 'Brock',
     trainer: 'Brock',
-    pokemon: 'Onix',
     rarity: 'Uncommon',
     supportType: 'Defense',
     baseStats: { HP: 10, Attack: 0, Defense: 35, Instinct: 0, Speed: 0 },
@@ -3882,10 +3827,9 @@ const SUPPORT_CARDS = {
     moveHints: ['RockSlide', 'IronTail', 'StealthRock', 'Sandstorm', 'Earthquake'],
     description: 'The Pewter Gym Leader hardens defenses'
   },
-  ErikaTangela: {
+  Erika: {
     name: 'Erika',
     trainer: 'Erika',
-    pokemon: 'Tangela',
     rarity: 'Uncommon',
     supportType: 'HP',
     baseStats: { HP: 35, Attack: 0, Defense: 10, Instinct: 0, Speed: 0 },
@@ -3897,14 +3841,13 @@ const SUPPORT_CARDS = {
     moveHints: ['GigaDrain', 'SleepPowder', 'EnergyBall', 'SeedBomb', 'StringShot'],
     description: 'The Celadon Gym Leader nurtures vitality'
   },
-  BlaineMagmar: {
+  Blaine: {
     name: 'Blaine',
     trainer: 'Blaine',
-    pokemon: 'Magmar',
     rarity: 'Uncommon',
     supportType: 'Attack',
     baseStats: { HP: 0, Attack: 40, Defense: 0, Instinct: 5, Speed: 5 },
-    trainingBonus: { typeMatch: 6, otherStats: 2, maxFriendshipTypeMatch: 15 },
+    trainingBonus: { typeMatch: 9, otherStats: 2, maxFriendshipTypeMatch: 23 },
     initialFriendship: 15,
     appearanceRate: 0.30,
     typeMatchPreference: 0.10,
@@ -3912,14 +3855,13 @@ const SUPPORT_CARDS = {
     moveHints: ['FireBlast', 'Flamethrower', 'FlameBurst', 'Overheat', 'Smokescreen'],
     description: 'The Cinnabar Gym Leader ignites fiery passion'
   },
-  KogaWeezing: {
+  Koga: {
     name: 'Koga',
     trainer: 'Koga',
-    pokemon: 'Weezing',
     rarity: 'Uncommon',
     supportType: 'Speed',
     baseStats: { HP: 0, Attack: 5, Defense: 10, Instinct: 5, Speed: 30 },
-    trainingBonus: { typeMatch: 5, otherStats: 2, maxFriendshipTypeMatch: 14 },
+    trainingBonus: { typeMatch: 8, otherStats: 2, maxFriendshipTypeMatch: 21 },
     initialFriendship: 10,
     appearanceRate: 0.35,
     typeMatchPreference: 0.35,
@@ -3927,14 +3869,13 @@ const SUPPORT_CARDS = {
     moveHints: ['SludgeBomb', 'Toxic', 'WillOWisp', 'Explosion', 'ShadowBall'],
     description: 'The Fuchsia Gym Leader masters ninja speed'
   },
-  JasminSteelix: {
+  Jasmine: {
     name: 'Jasmine',
     trainer: 'Jasmine',
-    pokemon: 'Steelix',
     rarity: 'Uncommon',
     supportType: 'Defense',
     baseStats: { HP: 10, Attack: 0, Defense: 35, Instinct: 0, Speed: 0 },
-    trainingBonus: { typeMatch: 5, otherStats: 2, maxFriendshipTypeMatch: 14 },
+    trainingBonus: { typeMatch: 8, otherStats: 2, maxFriendshipTypeMatch: 21 },
     initialFriendship: 30,
     appearanceRate: 0.40,
     typeMatchPreference: 0.30,
@@ -3942,10 +3883,9 @@ const SUPPORT_CARDS = {
     moveHints: ['IronTail', 'Earthquake', 'Screech', 'IronDefense', 'StoneEdge'],
     description: 'The Olivine Gym Leader provides iron defense'
   },
-  WinonaSkarmory: {
+  Winona: {
     name: 'Winona',
     trainer: 'Winona',
-    pokemon: 'Skarmory',
     rarity: 'Uncommon',
     supportType: 'Speed',
     baseStats: { HP: 0, Attack: 5, Defense: 15, Instinct: 0, Speed: 30 },
@@ -3957,14 +3897,13 @@ const SUPPORT_CARDS = {
     moveHints: ['SteelWing', 'BraveBird', 'Spikes', 'Roost', 'AirSlash'],
     description: 'The Fortree Gym Leader soars with grace'
   },
-  ElitesFourKaren: {
+  Karen: {
     name: 'Karen',
     trainer: 'Karen',
-    pokemon: 'Umbreon',
     rarity: 'Uncommon',
     supportType: 'Defense',
     baseStats: { HP: 10, Attack: 0, Defense: 30, Instinct: 10, Speed: 0 },
-    trainingBonus: { typeMatch: 6, otherStats: 2, maxFriendshipTypeMatch: 15 },
+    trainingBonus: { typeMatch: 9, otherStats: 2, maxFriendshipTypeMatch: 23 },
     initialFriendship: 5,
     appearanceRate: 0.25,
     typeMatchPreference: 0.15,
@@ -3972,14 +3911,13 @@ const SUPPORT_CARDS = {
     moveHints: ['FoulPlay', 'Moonlight', 'Toxic', 'Curse', 'DarkPulse'],
     description: 'The Elite Four member embraces darkness'
   },
-  AgathaGengar: {
+  Agatha: {
     name: 'Agatha',
     trainer: 'Agatha',
-    pokemon: 'Gengar',
     rarity: 'Uncommon',
     supportType: 'Instinct',
     baseStats: { HP: 0, Attack: 10, Defense: 0, Instinct: 35, Speed: 5 },
-    trainingBonus: { typeMatch: 5, otherStats: 2, maxFriendshipTypeMatch: 14 },
+    trainingBonus: { typeMatch: 8, otherStats: 2, maxFriendshipTypeMatch: 21 },
     initialFriendship: 20,
     appearanceRate: 0.32,
     typeMatchPreference: 0.40,
@@ -3987,10 +3925,9 @@ const SUPPORT_CARDS = {
     moveHints: ['ShadowBall', 'SludgeWave', 'DestinyBond', 'Hypnosis', 'DreamEater'],
     description: 'The Elite Four member masters ghosts'
   },
-  MiloEldegoss: {
+  Milo: {
     name: 'Milo',
     trainer: 'Milo',
-    pokemon: 'Eldegoss',
     rarity: 'Uncommon',
     supportType: 'HP',
     baseStats: { HP: 35, Attack: 0, Defense: 10, Instinct: 5, Speed: 0 },
@@ -4002,14 +3939,13 @@ const SUPPORT_CARDS = {
     moveHints: ['GigaDrain', 'CottonGuard', 'LeechSeed', 'Synthesis', 'PollenPuff'],
     description: 'The Turffield Gym Leader nurtures growth'
   },
-  KabuCentiskorch: {
+  Kabu: {
     name: 'Kabu',
     trainer: 'Kabu',
-    pokemon: 'Centiskorch',
     rarity: 'Uncommon',
     supportType: 'Attack',
     baseStats: { HP: 5, Attack: 38, Defense: 5, Instinct: 0, Speed: 5 },
-    trainingBonus: { typeMatch: 5, otherStats: 2, maxFriendshipTypeMatch: 14 },
+    trainingBonus: { typeMatch: 8, otherStats: 2, maxFriendshipTypeMatch: 21 },
     initialFriendship: 15,
     appearanceRate: 0.38,
     typeMatchPreference: 0.25,
@@ -4017,10 +3953,9 @@ const SUPPORT_CARDS = {
     moveHints: ['FireLash', 'Flamethrower', 'Crunch', 'Coil', 'PowerWhip'],
     description: 'The Motostoke Gym Leader burns with dedication'
   },
-  MelonyLapras: {
+  Melony: {
     name: 'Melony',
     trainer: 'Melony',
-    pokemon: 'Lapras',
     rarity: 'Uncommon',
     supportType: 'HP',
     baseStats: { HP: 40, Attack: 0, Defense: 10, Instinct: 5, Speed: 0 },
@@ -4032,10 +3967,9 @@ const SUPPORT_CARDS = {
     moveHints: ['IceBeam', 'Surf', 'FreezeDry', 'SheerCold', 'Sing'],
     description: 'The Circhester Gym Leader provides warmth in cold'
   },
-  GordieCoalossal: {
+  Gordie: {
     name: 'Gordie',
     trainer: 'Gordie',
-    pokemon: 'Coalossal',
     rarity: 'Uncommon',
     supportType: 'Defense',
     baseStats: { HP: 10, Attack: 5, Defense: 35, Instinct: 0, Speed: 0 },
@@ -4047,10 +3981,9 @@ const SUPPORT_CARDS = {
     moveHints: ['TarShot', 'StoneEdge', 'HeatCrash', 'Earthquake', 'StealthRock'],
     description: 'The Circhester Gym Leader stands firm'
   },
-  KlaraSlowbro: {
+  Klara: {
     name: 'Klara',
     trainer: 'Klara',
-    pokemon: 'Slowbro',
     rarity: 'Uncommon',
     supportType: 'Defense',
     baseStats: { HP: 15, Attack: 0, Defense: 30, Instinct: 5, Speed: 0 },
@@ -4062,10 +3995,9 @@ const SUPPORT_CARDS = {
     moveHints: ['ShellSideArm', 'Psychic', 'SludgeBomb', 'SlackOff', 'Scald'],
     description: 'The aspiring Poison specialist tanks hits'
   },
-  AveryRapidashGalar: {
+  Avery: {
     name: 'Avery',
     trainer: 'Avery',
-    pokemon: 'Rapidash',
     rarity: 'Uncommon',
     supportType: 'Speed',
     baseStats: { HP: 0, Attack: 10, Defense: 5, Instinct: 10, Speed: 30 },
@@ -4077,14 +4009,13 @@ const SUPPORT_CARDS = {
     moveHints: ['PsychoCut', 'PlayRough', 'HighHorsepower', 'Agility', 'Megahorn'],
     description: 'The aspiring Psychic specialist pursues perfection'
   },
-  IonoLuxray: {
+  Iono: {
     name: 'Iono',
     trainer: 'Iono',
-    pokemon: 'Luxray',
     rarity: 'Uncommon',
     supportType: 'Speed',
     baseStats: { HP: 0, Attack: 15, Defense: 0, Instinct: 10, Speed: 30 },
-    trainingBonus: { typeMatch: 5, otherStats: 2, maxFriendshipTypeMatch: 14 },
+    trainingBonus: { typeMatch: 8, otherStats: 2, maxFriendshipTypeMatch: 21 },
     initialFriendship: 60,
     appearanceRate: 0.60,
     typeMatchPreference: 0.15,
@@ -4092,10 +4023,9 @@ const SUPPORT_CARDS = {
     moveHints: ['WildCharge', 'Discharge', 'Spark', 'ElectroBall', 'ChargeBeam'],
     description: 'The streaming Gym Leader electrifies fans'
   },
-  GrushaAltaria: {
+  Grusha: {
     name: 'Grusha',
     trainer: 'Grusha',
-    pokemon: 'Altaria',
     rarity: 'Uncommon',
     supportType: 'Defense',
     baseStats: { HP: 10, Attack: 0, Defense: 30, Instinct: 10, Speed: 5 },
@@ -4113,10 +4043,9 @@ const SUPPORT_CARDS = {
   // Lower stats but still useful, high variance in specialization
   // Cards with statGainMultiplier have reduced base stats (~60-70% of normal)
   // ============================================================================
-  WhitneyMiltank: {
+  Whitney: {
     name: 'Whitney',
     trainer: 'Whitney',
-    pokemon: 'Miltank',
     rarity: 'Common',
     supportType: 'HP',
     baseStats: { HP: 25, Attack: 0, Defense: 5, Instinct: 0, Speed: 0 },
@@ -4128,14 +4057,13 @@ const SUPPORT_CARDS = {
     moveHints: ['Rollout', 'BodySlam', 'MilkDrink', 'Attract', 'Stomp'],
     description: 'The Goldenrod Gym Leader boosts endurance'
   },
-  ChuckPoliwrath: {
+  Chuck: {
     name: 'Chuck',
     trainer: 'Chuck',
-    pokemon: 'Poliwrath',
     rarity: 'Common',
     supportType: 'Attack',
     baseStats: { HP: 0, Attack: 30, Defense: 0, Instinct: 0, Speed: 5 },
-    trainingBonus: { typeMatch: 5, otherStats: 1, maxFriendshipTypeMatch: 12 },
+    trainingBonus: { typeMatch: 8, otherStats: 1, maxFriendshipTypeMatch: 18 },
     initialFriendship: 5,
     appearanceRate: 0.35,
     typeMatchPreference: 0.30,
@@ -4143,10 +4071,9 @@ const SUPPORT_CARDS = {
     moveHints: ['CrossChop', 'Waterfall', 'Superpower', 'BulkUp', 'ForcePalm'],
     description: 'The Cianwood Gym Leader builds strength'
   },
-  PryceDelibird: {
+  Pryce: {
     name: 'Pryce',
     trainer: 'Pryce',
-    pokemon: 'Delibird',
     rarity: 'Common',
     supportType: 'Defense',
     baseStats: { HP: 20, Attack: 0, Defense: 5, Instinct: 5, Speed: 0 },
@@ -4158,10 +4085,9 @@ const SUPPORT_CARDS = {
     moveHints: ['Present', 'IceBeam', 'IcePunch', 'Blizzard', 'AerialAce'],
     description: 'The Mahogany Gym Leader aids recovery'
   },
-  WattsonMagneton: {
+  Wattson: {
     name: 'Wattson',
     trainer: 'Wattson',
-    pokemon: 'Magneton',
     rarity: 'Common',
     supportType: 'Instinct',
     baseStats: { HP: 0, Attack: 0, Defense: 5, Instinct: 25, Speed: 5 },
@@ -4173,10 +4099,9 @@ const SUPPORT_CARDS = {
     moveHints: ['Thunderbolt', 'ZapCannon', 'Discharge', 'Spark', 'ElectricTerrain'],
     description: 'The Mauville Gym Leader electrifies training'
   },
-  FlanneryCamerupt: {
+  Flannery: {
     name: 'Flannery',
     trainer: 'Flannery',
-    pokemon: 'Camerupt',
     rarity: 'Common',
     supportType: 'Attack',
     baseStats: { HP: 0, Attack: 5, Defense: 0, Instinct: 20, Speed: 0 },
@@ -4199,31 +4124,31 @@ const SUPPORT_CARDS = {
 const SUPPORT_GACHA_RARITY = {
   Common: {
     rate: 0.50,
-    supports: ['WhitneyMiltank', 'ChuckPoliwrath', 'PryceDelibird', 'WattsonMagneton', 'FlanneryCamerupt']
+    supports: ['Whitney', 'Chuck', 'Pryce', 'Wattson', 'Flannery']
   },
   Uncommon: {
     rate: 0.35,
-    supports: ['MistyStarmie', 'BrockOnix', 'ErikaTangela', 'BlaineMagmar', 'KogaWeezing',
-               'JasminSteelix', 'WinonaSkarmory', 'ElitesFourKaren', 'AgathaGengar',
-               'MiloEldegoss', 'KabuCentiskorch', 'MelonyLapras', 'GordieCoalossal',
-               'KlaraSlowbro', 'AveryRapidashGalar', 'IonoLuxray', 'GrushaAltaria']
+    supports: ['Misty', 'Brock', 'Erika', 'Blaine', 'Koga',
+               'Jasmine', 'Winona', 'Karen', 'Agatha',
+               'Milo', 'Kabu', 'Melony', 'Gordie',
+               'Klara', 'Avery', 'Iono', 'Grusha']
   },
   Rare: {
     rate: 0.13,
-    supports: ['LanceDragonite', 'SabrinaAlakazam', 'MortyGengar', 'WallaceMillotic',
-               'CynthiaLucario', 'IrisHaxorus', 'BluePidgeot', 'GiovanniPersian',
-               'MaxieGroudon', 'ArchieKyogre', 'RaihanDuraludon', 'MarnieGrimmsnarl',
-               'NessaDrednaw', 'BeaMachamp', 'OpalAlcremie', 'PiersToxtricity',
-               'RikaWhiscash', 'PopPyTinkaton']
+    supports: ['Lance', 'Sabrina', 'Morty', 'Wallace',
+               'Iris', 'Blue', 'Giovanni',
+               'Maxie', 'Archie', 'Raihan', 'Marnie',
+               'Nessa', 'Bea', 'Opal', 'Piers',
+               'Rika', 'Poppy']
   },
   Legendary: {
     rate: 0.02,
-    supports: ['CynthiaGarchomp', 'RedCharizard', 'StevenMetagross', 'NReshiram',
-               'ProfessorOakMew', 'DianthaDiancie', 'LeonCharizard', 'SeleneLunala',
-               'GloriaZacian', 'NemonaKoraidon', 'MustardUrshifu', 'VictorEternatus',
-               'ArvenMabosstiff', 'PennyVaporeon', 'SoniaYamper', 'HopZamazenta',
-               'GeetaKingambit', 'KieranTerapagos', 'CarmineOgerpon', 'DraytonArchaludon',
-               'LaceyExcadrill']
+    supports: ['Cynthia', 'Red', 'Steven', 'N',
+               'ProfessorOak', 'Diantha', 'Leon', 'Selene',
+               'Gloria', 'Nemona', 'Mustard', 'Victor',
+               'Arven', 'Penny', 'Sonia', 'Hop',
+               'Geeta', 'Kieran', 'Carmine', 'Drayton',
+               'Lacey']
   }
 };
 
@@ -4959,184 +4884,178 @@ const RANDOM_EVENTS = {
 // ============================================================================
 
 const HANGOUT_EVENTS = {
-  CynthiaGarchomp: {
+  Cynthia: {
     name: 'Champion\'s Masterclass',
-    description: 'Cynthia invites you to train with her ace Garchomp!',
-    flavor: 'Cynthia demonstrates overwhelming power with Garchomp. "True strength comes from understanding your partner," she says with a serene smile.',
+    description: 'Cynthia invites you to train with her!',
+    flavor: 'Cynthia demonstrates overwhelming power. "True strength comes from understanding your partner," she says with a serene smile.',
     effect: { stats: { Attack: 15, Instinct: 10 }, moveHint: 'DragonClaw', energy: 20 }
   },
-  RedCharizard: {
+  Red: {
     name: 'Silent Training',
     description: 'The legendary Red gestures for you to join his training.',
-    flavor: 'Red says nothing, but his Charizard\'s fierce determination speaks volumes. You feel inspired by his quiet intensity.',
+    flavor: 'Red says nothing, but his fierce determination speaks volumes. You feel inspired by his quiet intensity.',
     effect: { stats: { Attack: 16, Instinct: 12 }, moveHint: 'FlareBlitz', skillPoints: 15 }
   },
-  StevenMetagross: {
+  Steven: {
     name: 'Stone Analysis Session',
     description: 'Steven shares his geological expertise and defensive tactics.',
-    flavor: 'Steven examines rare stones while Metagross demonstrates impenetrable defense. "Patience and precision win battles," he explains.',
+    flavor: 'Steven examines rare stones while demonstrating impenetrable defense. "Patience and precision win battles," he explains.',
     effect: { stats: { Defense: 17, Instinct: 10 }, moveHint: 'IronHead', energy: 18 }
   },
-  LanceDragonite: {
+  Lance: {
     name: 'Dragon Tamer\'s Wisdom',
     description: 'Lance shares secrets of dragon-type mastery.',
-    flavor: 'Lance\'s Dragonite soars majestically overhead. "Dragons respond to those with true conviction," he declares.',
+    flavor: 'Lance soars majestically overhead. "Dragons respond to those with true conviction," he declares.',
     effect: { stats: { Attack: 12, Instinct: 14 }, moveHint: 'DragonClaw', skillPoints: 12 }
   },
-  MistyStarmie: {
+  Misty: {
     name: 'Water Ballet Practice',
     description: 'Misty teaches elegant water-type techniques.',
-    flavor: 'Misty and Starmie perform graceful aquatic maneuvers. "Water flows effortlessly\u2014your training should too!" she chirps.',
+    flavor: 'Misty performs graceful aquatic maneuvers. "Water flows effortlessly—your training should too!" she chirps.',
     effect: { stats: { Instinct: 11, Speed: 8 }, moveHint: 'Surf', energy: 15 }
   },
-  BrockOnix: {
+  Brock: {
     name: 'Rock Solid Defense',
-    description: 'Brock demonstrates endurance training with Onix.',
-    flavor: 'Brock\'s Onix stands unmovable like a mountain. "Defense isn\'t just blocking\u2014it\'s outlasting!" he teaches firmly.',
+    description: 'Brock demonstrates endurance training.',
+    flavor: 'Brock stands unmovable like a mountain. "Defense isn\'t just blocking—it\'s outlasting!" he teaches firmly.',
     effect: { stats: { HP: 12, Defense: 14 }, moveHint: 'RockSlide', energy: 16 }
   },
-  ErikaTangela: {
+  Erika: {
     name: 'Garden Meditation',
     description: 'Erika invites you to her peaceful garden training.',
-    flavor: 'Surrounded by blooming flowers and Tangela\'s vines, Erika teaches harmony with nature. "Growth requires patience," she whispers.',
+    flavor: 'Surrounded by blooming flowers, Erika teaches harmony with nature. "Growth requires patience," she whispers.',
     effect: { stats: { HP: 14, Defense: 10 }, energy: 20 }
   },
-  SabrinaAlakazam: {
+  Sabrina: {
     name: 'Psychic Awakening',
     description: 'Sabrina helps unlock your Pokemon\'s mental potential.',
-    flavor: 'Alakazam\'s spoons bend as psychic energy fills the room. "The mind is the strongest muscle," Sabrina says cryptically.',
+    flavor: 'Psychic energy fills the room. "The mind is the strongest muscle," Sabrina says cryptically.',
     effect: { stats: { Instinct: 16, Speed: 9 }, moveHint: 'Psychic', skillPoints: 13 }
   },
-  BlaineMagmar: {
+  Blaine: {
     name: 'Volcanic Training',
     description: 'Blaine\'s fiery enthusiasm ignites your passion!',
-    flavor: 'Magmar\'s flames roar as Blaine cackles. "Hot-headed? Maybe! But that heat forges champions!" he bellows.',
+    flavor: 'Flames roar as Blaine cackles. "Hot-headed? Maybe! But that heat forges champions!" he bellows.',
     effect: { stats: { Attack: 13, Instinct: 9 }, moveHint: 'Flamethrower', energy: 14 }
   },
-  KogaWeezing: {
+  Koga: {
     name: 'Ninja Techniques',
     description: 'Koga teaches tactical maneuvering and precision.',
-    flavor: 'Weezing creates concealing smoke as Koga moves with ninja precision. "Strike from the shadows," he whispers.',
+    flavor: 'Koga moves with ninja precision. "Strike from the shadows," he whispers.',
     effect: { stats: { Instinct: 11, Speed: 10 }, moveHint: 'SludgeBomb', energy: 13 }
   },
-  WhitneyMiltank: {
+  Whitney: {
     name: 'Endurance Run',
     description: 'Whitney challenges you to a stamina-building session!',
-    flavor: 'Miltank\'s Rollout never stops! Whitney giggles, "Stamina wins the long game\u2014just keep going!"',
+    flavor: 'Whitney giggles, "Stamina wins the long game—just keep going!"',
     effect: { stats: { HP: 10, Defense: 8 }, energy: 16 }
   },
-  MortyGengar: {
+  Morty: {
     name: 'Spirit Connection',
     description: 'Morty communes with ghost-type energies.',
-    flavor: 'Gengar phases through walls as Morty meditates. "The bond between worlds strengthens the spirit," he murmurs.',
+    flavor: 'Morty meditates. "The bond between worlds strengthens the spirit," he murmurs.',
     effect: { stats: { Instinct: 12, Speed: 9 }, moveHint: 'ShadowBall', skillPoints: 11 }
   },
-  ChuckPoliwrath: {
+  Chuck: {
     name: 'Waterfall Training',
     description: 'Chuck\'s intense martial arts under a waterfall!',
-    flavor: 'Poliwrath punches through cascading water. Chuck roars, "Strength and discipline\u2014that\'s the warrior\'s way!"',
+    flavor: 'Chuck roars, "Strength and discipline—that\'s the warrior\'s way!"',
     effect: { stats: { HP: 9, Attack: 11 }, moveHint: 'DynamicPunch', energy: 14 }
   },
-  JasminSteelix: {
+  Jasmine: {
     name: 'Steel Resolve',
     description: 'Jasmine demonstrates unwavering defensive tactics.',
-    flavor: 'Steelix\'s metallic body gleams. Jasmine speaks softly, "True strength means protecting what matters most."',
+    flavor: 'Jasmine speaks softly, "True strength means protecting what matters most."',
     effect: { stats: { HP: 10, Defense: 12 }, moveHint: 'IronTail', energy: 15 }
   },
-  PryceDelibird: {
+  Pryce: {
     name: 'Gift of Rest',
     description: 'Pryce shares wisdom on recovery and preparation.',
-    flavor: 'Delibird delivers treats as Pryce smiles warmly. "Rest is not weakness\u2014it\'s strategic preparation," he advises.',
+    flavor: 'Pryce smiles warmly. "Rest is not weakness—it\'s strategic preparation," he advises.',
     effect: { stats: { HP: 8 }, energy: 25 }
   },
-  WallaceMillotic: {
+  Wallace: {
     name: 'Elegant Performance',
     description: 'Wallace showcases the art of beauty and strength.',
-    flavor: 'Milotic glides gracefully through water. Wallace beams, "True champions combine elegance with power!"',
+    flavor: 'Wallace beams, "True champions combine elegance with power!"',
     effect: { stats: { HP: 11, Defense: 12 }, moveHint: 'HydroPump', energy: 17 }
   },
-  WinonaSkarmory: {
+  Winona: {
     name: 'Aerial Maneuvers',
     description: 'Winona teaches swift flying techniques.',
-    flavor: 'Skarmory cuts through the air with razor precision. Winona calls out, "Speed and grace dominate the skies!"',
+    flavor: 'Winona calls out, "Speed and grace dominate the skies!"',
     effect: { stats: { Defense: 10, Speed: 12 }, moveHint: 'SteelWing', energy: 14 }
   },
-  WattsonMagneton: {
+  Wattson: {
     name: 'Electric Circuit Training',
     description: 'Wattson\'s shocking workout charges you up!',
-    flavor: 'Magneton crackles with electricity as Wattson laughs heartily. "Wahahaha! Feel the voltage!" he exclaims.',
+    flavor: 'Wattson laughs heartily. "Wahahaha! Feel the voltage!" he exclaims.',
     effect: { stats: { Instinct: 10, Speed: 8 }, moveHint: 'Thunderbolt', energy: 13 }
   },
-  FlanneryCamerupt: {
+  Flannery: {
     name: 'Explosive Power',
     description: 'Flannery demonstrates volcanic offensive tactics.',
-    flavor: 'Camerupt erupts with magma as Flannery pumps her fist. "Burn bright and strike hard!" she shouts enthusiastically.',
+    flavor: 'Flannery pumps her fist. "Burn bright and strike hard!" she shouts enthusiastically.',
     effect: { stats: { HP: 9, Attack: 11 }, moveHint: 'Earthquake', energy: 14 }
   },
-  CynthiaLucario: {
-    name: 'Aura Training',
-    description: 'Cynthia helps awaken your Pokemon\'s inner aura.',
-    flavor: 'Lucario\'s aura glows brilliantly. Cynthia explains, "True mastery comes from sensing your opponent\'s spirit."',
-    effect: { stats: { Attack: 12, Instinct: 10 }, moveHint: 'AuraSphere', skillPoints: 14 }
-  },
-  NReshiram: {
+  N: {
     name: 'Truth\'s Flame',
-    description: 'N shares ideals with Reshiram\'s legendary power.',
-    flavor: 'Reshiram\'s flames burn with truth itself. N speaks passionately, "Only through honesty can Pokemon and trainer unite!"',
+    description: 'N shares ideals with legendary power.',
+    flavor: 'N speaks passionately, "Only through honesty can Pokemon and trainer unite!"',
     effect: { stats: { Attack: 14, Instinct: 12 }, moveHint: 'BlueFlare', skillPoints: 16 }
   },
-  IrisHaxorus: {
+  Iris: {
     name: 'Dragon Dance',
     description: 'Iris teaches fierce dragon-type combat techniques.',
-    flavor: 'Haxorus roars powerfully as Iris cheers. "Dragons never back down\u2014show your fighting spirit!" she yells excitedly.',
+    flavor: 'Iris cheers. "Dragons never back down—show your fighting spirit!" she yells excitedly.',
     effect: { stats: { Attack: 14, Speed: 11 }, moveHint: 'DragonClaw', energy: 16 }
   },
-  ElitesFourKaren: {
+  Karen: {
     name: 'Dark Arts Mastery',
     description: 'Karen reveals the strength of dark-type strategy.',
-    flavor: 'Umbreon\'s rings glow in the darkness. Karen smirks, "Winning isn\'t about type\u2014it\'s about strategy and bond."',
+    flavor: 'Karen smirks, "Winning isn\'t about type—it\'s about strategy and bond."',
     effect: { stats: { Defense: 11, Instinct: 10 }, moveHint: 'DarkPulse', skillPoints: 12 }
   },
-  AgathaGengar: {
+  Agatha: {
     name: 'Spectral Training',
     description: 'Agatha teaches ancient ghost-type techniques.',
-    flavor: 'Gengar\'s eerie laugh echoes as Agatha cackles. "Fear is a weapon\u2014use it wisely!" she says ominously.',
+    flavor: 'Agatha cackles. "Fear is a weapon—use it wisely!" she says ominously.',
     effect: { stats: { Instinct: 12, Speed: 9 }, moveHint: 'ShadowBall', energy: 13 }
   },
-  BluePidgeot: {
+  Blue: {
     name: 'Rival\'s Challenge',
     description: 'Blue pushes you to exceed your limits.',
-    flavor: 'Pidgeot soars majestically. Blue smirks, "Smell ya later\u2014unless you can actually keep up!" he taunts.',
+    flavor: 'Blue smirks, "Smell ya later—unless you can actually keep up!" he taunts.',
     effect: { stats: { Attack: 11, Speed: 12 }, moveHint: 'AerialAce', skillPoints: 13 }
   },
-  GiovanniPersian: {
+  Giovanni: {
     name: 'Ruthless Tactics',
     description: 'Giovanni demonstrates calculated dominance.',
-    flavor: 'Persian prowls with predatory grace. Giovanni states coldly, "Power respects only power. Show no mercy."',
+    flavor: 'Giovanni states coldly, "Power respects only power. Show no mercy."',
     effect: { stats: { Attack: 13, Instinct: 10 }, moveHint: 'PayDay', skillPoints: 14 }
   },
-  ProfessorOakMew: {
+  ProfessorOak: {
     name: 'Legendary Research',
-    description: 'Professor Oak shares knowledge with Mew\'s assistance.',
-    flavor: 'Mew playfully teleports around as Oak beams. "The bond between Pokemon and trainer transcends science!" he declares.',
+    description: 'Professor Oak shares knowledge with you.',
+    flavor: 'Oak beams. "The bond between Pokemon and trainer transcends science!" he declares.',
     effect: { stats: { Instinct: 14, Speed: 10 }, skillPoints: 18, energy: 20 }
   },
-  DianthaDiancie: {
+  Diantha: {
     name: 'Dazzling Showcase',
-    description: 'Diantha performs with Diancie\'s brilliance.',
-    flavor: 'Diancie\'s diamonds sparkle radiantly. Diantha smiles, "A champion shines brightest under pressure\u2014be dazzling!"',
+    description: 'Diantha performs with brilliance.',
+    flavor: 'Diantha smiles, "A champion shines brightest under pressure—be dazzling!"',
     effect: { stats: { HP: 12, Defense: 15 }, moveHint: 'DiamondStorm', energy: 18 }
   },
-  MaxieGroudon: {
+  Maxie: {
     name: 'Land Expansion',
     description: 'Maxie demonstrates earth-shaking power.',
-    flavor: 'Groudon\'s presence makes the ground tremble. Maxie declares, "The land itself will bow to our strength!"',
+    flavor: 'Maxie declares, "The land itself will bow to our strength!"',
     effect: { stats: { HP: 11, Attack: 13 }, moveHint: 'Earthquake', energy: 16 }
   },
-  ArchieKyogre: {
+  Archie: {
     name: 'Ocean\'s Depth',
     description: 'Archie channels the power of the seas.',
-    flavor: 'Kyogre summons massive waves. Archie roars, "The ocean\'s fury is unstoppable\u2014embrace its power!"',
+    flavor: 'Archie roars, "The ocean\'s fury is unstoppable—embrace its power!"',
     effect: { stats: { HP: 13, Defense: 11 }, moveHint: 'HydroPump', energy: 17 }
   }
 };

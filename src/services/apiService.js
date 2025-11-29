@@ -523,6 +523,31 @@ export const apiDeletePokemonFromInventory = async (pokemonId, authToken) => {
   }
 };
 
+export const apiLimitBreakPokemon = async (pokemonId, authToken) => {
+  if (!authToken) return null;
+
+  try {
+    const response = await fetch(`${API_URL}/inventory/pokemon/${pokemonId}/limit-break`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to limit break Pokemon');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Limit break Pokemon error:', error);
+    return null;
+  }
+};
+
 export const apiGetSupportInventory = async (limit = 100, offset = 0, authToken) => {
   if (!authToken) return { supports: [], total: 0 };
 
@@ -588,6 +613,31 @@ export const apiDeleteSupportFromInventory = async (supportId, authToken) => {
     return data;
   } catch (error) {
     console.error('Delete Support error:', error);
+    return null;
+  }
+};
+
+export const apiLimitBreakSupport = async (supportId, authToken) => {
+  if (!authToken) return null;
+
+  try {
+    const response = await fetch(`${API_URL}/inventory/supports/${supportId}/limit-break`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to limit break Support');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Limit break Support error:', error);
     return null;
   }
 };
