@@ -256,7 +256,7 @@ const TrainedPokemonScreen = () => {
                   </div>
                   {trained.inspirations.strategy && (
                     <div className="flex justify-between items-center text-[10px]">
-                      <span className="font-semibold text-pocket-text">Strategy</span>
+                      <span className="font-semibold text-pocket-text">{trained.inspirations.strategy.name}</span>
                       <div className="flex gap-0.5">
                         {[...Array(trained.inspirations.strategy.stars)].map((_, i) => (
                           <Star key={i} size={10} className="text-amber-400 fill-amber-400" />

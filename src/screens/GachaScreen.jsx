@@ -13,7 +13,9 @@ import { useGame } from '../contexts/GameContext';
 import { useInventory } from '../contexts/InventoryContext';
 import {
   generatePokemonSprite,
-  getRarityColor
+  getRarityColor,
+  getBestStrategy,
+  getAptitudeColor
 } from '../utils/gameUtils';
 import { TypeBadge } from '../components/TypeIcon';
 import { POKEMON, GACHA_RARITY } from '../shared/gameData';
