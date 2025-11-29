@@ -13,6 +13,7 @@ import { useInventory } from '../contexts/InventoryContext';
 import {
   generatePokemonSprite,
   getPokemonRarity,
+  getRarityColor,
   StatIcon
 } from '../utils/gameUtils';
 import { TypeBadge, TYPE_COLORS } from '../components/TypeIcon';
@@ -157,6 +158,7 @@ const PokemonSelectionScreen = () => {
             const pokemon = POKEMON[pokemonName];
             if (!pokemon) return null;
 
+            const rarity = getPokemonRarity(pokemonName);
             return (
               <motion.button
                 key={idx}
@@ -168,7 +170,18 @@ const PokemonSelectionScreen = () => {
                   setGameState('inspirationSelect');
                 }}
                 className="bg-white rounded-2xl shadow-card p-4 text-left transition-shadow hover:shadow-card-hover"
+                style={{ borderLeft: `4px solid ${getRarityColor(rarity)}` }}
               >
+                {/* Rarity badge at top */}
+                <div className="flex items-center justify-between mb-2">
+                  <span
+                    className="px-2 py-0.5 rounded-full text-[10px] font-bold text-white"
+                    style={{ backgroundColor: getRarityColor(rarity) }}
+                  >
+                    {rarity}
+                  </span>
+                  <Swords size={14} className="text-pocket-red" />
+                </div>
                 <div className="flex items-center gap-3">
                   <div className="flex-shrink-0">
                     {generatePokemonSprite(pokemon.primaryType, pokemonName)}

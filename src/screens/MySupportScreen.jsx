@@ -274,6 +274,117 @@ const MySupportScreen = () => {
                 {/* Effect Description */}
                 <p className="text-xs text-pocket-text-light italic mb-3">{support.description || support.effect?.description}</p>
 
+                {/* Base Stats */}
+                {support.baseStatIncrease && Object.values(support.baseStatIncrease).some(v => v > 0) && (
+                  <div className="bg-pocket-bg rounded-lg p-2 mb-2">
+                    <p className="font-bold text-type-psychic text-[10px] mb-1">Base Stat Bonuses</p>
+                    <div className="space-y-0.5 text-[10px]">
+                      {Object.entries(support.baseStatIncrease).map(([stat, value]) => (
+                        value > 0 && (
+                          <div key={stat} className="flex justify-between">
+                            <span className="text-pocket-text-light">{stat}</span>
+                            <span className="text-pocket-green font-bold">+{value}</span>
+                          </div>
+                        )
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Training Bonuses */}
+                <div className="bg-pocket-bg rounded-lg p-2 mb-2">
+                  <p className="font-bold text-type-psychic text-[10px] mb-1">Training Bonuses</p>
+                  <div className="grid grid-cols-2 gap-1 text-[10px]">
+                    <div className="flex justify-between">
+                      <span className="text-pocket-text-light">Friendship</span>
+                      <span className="text-pocket-blue font-bold">{support.initialFriendship}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-pocket-text-light">Type Match</span>
+                      <span className="text-pocket-green font-bold">+{support.typeBonusTraining}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-pocket-text-light">Other Stats</span>
+                      <span className="text-pocket-green font-bold">+{support.generalBonusTraining}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-pocket-text-light">Max Friend</span>
+                      <span className="text-pocket-green font-bold">+{support.friendshipBonusTraining}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Appearance Rate & Type Match Preference */}
+                <div className="bg-pocket-bg rounded-lg p-2 mb-2">
+                  <div className="grid grid-cols-2 gap-1 text-[10px]">
+                    <div className="flex justify-between">
+                      <span className="text-pocket-text-light">Appearance</span>
+                      <span className="text-pocket-text font-bold">{Math.round(support.appearanceChance * 100)}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-pocket-text-light">Type Pref</span>
+                      <span className="text-pocket-text font-bold">{Math.round(support.typeAppearancePriority * 100)}%</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Special Effects */}
+                {support.specialEffect && (
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-2 mb-2">
+                    <p className="font-bold text-purple-700 text-[10px] mb-1">Special Effects</p>
+                    <div className="space-y-0.5 text-[10px]">
+                      {support.specialEffect.statGainMultiplier && (
+                        <div className="flex justify-between">
+                          <span className="text-pocket-text-light">Stat Gain</span>
+                          <span className="text-pocket-green font-bold">{support.specialEffect.statGainMultiplier}x</span>
+                        </div>
+                      )}
+                      {support.specialEffect.failRateReduction && (
+                        <div className="flex justify-between">
+                          <span className="text-pocket-text-light">Fail Rate</span>
+                          <span className="text-pocket-green font-bold">-{(support.specialEffect.failRateReduction * 100).toFixed(0)}%</span>
+                        </div>
+                      )}
+                      {support.specialEffect.maxEnergyBonus && (
+                        <div className="flex justify-between">
+                          <span className="text-pocket-text-light">Max Energy</span>
+                          <span className="text-pocket-green font-bold">+{support.specialEffect.maxEnergyBonus}</span>
+                        </div>
+                      )}
+                      {support.specialEffect.restBonus && (
+                        <div className="flex justify-between">
+                          <span className="text-pocket-text-light">Rest Bonus</span>
+                          <span className="text-pocket-green font-bold">+{support.specialEffect.restBonus}</span>
+                        </div>
+                      )}
+                      {support.specialEffect.energyRegenBonus && (
+                        <div className="flex justify-between">
+                          <span className="text-pocket-text-light">Speed Training Energy Regen</span>
+                          <span className="text-pocket-green font-bold">+{support.specialEffect.energyRegenBonus}</span>
+                        </div>
+                      )}
+                      {support.specialEffect.skillPointMultiplier && (
+                        <div className="flex justify-between">
+                          <span className="text-pocket-text-light">SP Mult</span>
+                          <span className="text-pocket-green font-bold">{support.specialEffect.skillPointMultiplier}x</span>
+                        </div>
+                      )}
+                      {support.specialEffect.friendshipGainBonus && (
+                        <div className="flex justify-between">
+                          <span className="text-pocket-text-light">Friendship Gain</span>
+                          <span className="text-pocket-green font-bold">+{support.specialEffect.friendshipGainBonus}</span>
+                        </div>
+                      )}
+                      {support.specialEffect.energyCostReduction && (
+                        <div className="flex justify-between">
+                          <span className="text-pocket-text-light">Energy Cost</span>
+                          <span className="text-pocket-green font-bold">-{support.specialEffect.energyCostReduction}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 {/* Move Hints */}
                 {support.moveHints && support.moveHints.length > 0 && (
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-2">

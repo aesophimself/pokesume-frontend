@@ -235,7 +235,18 @@ const MyPokemonScreen = () => {
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setSelectedPokemon(pokemonName)}
                 className="pokemon-card cursor-pointer hover:ring-2 hover:ring-purple-300 transition-all"
+                style={{ borderLeft: `4px solid ${getRarityColor(getPokemonRarity(pokemonName))}` }}
               >
+                {/* Rarity badge at top */}
+                <div className="flex items-center justify-between mb-2">
+                  <span
+                    className="px-2 py-0.5 rounded-full text-[10px] font-bold text-white"
+                    style={{ backgroundColor: getRarityColor(getPokemonRarity(pokemonName)) }}
+                  >
+                    {getPokemonRarity(pokemonName)}
+                  </span>
+                  <Box size={14} className="text-pocket-green" />
+                </div>
                 <div className="mb-2">
                   {generatePokemonSprite(pokemon.primaryType, pokemonName)}
                 </div>
@@ -245,14 +256,6 @@ const MyPokemonScreen = () => {
                 </div>
                 <div className="my-2">
                   <TypeBadge type={pokemon.primaryType} size={14} />
-                </div>
-                <div className="flex items-center justify-center gap-1.5 mb-2">
-                  <span
-                    className="px-2 py-0.5 rounded-full text-[10px] font-bold text-white"
-                    style={{ backgroundColor: getRarityColor(getPokemonRarity(pokemonName)) }}
-                  >
-                    {getPokemonRarity(pokemonName)}
-                  </span>
                 </div>
                 <div className="grid grid-cols-2 gap-1 text-[10px] text-pocket-text-light">
                   <div className="flex items-center gap-1">
