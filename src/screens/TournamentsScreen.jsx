@@ -80,7 +80,8 @@ const TournamentsScreen = () => {
     return () => {
       isMounted = false;
     };
-  }, [setTournaments, setTournamentsLoading]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const getTimeUntilStart = (startTime) => {
     const now = new Date();
